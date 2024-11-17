@@ -58,7 +58,7 @@
         const comandaElement = document.createElement('div');
         comandaElement.classList.add('comanda');
         comandaElement.innerHTML = `
-          <h2>Comanda ${comanda.id}</h2>
+          <h2>Comanda #${comanda.id}</h2>
           <div>
             ${comanda.platos.map(plato => `
               <p>${plato.nombre} - Cantidad: ${plato.cantidad} - Precio: €${plato.precio}</p>
@@ -103,7 +103,7 @@
     });
 
     // Función para eliminar una comanda
-    async function eliminarComanda(id) {
+    async function eliminarComanda(id).addEventListener('click', async () => {
       await fetch(`/api/comandas/${id}`, { method: 'DELETE' });
       cargarComandas(); // Recargar las comandas después de eliminar
     }
