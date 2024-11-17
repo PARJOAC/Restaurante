@@ -193,7 +193,7 @@ const guardarComanda = async () => {
         alert(`Error al guardar la comanda: ${errorData.details}`);
       }
     } catch (err) {
-      alert("No se pudo conectar al servidor.");
+      alert("No se pudo conectar al servidor." + err);
     }
   } else {
     alert("Selecciona al menos un plato.");
