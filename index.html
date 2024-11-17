@@ -121,44 +121,37 @@
   </div>
 
   <!-- Scripts -->
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database.js"></script>
-  <script>
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
+    import { getDatabase, ref, push, onChildAdded } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-database.js";
+
     // Configuración de Firebase
     const firebaseConfig = {
       apiKey: "AIzaSyCBGPG0BovYYzE1HD-Shau6t7bAMH-XqXk",
-    authDomain: "saydo-d9bf1.firebaseapp.com",
-    databaseURL: "https://saydo-d9bf1-default-rtdb.firebaseio.com",
-    projectId: "saydo-d9bf1",
-    storageBucket: "saydo-d9bf1.firebasestorage.app",
-    messagingSenderId: "222383911991",
-    appId: "1:222383911991:web:1598a9b2fb2b5a548bbbb2",
-    measurementId: "G-DRSZXT2R8K"
+      authDomain: "saydo-d9bf1.firebaseapp.com",
+      databaseURL: "https://saydo-d9bf1-default-rtdb.firebaseio.com",
+      projectId: "saydo-d9bf1",
+      storageBucket: "saydo-d9bf1.appspot.com",
+      messagingSenderId: "222383911991",
+      appId: "1:222383911991:web:1598a9b2fb2b5a548bbbb2",
+      measurementId: "G-DRSZXT2R8K"
     };
 
-    const app = firebase.initializeApp(firebaseConfig);
-    const db = firebase.database();
-    const comandasRef = db.ref("comandas");
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+    const comandasRef = ref(db, "comandas");
 
     const platos = [
       { nombre: "Alitas / Wings", precio: 9 },
       { nombre: "Rabas / Fried Squid", precio: 9 },
-      { nombre: "Aros de Cebolla / Onion Rings", precio: 9 },
-      { nombre: "Queso Cheddar / Cheddar Cheese", precio: 9 },
-      { nombre: "Croquetas / Croquettes", precio: 9 },
-      { nombre: "Burger de Pollo / Chicken Burger", precio: 9 },
-      { nombre: "Patatas Fritas / Fries", precio: 5 },
       { nombre: "Pizza BBQ", precio: 10 },
       { nombre: "Pizza Pepperoni", precio: 10 },
-      { nombre: "Pizza Salami", precio: 10 },
-      { nombre: "Pizza 4 Quesos / Four Cheese Pizza", precio: 10 }
+      { nombre: "Pizza Salami", precio: 10 }
     ];
 
     const menu = document.getElementById("menu");
     const comandas = document.getElementById("comandas");
     const totalElement = document.getElementById("total");
-
-    let comandaId = 0;
 
     // Cargar el menú
     platos.forEach((plato, index) => {
@@ -175,7 +168,9 @@
     const calcularTotal = () => {
       let total = 0;
       platos.forEach((plato, index) => {
-        const cantidad = parseInt(document.getElementById(`cantidad-${index}`).value) || 0;
+        const cantidadInput = document.getElementById(`cantidad-${index}`);
+        const cantidad = Math.max(0, parseInt(cantidadInput.value) || 0);
+        cantidadInput.value = cantidad; // Evitar valores negativos
         total += cantidad * plato.precio;
       });
       totalElement.textContent = total.toFixed(2);
@@ -183,7 +178,7 @@
 
     // Guardar la comanda
     const guardarComanda = () => {
-      const nuevaComanda = { id: comandaId++, platos: [], total: 0 };
+      const nuevaComanda = { platos: [], total: 0 };
 
       platos.forEach((plato, index) => {
         const cantidad = parseInt(document.getElementById(`cantidad-${index}`).value) || 0;
@@ -199,13 +194,15 @@
       });
 
       if (nuevaComanda.platos.length > 0) {
-        comandasRef.push(nuevaComanda);
+        push(comandasRef, nuevaComanda);
         resetCantidades();
+      } else {
+        alert("Por favor, selecciona al menos un plato.");
       }
     };
 
     // Escuchar cambios en Firebase
-    comandasRef.on("child_added", (snapshot) => {
+    onChildAdded(comandasRef, (snapshot) => {
       const comanda = snapshot.val();
       agregarComanda(comanda);
     });
@@ -215,7 +212,7 @@
       const comandaDiv = document.createElement("div");
       comandaDiv.classList.add("comanda");
       comandaDiv.innerHTML = `
-        <h3>Comanda ${comanda.id + 1}</h3>
+        <h3>Nueva Comanda</h3>
         ${comanda.platos.map(plato => `
           <div>
             <span><strong>${plato.nombre}</strong> - ${plato.cantidad} x ${plato.precio.toFixed(2)} € = ${plato.subtotal.toFixed(2)} €</span>
