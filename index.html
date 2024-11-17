@@ -124,6 +124,9 @@
     </div>
     <h2>Comandas Actuales</h2>
     <div id="comandas"></div>
+
+    <!-- Botón para eliminar todos los datos -->
+    <button class="btn btn-danger" onclick="eliminarTodosLosDatos()">Eliminar todas las comandas</button>
   </div>
 
   <script type="module">
@@ -200,54 +203,46 @@
 
       if (platosSeleccionados.length > 0) {
         const nuevaComanda = { id: comandaCount++, platos: platosSeleccionados, total };
-        push(comandasRef, nuevaComanda).then(() => {
-          alert("Comanda guardada.");
-          mostrarComandas();
-        }).catch(error => {
-          console.error("Error al guardar la comanda: ", error);
-        });
+        push(comandasRef, nuevaComanda);
+        resetCantidades();
       }
     };
 
-    // Función para mostrar las comandas
-    const mostrarComandas = () => {
-      comandas.innerHTML = "";
-      onChildAdded(comandasRef, (data) => {
-        const comanda = data.val();
-        const comandaDiv = document.createElement("div");
-        comandaDiv.classList.add("comanda");
-        comandaDiv.innerHTML = `
-          <h3>Comanda ${comanda.id}</h3>
-          ${comanda.platos.map(plato => `
-            <div>
-              <span>${plato.cantidad} x ${plato.nombre} - ${plato.subtotal.toFixed(2)} €</span>
-            </div>
-          `).join('')}
-          <div class="total">Total: ${comanda.total.toFixed(2)} €</div>
-          <button class="btn-danger" onclick="eliminarComanda('${comanda.id}')">Eliminar Comanda</button>
-        `;
-        comandas.appendChild(comandaDiv);
+    // Función para resetear las cantidades
+    const resetCantidades = () => {
+      platos.forEach((_, index) => {
+        document.getElementById(`cantidad-${index}`).value = 0;
       });
+      calcularTotal();
     };
 
-    // Función para eliminar una comanda
-    const eliminarComanda = (comandaId) => {
-      const comandaRef = ref(db, `comandas/${comandaId}`);
-      remove(comandaRef).then(() => {
-        alert("Comanda eliminada.");
-        mostrarComandas(); // Actualizar la lista de comandas
+    // Función para eliminar todos los datos de la base de datos
+    const eliminarTodosLosDatos = () => {
+      const dbRef = ref(db, "comandas"); // Referencia a la raíz de las comandas
+      remove(dbRef).then(() => {
+        alert("Todas las comandas han sido eliminadas.");
+        comandas.innerHTML = ""; // Limpiar la interfaz
       }).catch(error => {
-        console.error("Error al eliminar la comanda: ", error);
+        console.error("Error al eliminar las comandas: ", error);
       });
     };
 
-    // Inicializar la vista de comandas
-    mostrarComandas();
-
-    // Asignar el evento de guardar comanda
-    document.getElementById("guardar-btn").addEventListener("click", guardarComanda);
-    document.getElementById("mostrar-total-btn").addEventListener("click", calcularTotal);
-
+    // Mostrar las comandas actuales
+    onChildAdded(comandasRef, (snapshot) => {
+      const comanda = snapshot.val();
+      const comandaDiv = document.createElement("div");
+      comandaDiv.classList.add("comanda");
+      comandaDiv.innerHTML = `
+        <h3>Comanda ${comanda.id}</h3>
+        ${comanda.platos.map(plato => `
+          <div>
+            <span>${plato.nombre} - ${plato.cantidad} x ${plato.precio.toFixed(2)} € = ${plato.subtotal.toFixed(2)} €</span>
+          </div>
+        `).join("")}
+        <div class="total">Total: ${comanda.total.toFixed(2)} €</div>
+      `;
+      comandas.appendChild(comandaDiv);
+    });
   </script>
 </body>
 </html>
