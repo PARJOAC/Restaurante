@@ -60,9 +60,13 @@ app.get('/api/comandas', async (req, res) => {
 
 // Crear una nueva comanda
 app.post('/api/comandas', async (req, res) => {
-  const { id, platos, total } = req.body;
+  const { platos, total } = req.body;
   try {
-    const comanda = new Comanda({ identificador: id, platos, total });
+    // Generar un identificador único si no se proporciona
+    const maxId = (await Comanda.find().sort({ identificador: -1 }).limit(1))[0]?.identificador || 0;
+    const identificador = req.body.id || maxId + 1;
+
+    const comanda = new Comanda({ identificador, platos, total });
     await comanda.save();
     res.status(201).json({ message: "Comanda guardada", comanda });
   } catch (err) {
@@ -70,6 +74,7 @@ app.post('/api/comandas', async (req, res) => {
     res.status(500).json({ error: "Error al guardar la comanda", details: err.message });
   }
 });
+
 
 // Eliminar una comanda
 app.delete('/api/comandas/:id', async (req, res) => {
