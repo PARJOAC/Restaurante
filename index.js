@@ -19,7 +19,7 @@ mongoose.connect(process.env.MONGODB_URI)
 
 // Crear el esquema para las comandas
 const comandaSchema = new mongoose.Schema({
-  id: Number,
+  ide: Number,
   platos: [
     {
       nombre: String,
@@ -51,9 +51,9 @@ app.get('/api/comandas', async (req, res) => {
 
 // Crear una nueva comanda
 app.post('/api/comandas', async (req, res) => {
-  const { id, platos, total } = req.body;
+  const { ide, platos, total } = req.body;
   try {
-    const comanda = new Comanda({ Id: id, platos: platos, total: total });
+    const comanda = new Comanda({ ide: ide, platos: platos, total: total });
     await comanda.save();
     res.status(201).send("Comanda guardada");
   } catch (err) {
@@ -63,10 +63,10 @@ app.post('/api/comandas', async (req, res) => {
 
 // Eliminar una comanda
 app.delete('/api/comandas/:id', async (req, res) => {
-  const { id } = req.params;
-  console.log(id)
+  const { ide } = req.params;
+  console.log(ide)
   try {
-    await Comanda.findByIdAndDelete({ id: id });
+    await Comanda.findByIdAndDelete({ ide: ide });
     res.send("Comanda eliminada");
   } catch (err) {
     console.log(err)
