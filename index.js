@@ -83,6 +83,16 @@ app.post('/api/comandas', async (req, res) => {
   }
 });
 
+// Obtener todas las comandas
+app.get('/api/comandas', async (req, res) => {
+  try {
+    const comandas = await Comanda.find();
+    res.json(comandas);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Error al obtener las comandas", details: err.message });
+  }
+});
 
 
 // Eliminar una comanda
