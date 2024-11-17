@@ -62,8 +62,8 @@ app.post('/api/comandas', async (req, res) => {
 });
 
 // Eliminar una comanda
-app.delete('/api/comandas/:identificador', async (req, res) => {
-  const { identificador } = req.params;
+app.delete('/api/comandas/:id', async (req, res) => {
+  const { id } = req.params;
   console.log(req.params)
   try {
     await Comanda.findOneAndDelete({ identificador: identificador });
