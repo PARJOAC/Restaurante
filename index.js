@@ -13,7 +13,7 @@ app.use(cors());
 app.use(bodyParser.json());
 
 // Conexión a MongoDB con variables de entorno
-mongoose.connect(process.env.MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true })
+mongoose.connect(process.env.MONGODB_URI)
   .then(() => console.log("Conexión exitosa a MongoDB"))
   .catch((err) => console.log("Error en la conexión a MongoDB:", err));
 
