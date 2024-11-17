@@ -18,7 +18,7 @@ if (!MONGODB_URI) {
   console.error("Falta la variable de entorno MONGODB_URI");
   process.exit(1);
 }
-mongoose.connect(MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true })
+mongoose.connect(MONGODB_URI)
   .then(() => console.log("Conexión exitosa a MongoDB"))
   .catch((err) => {
     console.error("Error en la conexión a MongoDB:", err.message);
