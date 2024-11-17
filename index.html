@@ -6,7 +6,7 @@
   <title>Control de Comandas</title>
   <style>
     body {
-      font-family: 'Arial', sans-serif;
+      font-family: Arial, sans-serif;
       margin: 0;
       padding: 0;
       background-color: #f0f4f7;
@@ -15,11 +15,12 @@
     h1, h2 {
       text-align: center;
       color: #444;
-      margin-bottom: 20px;
+      margin: 20px 0;
     }
     .container {
       width: 90%;
-      margin: 20px auto;
+      max-width: 1200px;
+      margin: auto;
     }
     table {
       width: 100%;
@@ -47,9 +48,6 @@
       text-align: center;
       font-size: 16px;
     }
-    td input[type="number"] {
-      -moz-appearance: textfield;
-    }
     .btn {
       padding: 10px 15px;
       font-size: 16px;
@@ -69,28 +67,16 @@
     .btn-danger:hover {
       background-color: #c82333;
     }
-    .total-container {
-      display: flex;
-      justify-content: space-between;
-      margin-top: 20px;
-      font-weight: bold;
-      font-size: 1.2em;
-    }
     .comanda {
       margin: 20px 0;
-      background-color: #ffffff;
       padding: 15px;
+      background-color: #fff;
       border-radius: 8px;
       box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
     }
     .comanda h3 {
       margin: 0;
       color: #333;
-    }
-    .comanda div {
-      margin: 10px 0;
-      display: flex;
-      justify-content: space-between;
     }
     .comanda .total {
       font-weight: bold;
@@ -134,49 +120,27 @@
   </div>
 
   <script>
-    // Menú de platos (esto se puede modificar dinámicamente según lo que tengas en la base de datos)
     const platos = [
       { nombre: "Alitas / Wings", precio: 9 },
       { nombre: "Rabas / Fried Squid", precio: 9 },
-      { nombre: "Aros de Cebolla / Onion Rings", precio: 9 },
-      { nombre: "Queso Cheddar / Cheddar Cheese", precio: 9 },
-      { nombre: "Croquetas / Croquettes", precio: 9 },
-      { nombre: "Burger de Pollo / Chicken Burger", precio: 9 },
-      { nombre: "Patatas Fritas / Fries", precio: 5 },
-      { nombre: "Pizza BBQ", precio: 10 },
-      { nombre: "Pizza Pepperoni", precio: 10 },
-      { nombre: "Pizza Salami", precio: 10 },
-      { nombre: "Pizza 4 Quesos / Four Cheese Pizza", precio: 10 }
+      // Más platos...
     ];
 
     const menu = document.getElementById("menu");
     const comandas = document.getElementById("comandas");
     const totalElement = document.getElementById("total");
 
-    // Cargar el menú
-    platos.forEach((plato, index) => {
-      const fila = document.createElement("tr");
-      fila.innerHTML = `
-        <td>${plato.nombre}</td>
-        <td>${plato.precio.toFixed(2)} €</td>
-        <td><input type="number" id="cantidad-${index}" value="0" min="0" oninput="calcularTotal()"></td>
-      `;
-      menu.appendChild(fila);
-    });
-
-    // Calcular el total
     const calcularTotal = () => {
       let total = 0;
       platos.forEach((plato, index) => {
         const cantidadInput = document.getElementById(`cantidad-${index}`);
         const cantidad = Math.max(0, parseInt(cantidadInput.value) || 0);
-        cantidadInput.value = cantidad; // Evitar valores negativos
+        cantidadInput.value = cantidad;
         total += cantidad * plato.precio;
       });
       totalElement.textContent = total.toFixed(2);
     };
 
-    // Guardar la comanda en la base de datos
     const guardarComanda = async () => {
       const nuevaComanda = { platos: [], total: 0 };
 
@@ -186,92 +150,94 @@
           nuevaComanda.platos.push({
             nombre: plato.nombre,
             cantidad,
-            precio: plato.precio,
-            subtotal: cantidad * plato.precio
+            precio: plato.precio
           });
           nuevaComanda.total += cantidad * plato.precio;
         }
       });
 
       if (nuevaComanda.platos.length > 0) {
-        // Hacer la llamada POST a tu backend (MongoDB)
-        const response = await fetch('/api/comandas', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(nuevaComanda)
-        });
-
-        if (response.ok) {
-          alert("Comanda guardada con éxito.");
-          resetCantidades();
-        } else {
-          alert("Error al guardar la comanda.");
+        try {
+          const response = await fetch('/api/comandas', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(nuevaComanda)
+          });
+          if (response.ok) {
+            alert("Comanda guardada con éxito.");
+            resetCantidades();
+            mostrarComandas();
+          } else {
+            alert("Error al guardar la comanda.");
+          }
+        } catch (err) {
+          alert("No se pudo conectar al servidor.");
         }
       } else {
-        alert("Por favor, selecciona al menos un plato.");
+        alert("Selecciona al menos un plato.");
       }
     };
 
-    // Resetear las cantidades a cero
-    const resetCantidades = () => {
-      platos.forEach((plato, index) => {
-        document.getElementById(`cantidad-${index}`).value = 0;
-      });
-      calcularTotal();
-    };
-
-    // Mostrar las comandas guardadas
     const mostrarComandas = async () => {
-      const response = await fetch('/api/comandas');
-      const comandasData = await response.json();
-
-      comandas.innerHTML = '';
-      comandasData.forEach((comanda) => {
-        const comandaDiv = document.createElement('div');
-        comandaDiv.classList.add('comanda');
-        comandaDiv.innerHTML = `
-          <h3>Comanda ${comanda}</h3>
-          ${comanda.platos.map(plato => `
-            <div>
-              <span>${plato.nombre} - ${plato.cantidad} x ${plato.precio.toFixed(2)} €</span>
-              <span>${(plato.cantidad * plato.precio).toFixed(2)} €</span>
-            </div>
-          `).join('')}
-          <div class="total">
-            Total: ${comanda.total.toFixed(2)} €
-          </div>
-          <button class="btn btn-danger" onclick="eliminarComanda('${comanda.id}')">Eliminar Comanda</button>
-        `;
-        comandas.appendChild(comandaDiv);
-      });
-    };
-
-    // Eliminar una comanda específica
-    const eliminarComanda = async (comandaId) => {
-      const response = await fetch(`/api/comandas/${comandaId}`, { method: 'DELETE' });
-      if (response.ok) {
-        alert("Comanda eliminada.");
-        mostrarComandas();
-      } else {
-        alert("Error al eliminar la comanda.");
+      try {
+        const response = await fetch('/api/comandas');
+        if (response.ok) {
+          const comandasData = await response.json();
+          comandas.innerHTML = '';
+          comandasData.forEach(comanda => {
+            const comandaDiv = document.createElement('div');
+            comandaDiv.classList.add('comanda');
+            comandaDiv.innerHTML = `
+              <h3>Comanda ${comanda.identificador}</h3>
+              ${comanda.platos.map(plato => `
+                <div>
+                  <span>${plato.nombre} (${plato.cantidad} x ${plato.precio.toFixed(2)} €)</span>
+                  <span>${(plato.cantidad * plato.precio).toFixed(2)} €</span>
+                </div>
+              `).join('')}
+              <div class="total">Total: ${comanda.total.toFixed(2)} €</div>
+              <button class="btn btn-danger" onclick="eliminarComanda('${comanda.identificador}')">Eliminar</button>
+            `;
+            comandas.appendChild(comandaDiv);
+          });
+        }
+      } catch (err) {
+        alert("No se pudo obtener las comandas.");
       }
     };
 
-    // Eliminar todas las comandas
+    const eliminarComanda = async (id) => {
+      try {
+        const response = await fetch(`/api/comandas/${id}`, { method: 'DELETE' });
+        if (response.ok) {
+          alert("Comanda eliminada.");
+          mostrarComandas();
+        } else {
+          alert("Error al eliminar la comanda.");
+        }
+      } catch (err) {
+        alert("No se pudo conectar al servidor.");
+      }
+    };
+
     const eliminarTodasLasComandas = async () => {
-      const response = await fetch('/api/comandas', { method: 'DELETE' });
-      if (response.ok) {
-        alert("Todas las comandas han sido eliminadas.");
-        mostrarComandas();
-      } else {
-        alert("Error al eliminar todas las comandas.");
+      try {
+        const response = await fetch('/api/comandas', { method: 'DELETE' });
+        if (response.ok) {
+          alert("Todas las comandas eliminadas.");
+          mostrarComandas();
+        } else {
+          alert("Error al eliminar todas las comandas.");
+        }
+      } catch (err) {
+        alert("No se pudo conectar al servidor.");
       }
     };
 
-    // Mostrar las comandas cuando se cargue la página
-    document.addEventListener('DOMContentLoaded', mostrarComandas);
+    document.addEventListener('DOMContentLoaded', () => {
+      mostrarComandas();
+      calcularTotal();
+    });
   </script>
 </body>
 </html>
