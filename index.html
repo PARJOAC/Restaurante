@@ -5,135 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Control de Comandas</title>
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      background-color: #f4f7fa;
-      margin: 0;
-      padding: 0;
-    }
-    h1 {
-      text-align: center;
-      color: #444;
-    }
-    .container {
-      width: 90%;
-      margin: 20px auto;
-    }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-bottom: 20px;
-      background-color: #fff;
-      border-radius: 8px;
-      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    }
-    th, td {
-      padding: 15px;
-      text-align: left;
-      font-size: 16px;
-      border-bottom: 1px solid #ddd;
-    }
-    th {
-      background-color: #4caf50;
-      color: white;
-    }
-    td input {
-      width: 100%;
-      padding: 8px;
-      border: 1px solid #ddd;
-      border-radius: 5px;
-      text-align: center;
-      font-size: 14px;
-      box-sizing: border-box;
-    }
-    td input[type="number"] {
-      -moz-appearance: textfield;
-    }
-    .btn {
-      padding: 10px 15px;
-      font-size: 16px;
-      color: white;
-      background-color: #007bff;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-    }
-    .btn-danger {
-      background-color: #e74c3c;
-      color: white;
-      font-size: 16px;
-      padding: 10px 20px;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-      transition: background-color 0.3s ease, transform 0.2s ease;
-    }
-    .comanda {
-      margin: 20px 0;
-      background-color: #ffffff;
-      padding: 15px;
-      border-radius: 8px;
-      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    }
-    .comanda h3 {
-      margin: 0;
-      color: #333;
-    }
-    .comanda div {
-      margin: 10px 0;
-      display: flex;
-      justify-content: space-between;
-    }
-    .comanda .total {
-      font-weight: bold;
-      font-size: 18px;
-      color: #007bff;
-    }
-    .total-container {
-      display: flex;
-      justify-content: space-between;
-      margin-top: 20px;
-      font-weight: bold;
-      font-size: 1.2em;
-    }
-
-    /* Estilos para el formulario de inicio de sesión */
-    .login-container {
-      width: 100%;
-      max-width: 400px;
-      margin: 0 auto;
-      padding: 20px;
-      background-color: #ffffff;
-      border-radius: 8px;
-      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    }
-    .login-container input {
-      width: 100%;
-      padding: 10px;
-      margin: 10px 0;
-      border: 1px solid #ddd;
-      border-radius: 5px;
-    }
-    .login-container button {
-      width: 100%;
-      padding: 10px;
-      font-size: 16px;
-      color: white;
-      background-color: #007bff;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-    }
-    .login-container button:hover {
-      background-color: #0056b3;
-    }
-
-    /* Hacer la página responsiva */
-    @media (max-width: 600px) {
-      table, .total-container, .comanda {
-        font-size: 14px;
-      }
-    }
+    /* El mismo CSS que te proporcioné anteriormente... */
   </style>
 </head>
 <body>
@@ -143,7 +15,7 @@
     <h2>Iniciar sesión</h2>
     <input type="text" id="username" placeholder="Usuario" />
     <input type="password" id="password" placeholder="Contraseña" />
-    <button onclick="iniciarSesion()">Iniciar sesión</button>
+    <button id="login-btn">Iniciar sesión</button>
   </div>
 
   <!-- Contenedor principal de la aplicación -->
@@ -284,13 +156,17 @@
       const password = document.getElementById("password").value;
 
       if (username === "saydo" && password === "saydo") {
+        // Ocultar el formulario de login y mostrar la app
         document.getElementById("login").style.display = "none";
         document.getElementById("app").style.display = "block";
-        mostrarComandas();
+        mostrarComandas(); // Mostrar las comandas guardadas
       } else {
         alert("Usuario o contraseña incorrectos");
       }
     };
+
+    // Asignar el evento al botón de login
+    document.getElementById("login-btn").addEventListener("click", iniciarSesion);
   </script>
 </body>
 </html>
