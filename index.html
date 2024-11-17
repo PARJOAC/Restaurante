@@ -78,6 +78,10 @@
       font-size: 18px;
       color: #007bff;
     }
+    .comanda .btn-danger {
+      background-color: #dc3545;
+      font-size: 14px;
+    }
     .total-container {
       display: flex;
       justify-content: space-between;
@@ -124,7 +128,7 @@
   <script type="module">
     // Importar las funciones necesarias del SDK
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js";
-    import { getDatabase, ref, push, onChildAdded } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-database.js";
+    import { getDatabase, ref, push, onChildAdded, remove } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-database.js";
 
     // Configuración de Firebase
     const firebaseConfig = {
@@ -213,39 +217,45 @@
     // Escuchar cambios en la base de datos de Firebase y mostrar las comandas actuales
     onChildAdded(comandasRef, (snapshot) => {
       const comanda = snapshot.val();
-      agregarComanda(comanda);
+      const comandaId = snapshot.key; // Obtener ID único de la comanda
+      agregarComanda(comanda, comandaId);
     });
 
     // Mostrar la comanda en la interfaz
-    const agregarComanda = (comanda) => {
+    const agregarComanda = (comanda, comandaId) => {
       const comandaDiv = document.createElement("div");
       comandaDiv.classList.add("comanda");
       comandaDiv.innerHTML = `
-        <h3>Nueva Comanda</h3>
+        <h3>Comanda ${comandaId}</h3>
         ${comanda.platos.map(plato => `
           <div>
-            <span><strong>${plato.nombre}</strong> - ${plato.cantidad} x ${plato.precio.toFixed(2)} € = ${plato.subtotal.toFixed(2)} €</span>
+            <span>${plato.cantidad} x ${plato.nombre} - ${plato.subtotal.toFixed(2)} €</span>
           </div>
-        `).join("")}
+        `).join('')}
         <div class="total">Total: ${comanda.total.toFixed(2)} €</div>
+        <button class="btn-danger" onclick="eliminarComanda('${comandaId}')">Eliminar Comanda</button>
       `;
       comandas.appendChild(comandaDiv);
     };
 
-    // Función para resetear las cantidades
+    // Función para eliminar una comanda de Firebase
+    const eliminarComanda = (comandaId) => {
+      const comandaRef = ref(db, `comandas/${comandaId}`);
+      remove(comandaRef).then(() => {
+        alert("Comanda eliminada.");
+        location.reload(); // Recargar la página para actualizar la lista de comandas
+      }).catch(error => {
+        console.error("Error al eliminar la comanda: ", error);
+      });
+    };
+
+    // Función para resetear las cantidades de los platos
     const resetCantidades = () => {
       platos.forEach((_, index) => {
         document.getElementById(`cantidad-${index}`).value = 0;
       });
       calcularTotal();
     };
-
-    // Asignar evento de guardar comanda al botón
-    document.getElementById("guardar-btn").addEventListener("click", guardarComanda);
-
-    // Asignar evento de calcular total al botón
-    document.getElementById("mostrar-total-btn").addEventListener("click", calcularTotal);
-
   </script>
 </body>
 </html>
