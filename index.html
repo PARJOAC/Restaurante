@@ -277,6 +277,7 @@
 
       if (nuevaComanda.platos.length > 0) {
         push(comandasRef, nuevaComanda);
+        calcularTotal();
         mostrarComandas();
       }
     };
@@ -327,6 +328,9 @@
 
     // Asignar el evento al botón de login
     document.getElementById("login-btn").addEventListener("click", iniciarSesion);
+    document.getElementById("guardar-btn").addEventListener("click", guardarComanda);
+    document.getElementById("mostrar-total-btn").addEventListener("click", calcularTotal);
   </script>
+
 </body>
 </html>
