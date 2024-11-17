@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 const bodyParser = require('body-parser');
 const path = require('path');
+require('dotenv').config(); // Cargar variables de entorno
 
 // Crear aplicación Express
 const app = express();
@@ -11,8 +12,8 @@ const app = express();
 app.use(cors());
 app.use(bodyParser.json());
 
-// Conexión a MongoDB
-mongoose.connect('mongodb+srv://SAYDO:SAYDO@saydo.rordo.mongodb.net/?retryWrites=true&w=majority&appName=SAYDO', { useNewUrlParser: true, useUnifiedTopology: true })
+// Conexión a MongoDB con variables de entorno
+mongoose.connect(process.env.MONGODB_URI)
   .then(() => console.log("Conexión exitosa a MongoDB"))
   .catch((err) => console.log("Error en la conexión a MongoDB:", err));
 
@@ -33,7 +34,7 @@ const Comanda = mongoose.model('Comanda', comandaSchema);
 
 // Rutas
 
-// Ruta para servir el archivo index.html (la página de inicio)
+// Ruta para servir el archivo index.html
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'index.html'));  // Asegúrate de que index.html esté en la carpeta public
 });
@@ -82,7 +83,7 @@ app.delete('/api/comandas', async (req, res) => {
 });
 
 // Iniciar servidor
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Servidor en puerto ${PORT}`);
 });
