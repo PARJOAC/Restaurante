@@ -64,10 +64,12 @@ app.post('/api/comandas', async (req, res) => {
 // Eliminar una comanda
 app.delete('/api/comandas/:id', async (req, res) => {
   const { id } = req.params;
+  console.log(id)
   try {
     await Comanda.findByIdAndDelete(id);
     res.send("Comanda eliminada");
   } catch (err) {
+    console.log(err)
     res.status(500).send("Error al eliminar la comanda");
   }
 });
