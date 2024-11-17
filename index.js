@@ -27,7 +27,7 @@ mongoose.connect(MONGODB_URI)
 
 // Crear el esquema para las comandas
 const comandaSchema = new mongoose.Schema({
-  identificador: { type: Number, required: true, unique: true }, // Índice único
+  identificador: { type: Number, required: true, unique: true }, // Campo único
   platos: [
     {
       nombre: { type: String, required: true },
@@ -52,7 +52,7 @@ app.post('/api/comandas', async (req, res) => {
   const { platos, total } = req.body;
 
   try {
-    // Buscar el mayor identificador actual y sumarle 1
+    // Buscar el último identificador y asignar uno nuevo
     const lastComanda = await Comanda.findOne().sort({ identificador: -1 });
     const identificador = lastComanda ? lastComanda.identificador + 1 : 1;
 
@@ -65,6 +65,7 @@ app.post('/api/comandas', async (req, res) => {
     res.status(500).json({ error: "Error al guardar la comanda", details: err.message });
   }
 });
+
 
 
 app.post('/api/comandas', async (req, res) => {
