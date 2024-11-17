@@ -35,7 +35,7 @@ const Comanda = mongoose.model('Comanda', comandaSchema);
 
 // Ruta para servir el archivo index.html (la página de inicio)
 app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'index.html'));  // Asegúrate de que index.html esté en la carpeta public
+  res.sendFile(path.join(__dirname, 'index.html'));  // Asegúrate de que index.html esté en la carpeta public
 });
 
 // Obtener todas las comandas
