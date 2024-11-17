@@ -5,14 +5,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Control de Comandas</title>
   <style>
-    /* Estilos generales */
     body {
-      font-family: 'Arial', sans-serif;
+      font-family: Arial, sans-serif;
+      background-color: #f4f7fa;
       margin: 0;
       padding: 0;
-      background-color: #f4f7fa;
     }
-    h1, h2 {
+    h1 {
       text-align: center;
       color: #444;
     }
@@ -44,7 +43,6 @@
       border: 1px solid #ddd;
       border-radius: 5px;
       text-align: center;
-      font-size: 16px;
     }
     .btn {
       padding: 10px 15px;
@@ -64,16 +62,7 @@
       border-radius: 5px;
       cursor: pointer;
       transition: background-color 0.3s ease, transform 0.2s ease;
-      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     }
-    .btn-danger:hover {
-      background-color: #c0392b;
-      transform: scale(1.05);
-    }
-    .btn-danger:focus {
-      outline: none;
-    }
-
     .comanda {
       margin: 20px 0;
       background-color: #ffffff;
@@ -132,7 +121,7 @@
   <script type="module">
     // Importar las funciones necesarias del SDK
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js";
-    import { getDatabase, ref, push, onChildAdded, remove, removeChild } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-database.js";
+    import { getDatabase, ref, push, onChildAdded, remove } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-database.js";
 
     // Configuración de Firebase
     const firebaseConfig = {
@@ -148,7 +137,7 @@
 
     // Inicializar Firebase
     const app = initializeApp(firebaseConfig);
-    const db = getDatabase(app); // Obtener referencia a la base de datos en tiempo real
+    const db = getDatabase(app);
     const comandasRef = ref(db, "comandas");
 
     const platos = [
@@ -169,7 +158,7 @@
     const comandas = document.getElementById("comandas");
     const totalElement = document.getElementById("total");
 
-    let comandaCount = 1; // Variable para el contador de las comandas
+    let comandaCount = 1; // Contador de comandas
 
     // Cargar el menú de platos
     platos.forEach((plato, index) => {
@@ -182,7 +171,7 @@
       menu.appendChild(fila);
     });
 
-    // Función para calcular el total
+    // Calcular el total de la comanda
     const calcularTotal = () => {
       let total = 0;
       platos.forEach((plato, index) => {
@@ -192,7 +181,7 @@
       totalElement.textContent = total.toFixed(2);
     };
 
-    // Función para guardar una comanda
+    // Guardar una comanda
     const guardarComanda = () => {
       const platosSeleccionados = platos.map((plato, index) => {
         const cantidad = document.getElementById(`cantidad-${index}`).value;
@@ -208,7 +197,7 @@
       }
     };
 
-    // Función para resetear las cantidades
+    // Restablecer las cantidades de los platos
     const resetCantidades = () => {
       platos.forEach((_, index) => {
         document.getElementById(`cantidad-${index}`).value = 0;
@@ -216,7 +205,7 @@
       calcularTotal();
     };
 
-    // Función para eliminar todos los datos de la base de datos
+    // Eliminar todos los datos de la base de datos
     const eliminarTodosLosDatos = () => {
       remove(comandasRef).then(() => {
         alert("Todas las comandas han sido eliminadas.");
@@ -226,7 +215,7 @@
       });
     };
 
-    // Función para eliminar una comanda individualmente
+    // Eliminar una comanda individualmente
     const eliminarComanda = (id) => {
       const comandaRef = ref(db, `comandas/${id}`);
       remove(comandaRef).then(() => {
@@ -249,7 +238,7 @@
           </div>
         `).join("")}
         <div class="total">Total: ${comanda.total.toFixed(2)} €</div>
-        <button class="btn btn-danger" onclick="eliminarComanda(${snapshot.key})">Eliminar Comanda</button>
+        <button class="btn btn-danger" onclick="eliminarComanda('${snapshot.key}')">Eliminar Comanda</button>
       `;
       comandas.appendChild(comandaDiv);
     });
@@ -257,7 +246,6 @@
     // Configuración de los botones
     document.getElementById("guardar-btn").onclick = guardarComanda;
     document.getElementById("mostrar-total-btn").onclick = calcularTotal;
-
   </script>
 </body>
 </html>
