@@ -318,19 +318,18 @@
       const password = document.getElementById("password").value;
 
       if (username === "saydo" && password === "saydo") {
-        // Ocultar el formulario de login y mostrar la app
         document.getElementById("login").style.display = "none";
         document.getElementById("app").style.display = "block";
-        mostrarComandas(); // Mostrar las comandas guardadas
+        mostrarComandas();
       } else {
         alert("Usuario o contraseña incorrectos");
       }
     };
 
-    // Asignar el evento al botón de login
     document.getElementById("login-btn").addEventListener("click", iniciarSesion);
     document.getElementById("guardar-btn").addEventListener("click", guardarComanda);
     document.getElementById("mostrar-total-btn").addEventListener("click", calcularTotal);
   </script>
+
 </body>
 </html>
