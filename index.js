@@ -19,15 +19,15 @@ mongoose.connect(process.env.MONGODB_URI, { useNewUrlParser: true, useUnifiedTop
 
 // Crear el esquema para las comandas
 const comandaSchema = new mongoose.Schema({
-  ide: { type: Number, unique: true, required: true }, // Añadir índice único y requerido
+  ide: { type: Number, unique: true }, // Añadir índice único
   platos: [
     {
-      nombre: { type: String, required: true },
-      cantidad: { type: Number, required: true },
-      precio: { type: Number, required: true }
+      nombre: String,
+      cantidad: Number,
+      precio: Number
     }
   ],
-  total: { type: Number, required: true }
+  total: Number
 });
 
 const Comanda = mongoose.model('Comanda', comandaSchema);
@@ -45,7 +45,6 @@ app.get('/api/comandas', async (req, res) => {
     const comandas = await Comanda.find();
     res.json(comandas);
   } catch (err) {
-    console.error("Error al obtener las comandas:", err);
     res.status(500).send("Error al obtener las comandas");
   }
 });
@@ -54,14 +53,10 @@ app.get('/api/comandas', async (req, res) => {
 app.post('/api/comandas', async (req, res) => {
   const { ide, platos, total } = req.body;
   try {
-    if (typeof ide === 'undefined' || isNaN(ide)) {
-      return res.status(400).send("El valor de 'ide' debe ser un número válido.");
-    }
-    const comanda = new Comanda({ ide: Number(ide), platos: platos, total: total });
+    const comanda = new Comanda({ ide: ide, platos: platos, total: total });
     await comanda.save();
     res.status(201).send("Comanda guardada");
   } catch (err) {
-    console.error("Error al guardar la comanda:", err);
     res.status(500).send("Error al guardar la comanda");
   }
 });
@@ -69,14 +64,12 @@ app.post('/api/comandas', async (req, res) => {
 // Eliminar una comanda
 app.delete('/api/comandas/:ide', async (req, res) => {
   const { ide } = req.params;
+  console.log(req.params)
   try {
-    if (typeof ide === 'undefined' || isNaN(ide)) {
-      return res.status(400).send("El valor de 'ide' debe ser un número válido.");
-    }
-    await Comanda.findOneAndDelete({ ide: Number(ide) });
+    await Comanda.findOneAndDelete({ ide: ide });
     res.send("Comanda eliminada");
   } catch (err) {
-    console.error("Error al eliminar la comanda:", err);
+    console.log(err)
     res.status(500).send("Error al eliminar la comanda");
   }
 });
@@ -87,7 +80,6 @@ app.delete('/api/comandas', async (req, res) => {
     await Comanda.deleteMany();
     res.send("Todas las comandas eliminadas");
   } catch (err) {
-    console.error("Error al eliminar todas las comandas:", err);
     res.status(500).send("Error al eliminar todas las comandas");
   }
 });
