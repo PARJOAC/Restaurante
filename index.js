@@ -11,7 +11,7 @@ app.use(cors());
 app.use(bodyParser.json());
 
 // Conexión a MongoDB
-mongoose.connect('mongodb+srv://SAYDO:SAYDO@saydo.rordo.mongodb.net/?retryWrites=true&w=majority&appName=SAYDO', { useNewUrlParser: true, useUnifiedTopology: true })
+mongoose.connect('mongodb+srv://SAYDO:SAYDO@saydo.rordo.mongodb.net/?retryWrites=true&w=majority&appName=SAYDO')
   .then(() => console.log("Conexión exitosa a MongoDB"))
   .catch((err) => console.log("Error en la conexión a MongoDB:", err));
 
