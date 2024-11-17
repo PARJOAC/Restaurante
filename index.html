@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Control de Comandas</title>
   <style>
+    /* Estilos generales */
     body {
       font-family: 'Arial', sans-serif;
       margin: 0;
@@ -55,7 +56,7 @@
       cursor: pointer;
     }
     .btn-danger {
-      background-color: #e74c3c; /* Rojo brillante */
+      background-color: #e74c3c;
       color: white;
       font-size: 16px;
       padding: 10px 20px;
@@ -65,12 +66,10 @@
       transition: background-color 0.3s ease, transform 0.2s ease;
       box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     }
-
     .btn-danger:hover {
-      background-color: #c0392b; /* Rojo oscuro */
+      background-color: #c0392b;
       transform: scale(1.05);
     }
-
     .btn-danger:focus {
       outline: none;
     }
@@ -103,18 +102,6 @@
       font-weight: bold;
       font-size: 1.2em;
     }
-    @media (max-width: 768px) {
-      body {
-        font-size: 14px;
-      }
-      th, td {
-        font-size: 14px;
-        padding: 10px;
-      }
-      .btn {
-        font-size: 14px;
-      }
-    }
   </style>
 </head>
 <body>
@@ -133,7 +120,7 @@
     <div class="total-container">
       <div>Total: <span id="total">0.00</span> €</div>
       <button class="btn" id="guardar-btn">Guardar Comanda</button>
-      <button class="btn btn-danger" id="mostrar-total-btn">Mostrar Total</button>
+      <button class="btn" id="mostrar-total-btn">Mostrar Total</button>
     </div>
     <h2>Comandas Actuales</h2>
     <div id="comandas"></div>
