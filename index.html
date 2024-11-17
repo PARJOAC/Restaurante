@@ -9,7 +9,7 @@
       font-family: Arial, sans-serif;
       margin: 20px;
     }
-    h1 {
+    h1, h2 {
       text-align: center;
     }
     table {
@@ -32,6 +32,7 @@
       font-weight: bold;
       font-size: 1.2em;
       text-align: right;
+      margin-bottom: 20px;
     }
     .btn {
       background-color: #007bff;
@@ -40,12 +41,11 @@
       border: none;
       cursor: pointer;
       font-size: 16px;
+      margin-right: 10px;
     }
     .btn:hover {
       background-color: #0056b3;
     }
-
-    /* Media queries */
     @media (max-width: 768px) {
       th, td {
         font-size: 14px;
@@ -59,7 +59,6 @@
         font-size: 1em;
       }
     }
-
     @media (max-width: 480px) {
       body {
         margin: 10px;
@@ -99,9 +98,26 @@
   </table>
   <div class="total">Total: <span id="total">0.00</span> €</div>
   <button class="btn" onclick="calcularTotal()">Calcular Total</button>
+  <button class="btn" onclick="resetCantidades()">Reiniciar Cantidades</button>
+  <button class="btn" onclick="guardarComanda()">Guardar Comanda</button>
+
+  <h2>Comandas Actuales</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Plato</th>
+        <th>Precio</th>
+        <th>Cantidad</th>
+        <th>Total</th>
+        <th>Acciones</th>
+      </tr>
+    </thead>
+    <tbody id="comandas">
+      <!-- Comandas guardadas se generarán aquí -->
+    </tbody>
+  </table>
 
   <script>
-    // Datos de los platos
     const platos = [
       { nombre: "Alitas / Wings", precio: 9 },
       { nombre: "Rabas / Fried Squid", precio: 9 },
@@ -116,8 +132,17 @@
       { nombre: "Pizza 4 Quesos / Four Cheese Pizza", precio: 10 }
     ];
 
-    // Renderizar los platos en la tabla
     const menu = document.getElementById("menu");
+    const comandas = document.getElementById("comandas");
+    const totalElement = document.getElementById("total");
+
+    // Cargar las comandas desde localStorage
+    const cargarComandas = () => {
+      const savedComandas = JSON.parse(localStorage.getItem("comandas")) || [];
+      savedComandas.forEach(comanda => agregarComanda(comanda));
+    };
+
+    // Renderizar el menú
     platos.forEach((plato, index) => {
       const fila = document.createElement("tr");
       fila.innerHTML = `
@@ -128,15 +153,64 @@
       menu.appendChild(fila);
     });
 
-    // Calcular el total
-    function calcularTotal() {
+    const calcularTotal = () => {
       let total = 0;
       platos.forEach((plato, index) => {
         const cantidad = parseInt(document.getElementById(`cantidad-${index}`).value) || 0;
         total += cantidad * plato.precio;
       });
-      document.getElementById("total").textContent = total.toFixed(2);
-    }
+      totalElement.textContent = total.toFixed(2);
+    };
+
+    const resetCantidades = () => {
+      platos.forEach((_, index) => {
+        document.getElementById(`cantidad-${index}`).value = 0;
+      });
+      calcularTotal();
+    };
+
+    const agregarComanda = (comanda) => {
+      const fila = document.createElement("tr");
+      fila.innerHTML = `
+        <td>${comanda.nombre}</td>
+        <td>${comanda.precio.toFixed(2)} €</td>
+        <td>${comanda.cantidad}</td>
+        <td>${(comanda.precio * comanda.cantidad).toFixed(2)} €</td>
+        <td>
+          <button onclick="eliminarComanda(this)">Eliminar</button>
+        </td>
+      `;
+      comandas.appendChild(fila);
+    };
+
+    const guardarComanda = () => {
+      platos.forEach((plato, index) => {
+        const cantidad = parseInt(document.getElementById(`cantidad-${index}`).value) || 0;
+        if (cantidad > 0) {
+          const comanda = { nombre: plato.nombre, precio: plato.precio, cantidad };
+          agregarComanda(comanda);
+
+          // Guardar en localStorage
+          const savedComandas = JSON.parse(localStorage.getItem("comandas")) || [];
+          savedComandas.push(comanda);
+          localStorage.setItem("comandas", JSON.stringify(savedComandas));
+        }
+      });
+      resetCantidades();
+    };
+
+    const eliminarComanda = (btn) => {
+      const fila = btn.parentElement.parentElement;
+      fila.remove();
+
+      // Actualizar localStorage
+      const nombre = fila.children[0].textContent;
+      let savedComandas = JSON.parse(localStorage.getItem("comandas")) || [];
+      savedComandas = savedComandas.filter(comanda => comanda.nombre !== nombre);
+      localStorage.setItem("comandas", JSON.stringify(savedComandas));
+    };
+
+    cargarComandas();
   </script>
 </body>
 </html>
