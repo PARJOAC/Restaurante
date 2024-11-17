@@ -81,6 +81,7 @@
     .total-container {
       display: flex;
       justify-content: space-between;
+      gap: 10px;
       margin-top: 20px;
       font-weight: bold;
       font-size: 1.2em;
@@ -115,6 +116,7 @@
     <div class="total-container">
       <div>Total: <span id="total">0.00</span> €</div>
       <button class="btn" onclick="guardarComanda()">Guardar Comanda</button>
+      <button class="btn btn-danger" onclick="mostrarTotal()">Mostrar Total</button>
     </div>
     <h2>Comandas Actuales</h2>
     <div id="comandas"></div>
@@ -142,18 +144,18 @@
     const comandasRef = ref(db, "comandas");
 
     const platos = [
-  { nombre: "Alitas / Wings", precio: 9 },
-  { nombre: "Rabas / Fried Squid", precio: 9 },
-  { nombre: "Aros de Cebolla / Onion Rings", precio: 9 },
-  { nombre: "Queso Cheddar / Cheddar Cheese", precio: 9 },
-  { nombre: "Croquetas / Croquettes", precio: 9 },
-  { nombre: "Burger de Pollo / Chicken Burger", precio: 9 },
-  { nombre: "Patatas Fritas / Fries", precio: 5 },
-  { nombre: "Pizza BBQ", precio: 10 },
-  { nombre: "Pizza Pepperoni", precio: 10 },
-  { nombre: "Pizza Salami", precio: 10 },
-  { nombre: "Pizza 4 Quesos / Four Cheese Pizza", precio: 10 }
-];
+      { nombre: "Alitas / Wings", precio: 9 },
+      { nombre: "Rabas / Fried Squid", precio: 9 },
+      { nombre: "Aros de Cebolla / Onion Rings", precio: 9 },
+      { nombre: "Queso Cheddar / Cheddar Cheese", precio: 9 },
+      { nombre: "Croquetas / Croquettes", precio: 9 },
+      { nombre: "Burger de Pollo / Chicken Burger", precio: 9 },
+      { nombre: "Patatas Fritas / Fries", precio: 5 },
+      { nombre: "Pizza BBQ", precio: 10 },
+      { nombre: "Pizza Pepperoni", precio: 10 },
+      { nombre: "Pizza Salami", precio: 10 },
+      { nombre: "Pizza 4 Quesos / Four Cheese Pizza", precio: 10 }
+    ];
 
     const menu = document.getElementById("menu");
     const comandas = document.getElementById("comandas");
@@ -182,6 +184,11 @@
       totalElement.textContent = total.toFixed(2);
     };
 
+    // Mostrar el total actual
+    const mostrarTotal = () => {
+      alert(`El total actual es: ${totalElement.textContent} €`);
+    };
+
     // Guardar la comanda
     const guardarComanda = () => {
       const nuevaComanda = { platos: [], total: 0 };
@@ -202,6 +209,7 @@
       if (nuevaComanda.platos.length > 0) {
         push(comandasRef, nuevaComanda);
         resetCantidades();
+        alert("¡Comanda guardada exitosamente!");
       } else {
         alert("Por favor, selecciona al menos un plato.");
       }
