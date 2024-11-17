@@ -19,7 +19,7 @@ mongoose.connect(process.env.MONGODB_URI)
 
 // Crear el esquema para las comandas
 const comandaSchema = new mongoose.Schema({
-  identificador: { type: Number, unique: true }, // Añadir índice único
+  identificador: { type: Number, required: true, unique: true }, // Añadir índice único
   platos: [
     {
       nombre: String,
