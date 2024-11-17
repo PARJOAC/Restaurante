@@ -254,10 +254,13 @@
 
     // Función para eliminar un plato de una comanda
     const eliminarPlato = (comandaId, nombrePlato) => {
-      const comandaDiv = Array.from(comandas.children).find(div => div.getAttribute("data-id") == comandaId);
+      const comandaDiv = document.querySelector(`.comanda[data-id="${comandaId}"]`);
       const platoDiv = Array.from(comandaDiv.querySelectorAll("div")).find(div => div.querySelector("strong").textContent === nombrePlato);
-      platoDiv.remove();
-      actualizarAlmacenamiento();
+      if (platoDiv) {
+        platoDiv.remove();
+        actualizarAlmacenamiento();
+        calcularTotal();
+      }
     };
 
     // Función para actualizar el almacenamiento local
