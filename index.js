@@ -13,13 +13,13 @@ app.use(cors());
 app.use(bodyParser.json());
 
 // Conexión a MongoDB con variables de entorno
-mongoose.connect(process.env.MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true })
+mongoose.connect(process.env.MONGODB_URI)
   .then(() => console.log("Conexión exitosa a MongoDB"))
   .catch((err) => console.log("Error en la conexión a MongoDB:", err));
 
 // Crear el esquema para las comandas
 const comandaSchema = new mongoose.Schema({
-  ide: { type: Number, unique: true }, // Añadir índice único
+  identificador: { type: Number, unique: true }, // Añadir índice único
   platos: [
     {
       nombre: String,
@@ -51,9 +51,9 @@ app.get('/api/comandas', async (req, res) => {
 
 // Crear una nueva comanda
 app.post('/api/comandas', async (req, res) => {
-  const { ide, platos, total } = req.body;
+  const { identificador, platos, total } = req.body;
   try {
-    const comanda = new Comanda({ ide: ide, platos: platos, total: total });
+    const comanda = new Comanda({ identificador: identificador, platos: platos, total: total });
     await comanda.save();
     res.status(201).send("Comanda guardada");
   } catch (err) {
@@ -62,11 +62,11 @@ app.post('/api/comandas', async (req, res) => {
 });
 
 // Eliminar una comanda
-app.delete('/api/comandas/:ide', async (req, res) => {
-  const { ide } = req.params;
+app.delete('/api/comandas/:identificador', async (req, res) => {
+  const { identificador } = req.params;
   console.log(req.params)
   try {
-    await Comanda.findOneAndDelete({ ide: ide });
+    await Comanda.findOneAndDelete({ identificador: identificador });
     res.send("Comanda eliminada");
   } catch (err) {
     console.log(err)
