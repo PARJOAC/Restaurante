@@ -13,7 +13,7 @@ app.use(cors());
 app.use(bodyParser.json());
 
 // Conexión a MongoDB con variables de entorno
-mongoose.connect(process.env.MONGODB_URI)
+mongoose.connect(process.env.MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true })
   .then(() => console.log("Conexión exitosa a MongoDB"))
   .catch((err) => console.log("Error en la conexión a MongoDB:", err));
 
@@ -66,7 +66,7 @@ app.delete('/api/comandas/:ide', async (req, res) => {
   const { ide } = req.params;
   console.log(req.params)
   try {
-    await Comanda.findByIdAndDelete({ ide: ide });
+    await Comanda.findOneAndDelete({ ide: ide });
     res.send("Comanda eliminada");
   } catch (err) {
     console.log(err)
