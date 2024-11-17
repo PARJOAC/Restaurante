@@ -81,7 +81,6 @@
     .total-container {
       display: flex;
       justify-content: space-between;
-      gap: 10px;
       margin-top: 20px;
       font-weight: bold;
       font-size: 1.2em;
@@ -115,17 +114,17 @@
     </table>
     <div class="total-container">
       <div>Total: <span id="total">0.00</span> €</div>
-      <button class="btn" onclick="guardarComanda()">Guardar Comanda</button>
-      <button class="btn btn-danger" onclick="mostrarTotal()">Mostrar Total</button>
+      <button class="btn" id="guardar-btn">Guardar Comanda</button>
+      <button class="btn btn-danger" id="mostrar-total-btn">Mostrar Total</button>
     </div>
     <h2>Comandas Actuales</h2>
     <div id="comandas"></div>
   </div>
 
-  <!-- Scripts -->
   <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
-    import { getDatabase, ref, push, onChildAdded } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-database.js";
+    // Importar las funciones necesarias del SDK
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js";
+    import { getDatabase, ref, push, onChildAdded } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-database.js";
 
     // Configuración de Firebase
     const firebaseConfig = {
@@ -139,8 +138,9 @@
       measurementId: "G-DRSZXT2R8K"
     };
 
+    // Inicializar Firebase
     const app = initializeApp(firebaseConfig);
-    const db = getDatabase(app);
+    const db = getDatabase(app); // Obtener referencia a la base de datos en tiempo real
     const comandasRef = ref(db, "comandas");
 
     const platos = [
@@ -161,7 +161,7 @@
     const comandas = document.getElementById("comandas");
     const totalElement = document.getElementById("total");
 
-    // Cargar el menú
+    // Cargar el menú de platos
     platos.forEach((plato, index) => {
       const fila = document.createElement("tr");
       fila.innerHTML = `
@@ -172,7 +172,7 @@
       menu.appendChild(fila);
     });
 
-    // Calcular el total
+    // Función para calcular el total
     const calcularTotal = () => {
       let total = 0;
       platos.forEach((plato, index) => {
@@ -184,12 +184,7 @@
       totalElement.textContent = total.toFixed(2);
     };
 
-    // Mostrar el total actual
-    const mostrarTotal = () => {
-      alert(`El total actual es: ${totalElement.textContent} €`);
-    };
-
-    // Guardar la comanda
+    // Función para guardar la comanda en Firebase
     const guardarComanda = () => {
       const nuevaComanda = { platos: [], total: 0 };
 
@@ -207,15 +202,15 @@
       });
 
       if (nuevaComanda.platos.length > 0) {
+        // Guardar la comanda en Firebase
         push(comandasRef, nuevaComanda);
         resetCantidades();
-        alert("¡Comanda guardada exitosamente!");
       } else {
         alert("Por favor, selecciona al menos un plato.");
       }
     };
 
-    // Escuchar cambios en Firebase
+    // Escuchar cambios en la base de datos de Firebase y mostrar las comandas actuales
     onChildAdded(comandasRef, (snapshot) => {
       const comanda = snapshot.val();
       agregarComanda(comanda);
@@ -237,13 +232,20 @@
       comandas.appendChild(comandaDiv);
     };
 
-    // Resetear las cantidades
+    // Función para resetear las cantidades
     const resetCantidades = () => {
       platos.forEach((_, index) => {
         document.getElementById(`cantidad-${index}`).value = 0;
       });
       calcularTotal();
     };
+
+    // Asignar evento de guardar comanda al botón
+    document.getElementById("guardar-btn").addEventListener("click", guardarComanda);
+
+    // Asignar evento de calcular total al botón
+    document.getElementById("mostrar-total-btn").addEventListener("click", calcularTotal);
+
   </script>
 </body>
 </html>
