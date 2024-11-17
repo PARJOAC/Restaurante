@@ -19,15 +19,15 @@ mongoose.connect(process.env.MONGODB_URI, { useNewUrlParser: true, useUnifiedTop
 
 // Crear el esquema para las comandas
 const comandaSchema = new mongoose.Schema({
-  ide: { type: Number, unique: true }, // Añadir índice único
+  ide: { type: Number, unique: true, required: true }, // Añadir índice único y requerido
   platos: [
     {
-      nombre: String,
-      cantidad: Number,
-      precio: Number
+      nombre: { type: String, required: true },
+      cantidad: { type: Number, required: true },
+      precio: { type: Number, required: true }
     }
   ],
-  total: Number
+  total: { type: Number, required: true }
 });
 
 const Comanda = mongoose.model('Comanda', comandaSchema);
@@ -45,6 +45,7 @@ app.get('/api/comandas', async (req, res) => {
     const comandas = await Comanda.find();
     res.json(comandas);
   } catch (err) {
+    console.error("Error al obtener las comandas:", err);
     res.status(500).send("Error al obtener las comandas");
   }
 });
@@ -60,6 +61,7 @@ app.post('/api/comandas', async (req, res) => {
     await comanda.save();
     res.status(201).send("Comanda guardada");
   } catch (err) {
+    console.error("Error al guardar la comanda:", err);
     res.status(500).send("Error al guardar la comanda");
   }
 });
@@ -67,7 +69,6 @@ app.post('/api/comandas', async (req, res) => {
 // Eliminar una comanda
 app.delete('/api/comandas/:ide', async (req, res) => {
   const { ide } = req.params;
-  console.log(req.params)
   try {
     if (typeof ide === 'undefined' || isNaN(ide)) {
       return res.status(400).send("El valor de 'ide' debe ser un número válido.");
@@ -75,7 +76,7 @@ app.delete('/api/comandas/:ide', async (req, res) => {
     await Comanda.findOneAndDelete({ ide: Number(ide) });
     res.send("Comanda eliminada");
   } catch (err) {
-    console.log(err)
+    console.error("Error al eliminar la comanda:", err);
     res.status(500).send("Error al eliminar la comanda");
   }
 });
@@ -86,6 +87,7 @@ app.delete('/api/comandas', async (req, res) => {
     await Comanda.deleteMany();
     res.send("Todas las comandas eliminadas");
   } catch (err) {
+    console.error("Error al eliminar todas las comandas:", err);
     res.status(500).send("Error al eliminar todas las comandas");
   }
 });
