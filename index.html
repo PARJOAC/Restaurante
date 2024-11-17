@@ -232,7 +232,7 @@
         const comandaDiv = document.createElement('div');
         comandaDiv.classList.add('comanda');
         comandaDiv.innerHTML = `
-          <h3>Comanda ${comanda.id}</h3>
+          <h3>Comanda ${comanda}</h3>
           ${comanda.platos.map(plato => `
             <div>
               <span>${plato.nombre} - ${plato.cantidad} x ${plato.precio.toFixed(2)} €</span>
