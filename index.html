@@ -259,14 +259,15 @@
       let total = 0;
       platos.forEach((plato, index) => {
         const cantidad = document.getElementById(`cantidad-${index}`).value;
-        total += plato.precio * cantidad;
+        total += cantidad * plato.precio;
       });
       totalElement.textContent = total.toFixed(2);
     };
 
-    // Guardar una comanda
+    // Guardar una nueva comanda
     const guardarComanda = () => {
       const nuevaComanda = { id: comandaCount++, platos: [], total: 0 };
+
       platos.forEach((plato, index) => {
         const cantidad = document.getElementById(`cantidad-${index}`).value;
         if (cantidad > 0) {
@@ -331,6 +332,5 @@
     document.getElementById("guardar-btn").addEventListener("click", guardarComanda);
     document.getElementById("mostrar-total-btn").addEventListener("click", calcularTotal);
   </script>
-
 </body>
 </html>
