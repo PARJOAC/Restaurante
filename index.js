@@ -12,22 +12,30 @@ const app = express();
 app.use(cors());
 app.use(bodyParser.json());
 
-// Conexión a MongoDB con variables de entorno
-mongoose.connect(process.env.MONGODB_URI)
+// Conexión a MongoDB con manejo de errores
+const MONGODB_URI = process.env.MONGODB_URI;
+if (!MONGODB_URI) {
+  console.error("Falta la variable de entorno MONGODB_URI");
+  process.exit(1);
+}
+mongoose.connect(MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true })
   .then(() => console.log("Conexión exitosa a MongoDB"))
-  .catch((err) => console.log("Error en la conexión a MongoDB:", err));
+  .catch((err) => {
+    console.error("Error en la conexión a MongoDB:", err.message);
+    process.exit(1);
+  });
 
 // Crear el esquema para las comandas
 const comandaSchema = new mongoose.Schema({
-  identificador: { type: Number, required: true, unique: true }, // Añadir índice único
+  identificador: { type: Number, required: true, unique: true }, // Índice único
   platos: [
     {
-      nombre: String,
-      cantidad: Number,
-      precio: Number
+      nombre: { type: String, required: true },
+      cantidad: { type: Number, required: true, min: 1 },
+      precio: { type: Number, required: true, min: 0 }
     }
   ],
-  total: Number
+  total: { type: Number, required: true, min: 0 }
 });
 
 const Comanda = mongoose.model('Comanda', comandaSchema);
@@ -36,7 +44,7 @@ const Comanda = mongoose.model('Comanda', comandaSchema);
 
 // Ruta para servir el archivo index.html
 app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'index.html'));  // Asegúrate de que index.html esté en la carpeta public
+  res.sendFile(path.join(__dirname, 'index.html')); // Asegúrate de que index.html esté en la carpeta public
 });
 
 // Obtener todas las comandas
@@ -45,7 +53,8 @@ app.get('/api/comandas', async (req, res) => {
     const comandas = await Comanda.find();
     res.json(comandas);
   } catch (err) {
-    res.status(500).send("Error al obtener las comandas");
+    console.error(err);
+    res.status(500).json({ error: "Error al obtener las comandas" });
   }
 });
 
@@ -53,39 +62,4 @@ app.get('/api/comandas', async (req, res) => {
 app.post('/api/comandas', async (req, res) => {
   const { id, platos, total } = req.body;
   try {
-    const comanda = new Comanda({ identificador: id, platos: platos, total: total });
-    await comanda.save();
-    res.status(201).send("Comanda guardada");
-  } catch (err) {
-    res.status(500).send("Error al guardar la comanda");
-  }
-});
-
-// Eliminar una comanda
-app.delete('/api/comandas/:id', async (req, res) => {
-  const { id } = req.params;
-  console.log(req.params)
-  try {
-    await Comanda.findOneAndDelete({ identificador: id });
-    res.send("Comanda eliminada");
-  } catch (err) {
-    console.log(err)
-    res.status(500).send("Error al eliminar la comanda");
-  }
-});
-
-// Eliminar todas las comandas
-app.delete('/api/comandas', async (req, res) => {
-  try {
-    await Comanda.deleteMany();
-    res.send("Todas las comandas eliminadas");
-  } catch (err) {
-    res.status(500).send("Error al eliminar todas las comandas");
-  }
-});
-
-// Iniciar servidor
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`Servidor en puerto ${PORT}`);
-});
+    const comanda = new Comanda({ identificador: id,
