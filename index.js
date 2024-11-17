@@ -62,4 +62,47 @@ app.get('/api/comandas', async (req, res) => {
 app.post('/api/comandas', async (req, res) => {
   const { id, platos, total } = req.body;
   try {
-    const comanda = new Comanda({ identificador: id,
+    const comanda = new Comanda({ identificador: id, platos, total });
+    await comanda.save();
+    res.status(201).json({ message: "Comanda guardada", comanda });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Error al guardar la comanda", details: err.message });
+  }
+});
+
+// Eliminar una comanda
+app.delete('/api/comandas/:id', async (req, res) => {
+  const id = parseInt(req.params.id, 10); // Convertir a número
+  if (isNaN(id)) {
+    return res.status(400).json({ error: "ID inválido" });
+  }
+  try {
+    const result = await Comanda.findOneAndDelete({ identificador: id });
+    if (result) {
+      res.json({ message: "Comanda eliminada" });
+    } else {
+      res.status(404).json({ error: "Comanda no encontrada" });
+    }
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Error al eliminar la comanda", details: err.message });
+  }
+});
+
+// Eliminar todas las comandas
+app.delete('/api/comandas', async (req, res) => {
+  try {
+    await Comanda.deleteMany();
+    res.json({ message: "Todas las comandas eliminadas" });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Error al eliminar todas las comandas", details: err.message });
+  }
+});
+
+// Iniciar servidor
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  console.log(`Servidor escuchando en puerto ${PORT}`);
+});
