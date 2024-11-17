@@ -162,42 +162,45 @@
       totalElement.textContent = total.toFixed(2);
     };
 
-    const guardarComanda = async () => {
-      const nuevaComanda = { platos: [], total: 0 };
+const guardarComanda = async () => {
+  const nuevaComanda = { platos: [], total: 0 };
 
-      platos.forEach((plato, index) => {
-        const cantidad = parseInt(document.getElementById(`cantidad-${index}`).value) || 0;
-        if (cantidad > 0) {
-          nuevaComanda.platos.push({
-            nombre: plato.nombre,
-            cantidad,
-            precio: plato.precio
-          });
-          nuevaComanda.total += cantidad * plato.precio;
-        }
+  platos.forEach((plato, index) => {
+    const cantidad = parseInt(document.getElementById(`cantidad-${index}`).value) || 0;
+    if (cantidad > 0) {
+      nuevaComanda.platos.push({
+        nombre: plato.nombre,
+        cantidad,
+        precio: plato.precio
       });
+      nuevaComanda.total += cantidad * plato.precio;
+    }
+  });
 
-      if (nuevaComanda.platos.length > 0) {
-        try {
-          const response = await fetch('/api/comandas', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(nuevaComanda)
-          });
-          if (response.ok) {
-            alert("Comanda guardada con éxito.");
-            resetCantidades();
-            mostrarComandas();
-          } else {
-            alert("Error al guardar la comanda.");
-          }
-        } catch (err) {
-          alert("No se pudo conectar al servidor.");
-        }
+  if (nuevaComanda.platos.length > 0) {
+    try {
+      const response = await fetch('/api/comandas', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(nuevaComanda)
+      });
+      if (response.ok) {
+        alert("Comanda guardada con éxito.");
+        resetCantidades();
+        mostrarComandas();
       } else {
-        alert("Selecciona al menos un plato.");
+        const errorData = await response.json();
+        alert(`Error al guardar la comanda: ${errorData.details}`);
       }
-    };
+    } catch (err) {
+      alert("No se pudo conectar al servidor.");
+    }
+  } else {
+    alert("Selecciona al menos un plato.");
+  }
+};
+
+
 
     const mostrarComandas = async () => {
       try {
