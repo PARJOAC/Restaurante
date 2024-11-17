@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Control de Comandas</title>
   <style>
+    /* Estilos (sin cambios significativos) */
     body {
       font-family: Arial, sans-serif;
       margin: 20px;
@@ -38,22 +39,12 @@
     td {
       border-bottom: 1px solid #ddd;
     }
-    td:last-child {
-      text-align: center;
-    }
     td input {
       width: 60px;
       padding: 5px;
       border: 1px solid #ddd;
       border-radius: 4px;
       text-align: center;
-    }
-    td button {
-      padding: 5px 10px;
-      border: none;
-      border-radius: 4px;
-      font-size: 12px;
-      cursor: pointer;
     }
     .btn {
       display: inline-block;
@@ -77,13 +68,6 @@
     .btn-danger:hover {
       background-color: #a71d2a;
     }
-    .btn-edit {
-      background-color: #ffc107;
-      color: #333;
-    }
-    .btn-edit:hover {
-      background-color: #e0a800;
-    }
     .total {
       font-weight: bold;
       font-size: 1.2em;
@@ -91,7 +75,6 @@
       margin-bottom: 20px;
     }
 
-    /* Media queries */
     @media (max-width: 768px) {
       body {
         margin: 15px;
@@ -103,16 +86,9 @@
         font-size: 14px;
         padding: 10px 12px;
       }
-      td input {
-        width: 50px;
-      }
       .btn {
         font-size: 14px;
         padding: 8px 12px;
-      }
-      .total {
-        font-size: 1em;
-        text-align: left;
       }
     }
 
@@ -127,26 +103,17 @@
         font-size: 12px;
         padding: 8px 10px;
       }
-      td input {
-        width: 40px;
-      }
       .btn {
         font-size: 12px;
         padding: 6px 10px;
-        margin-bottom: 10px;
-      }
-      .total {
-        font-size: 0.9em;
-        text-align: left;
-      }
-      table {
-        font-size: 12px;
       }
     }
   </style>
 </head>
 <body>
   <h1>Control de Comandas</h1>
+
+  <!-- Menú de selección de platos -->
   <table>
     <thead>
       <tr>
@@ -156,139 +123,160 @@
       </tr>
     </thead>
     <tbody id="menu">
-      <!-- Los platos se generarán aquí dinámicamente -->
+      <!-- Platos del menú -->
     </tbody>
   </table>
+
   <div class="total">Total: <span id="total">0.00</span> €</div>
-  <button class="btn" onclick="calcularTotal()">Calcular Total</button>
-  <button class="btn" onclick="resetCantidades()">Reiniciar Cantidades</button>
+
   <button class="btn" onclick="guardarComanda()">Guardar Comanda</button>
 
   <h2>Comandas Actuales</h2>
-  <table>
-    <thead>
-      <tr>
-        <th>Plato</th>
-        <th>Precio</th>
-        <th>Cantidad</th>
-        <th>Total</th>
-        <th>Acciones</th>
-      </tr>
-    </thead>
-    <tbody id="comandas">
-      <!-- Comandas guardadas se generarán aquí -->
-    </tbody>
-  </table>
+  <div id="comandas">
+    <!-- Aquí se mostrarán las comandas -->
+  </div>
 
-<script>
-  let comandaEnEdicion = null; // Referencia a la fila en edición (si la hay)
+  <script>
+    const platos = [
+      { nombre: "Alitas / Wings", precio: 9 },
+      { nombre: "Rabas / Fried Squid", precio: 9 },
+      { nombre: "Aros de Cebolla / Onion Rings", precio: 9 },
+      { nombre: "Queso Cheddar / Cheddar Cheese", precio: 9 },
+      { nombre: "Croquetas / Croquettes", precio: 9 },
+      { nombre: "Burger de Pollo / Chicken Burger", precio: 9 },
+      { nombre: "Patatas Fritas / Fries", precio: 5 },
+      { nombre: "Pizza BBQ", precio: 10 },
+      { nombre: "Pizza Pepperoni", precio: 10 },
+      { nombre: "Pizza Salami", precio: 10 },
+      { nombre: "Pizza 4 Quesos / Four Cheese Pizza", precio: 10 }
+    ];
 
-  // Función para editar una comanda existente
-  const editarComanda = (boton) => {
-    const fila = boton.parentElement.parentElement;
-    comandaEnEdicion = fila;
+    const menu = document.getElementById("menu");
+    const comandas = document.getElementById("comandas");
+    const totalElement = document.getElementById("total");
 
-    // Obtén el nombre del plato y la cantidad de la fila
-    const nombrePlato = fila.children[0].textContent;
-    const cantidad = parseInt(fila.children[2].textContent);
+    let comandaId = 0; // Identificador para cada comanda
 
-    // Busca el plato en el menú y carga la cantidad correspondiente
+    // Cargar menú dinámicamente
     platos.forEach((plato, index) => {
-      if (plato.nombre === nombrePlato) {
-        document.getElementById(`cantidad-${index}`).value = cantidad;
-      } else {
-        document.getElementById(`cantidad-${index}`).value = 0; // Resetea los demás
-      }
+      const fila = document.createElement("tr");
+      fila.innerHTML = `
+        <td>${plato.nombre}</td>
+        <td>${plato.precio.toFixed(2)} €</td>
+        <td><input type="number" id="cantidad-${index}" value="0" min="0"></td>
+      `;
+      menu.appendChild(fila);
     });
-  };
 
-  // Guardar una nueva comanda o actualizar la existente
-  const guardarComanda = () => {
-    let total = 0;
-    const nuevasComandas = [];
+    // Función para calcular el total
+    const calcularTotal = () => {
+      let total = 0;
+      platos.forEach((plato, index) => {
+        const cantidad = parseInt(document.getElementById(`cantidad-${index}`).value) || 0;
+        total += cantidad * plato.precio;
+      });
+      totalElement.textContent = total.toFixed(2);
+    };
 
-    // Recorre los platos para calcular cantidades
-    platos.forEach((plato, index) => {
-      const cantidad = parseInt(document.getElementById(`cantidad-${index}`).value) || 0;
+    // Función para guardar la comanda
+    const guardarComanda = () => {
+      const nuevaComanda = { id: comandaId++, platos: [] };
 
-      if (cantidad > 0) {
-        const totalParcial = cantidad * plato.precio;
-        total += totalParcial;
-
-        // Actualiza la comanda en edición o agrega una nueva
-        if (comandaEnEdicion && comandaEnEdicion.children[0].textContent === plato.nombre) {
-          comandaEnEdicion.children[2].textContent = cantidad;
-          comandaEnEdicion.children[3].textContent = `${totalParcial.toFixed(2)} €`;
-          comandaEnEdicion = null; // Resetea el estado de edición
-        } else {
-          nuevasComandas.push({
-            nombre: plato.nombre,
-            precio: plato.precio,
-            cantidad,
-            total: totalParcial
-          });
+      platos.forEach((plato, index) => {
+        const cantidad = parseInt(document.getElementById(`cantidad-${index}`).value) || 0;
+        if (cantidad > 0) {
+          nuevaComanda.platos.push({ nombre: plato.nombre, cantidad, precio: plato.precio });
         }
+      });
+
+      if (nuevaComanda.platos.length > 0) {
+        agregarComanda(nuevaComanda);
+        actualizarAlmacenamiento();
+        resetCantidades();
       }
-    });
+    };
 
-    // Si no hay edición, agrega nuevas comandas
-    nuevasComandas.forEach((comanda) => agregarComanda(comanda));
+    // Función para agregar una comanda a la lista
+    const agregarComanda = ({ id, platos }) => {
+      const comandaDiv = document.createElement("div");
+      comandaDiv.classList.add("comanda");
+      comandaDiv.setAttribute("data-id", id);
 
-    // Actualiza el almacenamiento local
-    actualizarAlmacenamiento();
-    resetCantidades();
-  };
+      let comandaTotal = 0;
+      let platosHTML = '';
 
-  // Función para agregar una nueva comanda a la tabla
-  const agregarComanda = ({ nombre, precio, cantidad, total }) => {
-    const fila = document.createElement("tr");
-    fila.innerHTML = `
-      <td>${nombre}</td>
-      <td>${precio.toFixed(2)} €</td>
-      <td>${cantidad}</td>
-      <td>${total.toFixed(2)} €</td>
-      <td>
-        <button class="btn btn-edit" onclick="editarComanda(this)">Editar</button>
-        <button class="btn btn-danger" onclick="eliminarComanda(this)">Eliminar</button>
-      </td>
-    `;
-    comandas.appendChild(fila);
-  };
+      platos.forEach(plato => {
+        const totalPlato = plato.precio * plato.cantidad;
+        comandaTotal += totalPlato;
+        platosHTML += `
+          <div>
+            <strong>${plato.nombre}</strong> - ${plato.cantidad} x ${plato.precio.toFixed(2)} € = ${totalPlato.toFixed(2)} €
+            <button class="btn btn-danger" onclick="eliminarPlato(${id}, '${plato.nombre}')">Eliminar</button>
+          </div>
+        `;
+      });
 
-  // Función para eliminar una comanda
-  const eliminarComanda = (boton) => {
-    const fila = boton.parentElement.parentElement;
-    fila.remove();
-    actualizarAlmacenamiento();
-  };
+      comandaDiv.innerHTML = `
+        <h3>Comanda ${id + 1} - Total: ${comandaTotal.toFixed(2)} €</h3>
+        ${platosHTML}
+      `;
 
-  // Actualiza el almacenamiento local
-  const actualizarAlmacenamiento = () => {
-    const datos = Array.from(comandas.children).map(fila => ({
-      nombre: fila.children[0].textContent,
-      precio: parseFloat(fila.children[1].textContent.replace("€", "").trim()),
-      cantidad: parseInt(fila.children[2].textContent),
-      total: parseFloat(fila.children[3].textContent.replace("€", "").trim())
-    }));
-    localStorage.setItem("comandas", JSON.stringify(datos));
-  };
+      comandas.appendChild(comandaDiv);
+    };
 
-  // Cargar comandas al inicio
-  const cargarComandas = () => {
-    const datosGuardados = JSON.parse(localStorage.getItem("comandas")) || [];
-    datosGuardados.forEach(agregarComanda);
-  };
+    // Función para eliminar un plato de una comanda
+    const eliminarPlato = (comandaId, nombrePlato) => {
+      const comandaDiv = document.querySelector(`.comanda[data-id="${comandaId}"]`);
+      const platos = Array.from(comandaDiv.querySelectorAll('div'));
+      let totalComanda = 0;
+      comandaDiv.innerHTML = `<h3>Comanda ${comandaId + 1} - Total: </h3>`;
 
-  // Resetea las cantidades del menú
-  const resetCantidades = () => {
-    platos.forEach((_, index) => {
-      document.getElementById(`cantidad-${index}`).value = 0;
-    });
-    calcularTotal();
-  };
+      platos.forEach(platoDiv => {
+        const nombre = platoDiv.querySelector('strong').textContent;
+        if (nombre !== nombrePlato) {
+          comandaDiv.innerHTML += platoDiv.outerHTML;
+          const precio = parseFloat(platoDiv.querySelector('span').textContent.replace("€", ""));
+          totalComanda += precio;
+        }
+      });
 
-  // Inicialización
-  cargarComandas();
-</script>
+      // Actualiza el total de la comanda
+      comandaDiv.innerHTML += `<h3>Comanda ${comandaId + 1} - Total: ${totalComanda.toFixed(2)} €</h3>`;
+      actualizarAlmacenamiento();
+    };
+
+    // Función para actualizar el almacenamiento local
+    const actualizarAlmacenamiento = () => {
+      const comandasData = Array.from(comandas.children).map(comandaDiv => {
+        const id = parseInt(comandaDiv.getAttribute("data-id"));
+        const platos = Array.from(comandaDiv.querySelectorAll('div')).map(platoDiv => {
+          const nombre = platoDiv.querySelector('strong').textContent;
+          const cantidad = parseInt(platoDiv.querySelector('input').value);
+          const precio = parseFloat(platoDiv.querySelector('span').textContent.replace("€", ""));
+          return { nombre, cantidad, precio };
+        });
+
+        return { id, platos };
+      });
+
+      localStorage.setItem("comandas", JSON.stringify(comandasData));
+    };
+
+    // Resetear las cantidades de los platos
+    const resetCantidades = () => {
+      platos.forEach((_, index) => {
+        document.getElementById(`cantidad-${index}`).value = 0;
+      });
+      calcularTotal();
+    };
+
+    // Cargar las comandas guardadas al inicio
+    const cargarComandas = () => {
+      const datosGuardados = JSON.parse(localStorage.getItem("comandas")) || [];
+      datosGuardados.forEach(agregarComanda);
+    };
+
+    cargarComandas();
+  </script>
 </body>
 </html>
