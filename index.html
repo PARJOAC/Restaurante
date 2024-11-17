@@ -125,14 +125,14 @@
     <h2>Comandas Actuales</h2>
     <div id="comandas"></div>
 
-    <!-- Botón para eliminar todos los datos -->
+    <!-- Botón para eliminar todas las comandas -->
     <button class="btn btn-danger" onclick="eliminarTodosLosDatos()">Eliminar todas las comandas</button>
   </div>
 
   <script type="module">
     // Importar las funciones necesarias del SDK
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js";
-    import { getDatabase, ref, push, onChildAdded, remove } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-database.js";
+    import { getDatabase, ref, push, onChildAdded, remove, removeChild } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-database.js";
 
     // Configuración de Firebase
     const firebaseConfig = {
@@ -218,12 +218,21 @@
 
     // Función para eliminar todos los datos de la base de datos
     const eliminarTodosLosDatos = () => {
-      const dbRef = ref(db, "comandas"); // Referencia a la raíz de las comandas
-      remove(dbRef).then(() => {
+      remove(comandasRef).then(() => {
         alert("Todas las comandas han sido eliminadas.");
         comandas.innerHTML = ""; // Limpiar la interfaz
-      }).catch(error => {
-        console.error("Error al eliminar las comandas: ", error);
+      }).catch((error) => {
+        console.error("Error al eliminar los datos: ", error);
+      });
+    };
+
+    // Función para eliminar una comanda individualmente
+    const eliminarComanda = (id) => {
+      const comandaRef = ref(db, `comandas/${id}`);
+      remove(comandaRef).then(() => {
+        alert(`Comanda ${id} eliminada.`);
+      }).catch((error) => {
+        console.error("Error al eliminar la comanda: ", error);
       });
     };
 
@@ -240,9 +249,15 @@
           </div>
         `).join("")}
         <div class="total">Total: ${comanda.total.toFixed(2)} €</div>
+        <button class="btn btn-danger" onclick="eliminarComanda(${snapshot.key})">Eliminar Comanda</button>
       `;
       comandas.appendChild(comandaDiv);
     });
+
+    // Configuración de los botones
+    document.getElementById("guardar-btn").onclick = guardarComanda;
+    document.getElementById("mostrar-total-btn").onclick = calcularTotal;
+
   </script>
 </body>
 </html>
