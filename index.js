@@ -11,6 +11,7 @@ const app = express();
 // Usar middleware
 app.use(cors());
 app.use(bodyParser.json());
+app.use(express.static('public'));
 
 // Conexión a MongoDB con manejo de errores
 const MONGODB_URI = process.env.MONGODB_URI;
