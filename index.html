@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Control de Comandas</title>
   <style>
     body {
@@ -38,11 +38,16 @@
       color: white;
     }
     td input {
-      width: 60px;
-      padding: 5px;
+      width: 100%;
+      padding: 8px;
       border: 1px solid #ddd;
       border-radius: 5px;
       text-align: center;
+      font-size: 14px;
+      box-sizing: border-box;
+    }
+    td input[type="number"] {
+      -moz-appearance: textfield;
     }
     .btn {
       padding: 10px 15px;
@@ -91,10 +96,58 @@
       font-weight: bold;
       font-size: 1.2em;
     }
+
+    /* Estilos para el formulario de inicio de sesión */
+    .login-container {
+      width: 100%;
+      max-width: 400px;
+      margin: 0 auto;
+      padding: 20px;
+      background-color: #ffffff;
+      border-radius: 8px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+    .login-container input {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+    }
+    .login-container button {
+      width: 100%;
+      padding: 10px;
+      font-size: 16px;
+      color: white;
+      background-color: #007bff;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .login-container button:hover {
+      background-color: #0056b3;
+    }
+
+    /* Hacer la página responsiva */
+    @media (max-width: 600px) {
+      table, .total-container, .comanda {
+        font-size: 14px;
+      }
+    }
   </style>
 </head>
 <body>
-  <div class="container">
+
+  <!-- Formulario de login -->
+  <div id="login" class="login-container">
+    <h2>Iniciar sesión</h2>
+    <input type="text" id="username" placeholder="Usuario" />
+    <input type="password" id="password" placeholder="Contraseña" />
+    <button onclick="iniciarSesion()">Iniciar sesión</button>
+  </div>
+
+  <!-- Contenedor principal de la aplicación -->
+  <div id="app" class="container" style="display:none;">
     <h1>Control de Comandas</h1>
     <table>
       <thead>
@@ -119,11 +172,10 @@
   </div>
 
   <script type="module">
-    // Importar las funciones necesarias del SDK
+    // Firebase configuration
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js";
     import { getDatabase, ref, push, onChildAdded, remove } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-database.js";
 
-    // Configuración de Firebase
     const firebaseConfig = {
       apiKey: "AIzaSyCBGPG0BovYYzE1HD-Shau6t7bAMH-XqXk",
       authDomain: "saydo-d9bf1.firebaseapp.com",
@@ -135,7 +187,6 @@
       measurementId: "G-DRSZXT2R8K"
     };
 
-    // Inicializar Firebase
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
     const comandasRef = ref(db, "comandas");
@@ -158,7 +209,7 @@
     const comandas = document.getElementById("comandas");
     const totalElement = document.getElementById("total");
 
-    let comandaCount = 1; // Contador de comandas
+    let comandaCount = 1;
 
     // Cargar el menú de platos
     platos.forEach((plato, index) => {
@@ -166,7 +217,7 @@
       fila.innerHTML = `
         <td>${plato.nombre}</td>
         <td>${plato.precio.toFixed(2)} €</td>
-        <td><input type="number" id="cantidad-${index}" value="0" min="0" onchange="calcularTotal()"></td>
+        <td><input type="number" id="cantidad-${index}" value="0" min="0" inputmode="numeric" onchange="calcularTotal()"></td>
       `;
       menu.appendChild(fila);
     });
@@ -183,69 +234,63 @@
 
     // Guardar una comanda
     const guardarComanda = () => {
-      const platosSeleccionados = platos.map((plato, index) => {
+      const nuevaComanda = { id: comandaCount++, platos: [], total: 0 };
+      platos.forEach((plato, index) => {
         const cantidad = document.getElementById(`cantidad-${index}`).value;
-        return cantidad > 0 ? { ...plato, cantidad: parseInt(cantidad), subtotal: plato.precio * cantidad } : null;
-      }).filter(plato => plato !== null);
+        if (cantidad > 0) {
+          nuevaComanda.platos.push({ nombre: plato.nombre, cantidad, precio: plato.precio });
+          nuevaComanda.total += plato.precio * cantidad;
+        }
+      });
 
-      const total = platosSeleccionados.reduce((acc, plato) => acc + plato.subtotal, 0);
-
-      if (platosSeleccionados.length > 0) {
-        const nuevaComanda = { id: comandaCount++, platos: platosSeleccionados, total };
+      if (nuevaComanda.platos.length > 0) {
         push(comandasRef, nuevaComanda);
-        resetCantidades();
+        mostrarComandas();
       }
     };
 
-    // Restablecer las cantidades de los platos
-    const resetCantidades = () => {
-      platos.forEach((_, index) => {
-        document.getElementById(`cantidad-${index}`).value = 0;
+    // Mostrar las comandas
+    const mostrarComandas = () => {
+      comandas.innerHTML = "";
+      onChildAdded(comandasRef, (data) => {
+        const comanda = data.val();
+        const divComanda = document.createElement("div");
+        divComanda.classList.add("comanda");
+        divComanda.innerHTML = `
+          <h3>Comanda ${comanda.id}</h3>
+          <ul>
+            ${comanda.platos.map(p => `<li>${p.nombre}: ${p.cantidad} x ${p.precio} €</li>`).join('')}
+          </ul>
+          <div class="total">Total: ${comanda.total.toFixed(2)} €</div>
+          <button class="btn btn-danger" onclick="eliminarComanda('${data.key}')">Eliminar Comanda</button>
+        `;
+        comandas.appendChild(divComanda);
       });
-      calcularTotal();
     };
 
-    // Eliminar todos los datos de la base de datos
-    const eliminarTodosLosDatos = () => {
-      remove(comandasRef).then(() => {
-        alert("Todas las comandas han sido eliminadas.");
-        comandas.innerHTML = ""; // Limpiar la interfaz
-      }).catch((error) => {
-        console.error("Error al eliminar los datos: ", error);
-      });
-    };
-
-    // Eliminar una comanda individualmente
+    // Eliminar una comanda
     const eliminarComanda = (id) => {
-      const comandaRef = ref(db, `comandas/${id}`);
-      remove(comandaRef).then(() => {
-        alert(`Comanda ${id} eliminada.`);
-      }).catch((error) => {
-        console.error("Error al eliminar la comanda: ", error);
-      });
+      remove(ref(db, `comandas/${id}`));
     };
 
-    // Mostrar las comandas actuales
-    onChildAdded(comandasRef, (snapshot) => {
-      const comanda = snapshot.val();
-      const comandaDiv = document.createElement("div");
-      comandaDiv.classList.add("comanda");
-      comandaDiv.innerHTML = `
-        <h3>Comanda ${comanda.id}</h3>
-        ${comanda.platos.map(plato => `
-          <div>
-            <span>${plato.nombre} - ${plato.cantidad} x ${plato.precio.toFixed(2)} € = ${plato.subtotal.toFixed(2)} €</span>
-          </div>
-        `).join("")}
-        <div class="total">Total: ${comanda.total.toFixed(2)} €</div>
-        <button class="btn btn-danger" onclick="eliminarComanda('${snapshot.key}')">Eliminar Comanda</button>
-      `;
-      comandas.appendChild(comandaDiv);
-    });
+    // Eliminar todas las comandas
+    const eliminarTodosLosDatos = () => {
+      remove(comandasRef);
+    };
 
-    // Configuración de los botones
-    document.getElementById("guardar-btn").onclick = guardarComanda;
-    document.getElementById("mostrar-total-btn").onclick = calcularTotal;
+    // Iniciar sesión
+    const iniciarSesion = () => {
+      const username = document.getElementById("username").value;
+      const password = document.getElementById("password").value;
+
+      if (username === "saydo" && password === "saydo") {
+        document.getElementById("login").style.display = "none";
+        document.getElementById("app").style.display = "block";
+        mostrarComandas();
+      } else {
+        alert("Usuario o contraseña incorrectos");
+      }
+    };
   </script>
 </body>
 </html>
