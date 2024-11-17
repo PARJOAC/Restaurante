@@ -134,26 +134,8 @@
     <button class="btn btn-danger" onclick="eliminarTodasLasComandas()">Eliminar todas las comandas</button>
   </div>
 
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
-    import { getDatabase, ref, push, onChildAdded, remove } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-database.js";
-
-    // Configuración de Firebase
-    const firebaseConfig = {
-      apiKey: "AIzaSyCBGPG0BovYYzE1HD-Shau6t7bAMH-XqXk",
-      authDomain: "saydo-d9bf1.firebaseapp.com",
-      databaseURL: "https://saydo-d9bf1-default-rtdb.firebaseio.com",
-      projectId: "saydo-d9bf1",
-      storageBucket: "saydo-d9bf1.appspot.com",
-      messagingSenderId: "222383911991",
-      appId: "1:222383911991:web:1598a9b2fb2b5a548bbbb2",
-      measurementId: "G-DRSZXT2R8K"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const db = getDatabase(app);
-    const comandasRef = ref(db, "comandas");
-
+  <script>
+    // Menú de platos (esto se puede modificar dinámicamente según lo que tengas en la base de datos)
     const platos = [
       { nombre: "Alitas / Wings", precio: 9 },
       { nombre: "Rabas / Fried Squid", precio: 9 },
@@ -195,8 +177,8 @@
       totalElement.textContent = total.toFixed(2);
     };
 
-    // Guardar la comanda
-    const guardarComanda = () => {
+    // Guardar la comanda en la base de datos
+    const guardarComanda = async () => {
       const nuevaComanda = { platos: [], total: 0 };
 
       platos.forEach((plato, index) => {
@@ -213,56 +195,84 @@
       });
 
       if (nuevaComanda.platos.length > 0) {
-        push(comandasRef, nuevaComanda);
-        resetCantidades();
+        // Hacer la llamada POST a tu backend (MongoDB)
+        const response = await fetch('/api/comandas', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(nuevaComanda)
+        });
+
+        if (response.ok) {
+          alert("Comanda guardada con éxito.");
+          resetCantidades();
+        } else {
+          alert("Error al guardar la comanda.");
+        }
       } else {
         alert("Por favor, selecciona al menos un plato.");
       }
     };
 
-    // Eliminar todas las comandas
-    const eliminarTodasLasComandas = () => {
-      remove(comandasRef);
-      alert("Todas las comandas han sido eliminadas.");
-    };
-
-    // Escuchar cambios en Firebase
-    onChildAdded(comandasRef, (snapshot) => {
-      const comanda = snapshot.val();
-      agregarComanda(comanda, snapshot.key);
-    });
-
-    // Mostrar la comanda en la interfaz
-    const agregarComanda = (comanda, id) => {
-      const comandaDiv = document.createElement("div");
-      comandaDiv.classList.add("comanda");
-      comandaDiv.innerHTML = `
-        <h3>Comanda ${id}</h3>
-        ${comanda.platos.map(plato => `
-          <div>
-            <span>${plato.nombre}</span> x${plato.cantidad} - ${plato.subtotal.toFixed(2)} €
-          </div>
-        `).join("")}
-        <div class="total">Total: ${comanda.total.toFixed(2)} €</div>
-        <button class="btn btn-danger" onclick="eliminarComanda('${id}')">Eliminar Comanda</button>
-      `;
-      comandas.appendChild(comandaDiv);
-    };
-
-    // Eliminar una comanda
-    const eliminarComanda = (id) => {
-      const comandaRef = ref(db, `comandas/${id}`);
-      remove(comandaRef);
-      alert("Comanda eliminada.");
-    };
-
-    // Reiniciar las cantidades en el formulario
+    // Resetear las cantidades a cero
     const resetCantidades = () => {
       platos.forEach((plato, index) => {
         document.getElementById(`cantidad-${index}`).value = 0;
       });
       calcularTotal();
     };
+
+    // Mostrar las comandas guardadas
+    const mostrarComandas = async () => {
+      const response = await fetch('/api/comandas');
+      const comandasData = await response.json();
+
+      comandas.innerHTML = '';
+      comandasData.forEach((comanda) => {
+        const comandaDiv = document.createElement('div');
+        comandaDiv.classList.add('comanda');
+        comandaDiv.innerHTML = `
+          <h3>Comanda ${comanda.id}</h3>
+          ${comanda.platos.map(plato => `
+            <div>
+              <span>${plato.nombre} - ${plato.cantidad} x ${plato.precio.toFixed(2)} €</span>
+              <span>${(plato.cantidad * plato.precio).toFixed(2)} €</span>
+            </div>
+          `).join('')}
+          <div class="total">
+            Total: ${comanda.total.toFixed(2)} €
+          </div>
+          <button class="btn btn-danger" onclick="eliminarComanda('${comanda.id}')">Eliminar Comanda</button>
+        `;
+        comandas.appendChild(comandaDiv);
+      });
+    };
+
+    // Eliminar una comanda específica
+    const eliminarComanda = async (comandaId) => {
+      const response = await fetch(`/api/comandas/${comandaId}`, { method: 'DELETE' });
+      if (response.ok) {
+        alert("Comanda eliminada.");
+        mostrarComandas();
+      } else {
+        alert("Error al eliminar la comanda.");
+      }
+    };
+
+    // Eliminar todas las comandas
+    const eliminarTodasLasComandas = async () => {
+      const response = await fetch('/api/comandas', { method: 'DELETE' });
+      if (response.ok) {
+        alert("Todas las comandas han sido eliminadas.");
+        mostrarComandas();
+      } else {
+        alert("Error al eliminar todas las comandas.");
+      }
+    };
+
+    // Mostrar las comandas cuando se cargue la página
+    document.addEventListener('DOMContentLoaded', mostrarComandas);
   </script>
 </body>
 </html>
