@@ -51,9 +51,9 @@ app.get('/api/comandas', async (req, res) => {
 
 // Crear una nueva comanda
 app.post('/api/comandas', async (req, res) => {
-  const { identificador, platos, total } = req.body;
+  const { id, platos, total } = req.body;
   try {
-    const comanda = new Comanda({ identificador: identificador, platos: platos, total: total });
+    const comanda = new Comanda({ identificador: id, platos: platos, total: total });
     await comanda.save();
     res.status(201).send("Comanda guardada");
   } catch (err) {
@@ -63,10 +63,10 @@ app.post('/api/comandas', async (req, res) => {
 
 // Eliminar una comanda
 app.delete('/api/comandas/:id', async (req, res) => {
-  const { identificador } = req.params;
+  const { id } = req.params;
   console.log(req.params)
   try {
-    await Comanda.findOneAndDelete({ identificador: identificador });
+    await Comanda.findOneAndDelete({ identificador: id });
     res.send("Comanda eliminada");
   } catch (err) {
     console.log(err)
