@@ -3,276 +3,192 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Control de Comandas</title>
+  <title>Gestión de Comandas</title>
+  <link rel="stylesheet" href="style.css">
   <style>
     body {
-      font-family: 'Arial', sans-serif;
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f9;
       margin: 0;
       padding: 0;
-      background-color: #f0f4f7;
-      color: #333;
     }
-    h1, h2 {
-      text-align: center;
-      color: #444;
-      margin-bottom: 20px;
-    }
+
     .container {
-      width: 90%;
+      max-width: 1200px;
       margin: 20px auto;
-    }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-bottom: 20px;
-      background-color: #fff;
+      padding: 20px;
+      background-color: white;
       border-radius: 8px;
-      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     }
-    th, td {
-      padding: 15px;
-      text-align: left;
-      font-size: 16px;
-      border-bottom: 1px solid #ddd;
-    }
-    th {
-      background-color: #4CAF50;
-      color: white;
-    }
-    td input {
-      width: 60px;
-      padding: 5px;
-      border: 1px solid #ddd;
-      border-radius: 5px;
+
+    h1 {
       text-align: center;
-      font-size: 16px;
+      margin-bottom: 20px;
     }
-    td input[type="number"] {
-      -moz-appearance: textfield;
+
+    .comanda-list {
+      margin-top: 20px;
     }
-    .btn {
-      padding: 10px 15px;
+
+    .comanda {
+      background-color: #f9f9f9;
+      margin-bottom: 15px;
+      padding: 15px;
+      border-radius: 5px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .comanda h2 {
+      margin: 0;
+      font-size: 18px;
+    }
+
+    .comanda p {
       font-size: 16px;
+      margin: 5px 0;
+    }
+
+    .button {
+      background-color: #007BFF;
       color: white;
-      background-color: #007bff;
+      padding: 10px 15px;
       border: none;
       border-radius: 5px;
       cursor: pointer;
-      transition: background-color 0.3s ease;
     }
-    .btn:hover {
+
+    .button:hover {
       background-color: #0056b3;
     }
-    .btn-danger {
-      background-color: #dc3545;
-    }
-    .btn-danger:hover {
-      background-color: #c82333;
-    }
-    .total-container {
+
+    .form-container {
       display: flex;
-      justify-content: space-between;
-      margin-top: 20px;
+      justify-content: center;
+      margin-bottom: 20px;
+    }
+
+    input, button {
+      padding: 10px;
+      margin-right: 10px;
+    }
+
+    input[type="number"] {
+      width: 100px;
+    }
+
+    .form-container button {
+      background-color: #28a745;
+    }
+
+    .form-container button:hover {
+      background-color: #218838;
+    }
+
+    .comanda p span {
       font-weight: bold;
-      font-size: 1.2em;
-    }
-    .comanda {
-      margin: 20px 0;
-      background-color: #ffffff;
-      padding: 15px;
-      border-radius: 8px;
-      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    }
-    .comanda h3 {
-      margin: 0;
-      color: #333;
-    }
-    .comanda div {
-      margin: 10px 0;
-      display: flex;
-      justify-content: space-between;
-    }
-    .comanda .total {
-      font-weight: bold;
-      font-size: 18px;
-      color: #007bff;
-    }
-    @media (max-width: 768px) {
-      body {
-        font-size: 14px;
-      }
-      th, td {
-        font-size: 14px;
-        padding: 10px;
-      }
-      .btn {
-        font-size: 14px;
-      }
     }
   </style>
 </head>
 <body>
+
   <div class="container">
-    <h1>Control de Comandas</h1>
-    <table>
-      <thead>
-        <tr>
-          <th>Plato</th>
-          <th>Precio</th>
-          <th>Cantidad</th>
-        </tr>
-      </thead>
-      <tbody id="menu"></tbody>
-    </table>
-    <div class="total-container">
-      <div>Total: <span id="total">0.00</span> €</div>
-      <button class="btn" onclick="guardarComanda()">Guardar Comanda</button>
-      <button class="btn" onclick="calcularTotal()">Ver Total</button>
+    <h1>Gestión de Comandas</h1>
+
+    <!-- Formulario para añadir nueva comanda -->
+    <div class="form-container">
+      <input id="comanda-id" type="number" placeholder="ID de comanda">
+      <input id="plato-nombre" type="text" placeholder="Nombre del plato">
+      <input id="plato-cantidad" type="number" placeholder="Cantidad" min="1">
+      <input id="plato-precio" type="number" placeholder="Precio" step="0.01">
+      <button class="button" id="agregar-comanda">Añadir Comanda</button>
+      <button class="button" id="calcular-total">Ver Total</button>
     </div>
-    <h2>Comandas Actuales</h2>
-    <div id="comandas"></div>
-    <button class="btn btn-danger" onclick="eliminarTodasLasComandas()">Eliminar todas las comandas</button>
+
+    <!-- Lista de las comandas -->
+    <div id="comanda-list" class="comanda-list"></div>
+
+    <button class="button" id="eliminar-todas">Eliminar Todas las Comandas</button>
   </div>
 
   <script>
-    // Menú de platos (esto se puede modificar dinámicamente según lo que tengas en la base de datos)
-    const platos = [
-      { nombre: "Alitas / Wings", precio: 9 },
-      { nombre: "Rabas / Fried Squid", precio: 9 },
-      { nombre: "Aros de Cebolla / Onion Rings", precio: 9 },
-      { nombre: "Queso Cheddar / Cheddar Cheese", precio: 9 },
-      { nombre: "Croquetas / Croquettes", precio: 9 },
-      { nombre: "Burger de Pollo / Chicken Burger", precio: 9 },
-      { nombre: "Patatas Fritas / Fries", precio: 5 },
-      { nombre: "Pizza BBQ", precio: 10 },
-      { nombre: "Pizza Pepperoni", precio: 10 },
-      { nombre: "Pizza Salami", precio: 10 },
-      { nombre: "Pizza 4 Quesos / Four Cheese Pizza", precio: 10 }
-    ];
+    // Función para obtener las comandas desde el servidor
+    async function cargarComandas() {
+      const response = await fetch('/api/comandas');
+      const comandas = await response.json();
+      const comandaList = document.getElementById('comanda-list');
+      comandaList.innerHTML = ''; // Limpiar la lista antes de actualizar
 
-    const menu = document.getElementById("menu");
-    const comandas = document.getElementById("comandas");
-    const totalElement = document.getElementById("total");
+      comandas.forEach(comanda => {
+        const comandaElement = document.createElement('div');
+        comandaElement.classList.add('comanda');
+        comandaElement.innerHTML = `
+          <h2>Comanda ${comanda.id}</h2>
+          <div>
+            ${comanda.platos.map(plato => `
+              <p>${plato.nombre} - Cantidad: ${plato.cantidad} - Precio: €${plato.precio}</p>
+            `).join('')}
+          </div>
+          <p>Total: €<span>${comanda.total}</span></p>
+          <button class="button" onclick="eliminarComanda('${comanda._id}')">Eliminar Comanda</button>
+        `;
+        comandaList.appendChild(comandaElement);
+      });
+    }
 
-    // Cargar el menú
-    platos.forEach((plato, index) => {
-      const fila = document.createElement("tr");
-      fila.innerHTML = `
-        <td>${plato.nombre}</td>
-        <td>${plato.precio.toFixed(2)} €</td>
-        <td><input type="number" id="cantidad-${index}" value="0" min="0" oninput="calcularTotal()"></td>
-      `;
-      menu.appendChild(fila);
+    // Cargar las comandas al cargar la página
+    window.onload = cargarComandas;
+
+    // Función para añadir una nueva comanda
+    document.getElementById('agregar-comanda').addEventListener('click', async () => {
+      const id = document.getElementById('comanda-id').value;
+      const nombre = document.getElementById('plato-nombre').value;
+      const cantidad = document.getElementById('plato-cantidad').value;
+      const precio = document.getElementById('plato-precio').value;
+
+      if (!id || !nombre || !cantidad || !precio) {
+        alert('Por favor complete todos los campos');
+        return;
+      }
+
+      const comanda = {
+        id: parseInt(id),
+        platos: [{
+          nombre: nombre,
+          cantidad: parseInt(cantidad),
+          precio: parseFloat(precio)
+        }],
+        total: parseInt(cantidad) * parseFloat(precio)
+      };
+
+      await fetch('/api/comandas', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(comanda)
+      });
+
+      cargarComandas(); // Recargar las comandas
     });
 
-    // Calcular el total
-    const calcularTotal = () => {
-      let total = 0;
-      platos.forEach((plato, index) => {
-        const cantidadInput = document.getElementById(`cantidad-${index}`);
-        const cantidad = Math.max(0, parseInt(cantidadInput.value) || 0);
-        cantidadInput.value = cantidad; // Evitar valores negativos
-        total += cantidad * plato.precio;
-      });
-      totalElement.textContent = total.toFixed(2);
-    };
+    // Función para eliminar una comanda
+    async function eliminarComanda(id) {
+      await fetch(`/api/comandas/${id}`, { method: 'DELETE' });
+      cargarComandas(); // Recargar las comandas después de eliminar
+    }
 
-    // Guardar la comanda en la base de datos
-    const guardarComanda = async () => {
-      const nuevaComanda = { platos: [], total: 0 };
+    // Función para eliminar todas las comandas
+    document.getElementById('eliminar-todas').addEventListener('click', async () => {
+      await fetch('/api/comandas', { method: 'DELETE' });
+      cargarComandas(); // Recargar las comandas después de eliminar todas
+    });
 
-      platos.forEach((plato, index) => {
-        const cantidad = parseInt(document.getElementById(`cantidad-${index}`).value) || 0;
-        if (cantidad > 0) {
-          nuevaComanda.platos.push({
-            nombre: plato.nombre,
-            cantidad,
-            precio: plato.precio,
-            subtotal: cantidad * plato.precio
-          });
-          nuevaComanda.total += cantidad * plato.precio;
-        }
-      });
-
-      if (nuevaComanda.platos.length > 0) {
-        // Hacer la llamada POST a tu backend (MongoDB)
-        const response = await fetch('/api/comandas', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(nuevaComanda)
-        });
-
-        if (response.ok) {
-          alert("Comanda guardada con éxito.");
-          resetCantidades();
-        } else {
-          alert("Error al guardar la comanda.");
-        }
-      } else {
-        alert("Por favor, selecciona al menos un plato.");
-      }
-    };
-
-    // Resetear las cantidades a cero
-    const resetCantidades = () => {
-      platos.forEach((plato, index) => {
-        document.getElementById(`cantidad-${index}`).value = 0;
-      });
-      calcularTotal();
-    };
-
-    // Mostrar las comandas guardadas
-    const mostrarComandas = async () => {
-      const response = await fetch('/api/comandas');
-      const comandasData = await response.json();
-
-      comandas.innerHTML = '';
-      comandasData.forEach((comanda) => {
-        const comandaDiv = document.createElement('div');
-        comandaDiv.classList.add('comanda');
-        comandaDiv.innerHTML = `
-          <h3>Comanda ${comanda.id}</h3>
-          ${comanda.platos.map(plato => `
-            <div>
-              <span>${plato.nombre} - ${plato.cantidad} x ${plato.precio.toFixed(2)} €</span>
-              <span>${(plato.cantidad * plato.precio).toFixed(2)} €</span>
-            </div>
-          `).join('')}
-          <div class="total">
-            Total: ${comanda.total.toFixed(2)} €
-          </div>
-          <button class="btn btn-danger" onclick="eliminarComanda('${comanda.id}')">Eliminar Comanda</button>
-        `;
-        comandas.appendChild(comandaDiv);
-      });
-    };
-
-    // Eliminar una comanda específica
-    const eliminarComanda = async (comandaId) => {
-      const response = await fetch(`/api/comandas/${comandaId}`, { method: 'DELETE' });
-      if (response.ok) {
-        alert("Comanda eliminada.");
-        mostrarComandas();
-      } else {
-        alert("Error al eliminar la comanda.");
-      }
-    };
-
-    // Eliminar todas las comandas
-    const eliminarTodasLasComandas = async () => {
-      const response = await fetch('/api/comandas', { method: 'DELETE' });
-      if (response.ok) {
-        alert("Todas las comandas han sido eliminadas.");
-        mostrarComandas();
-      } else {
-        alert("Error al eliminar todas las comandas.");
-      }
-    };
-
-    // Mostrar las comandas cuando se cargue la página
-    document.addEventListener('DOMContentLoaded', mostrarComandas);
+    // Función para calcular el total
+    document.getElementById('calcular-total').addEventListener('click', () => {
+      const cantidad = document.getElementById('plato-cantidad').value;
+      const precio = document.getElementById('plato-precio').value;
+      const total = cantidad * precio;
+      alert('El total de la comanda es: €' + total);
+    });
   </script>
 </body>
 </html>
