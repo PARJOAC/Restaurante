@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Control de Comandas</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+    }
+    h1 {
+      text-align: center;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 20px;
+    }
+    th, td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: left;
+    }
+    th {
+      background-color: #f4f4f4;
+    }
+    td input {
+      width: 50px;
+    }
+    .total {
+      font-weight: bold;
+      font-size: 1.2em;
+      text-align: right;
+    }
+    .btn {
+      background-color: #007bff;
+      color: white;
+      padding: 10px 15px;
+      border: none;
+      cursor: pointer;
+      font-size: 16px;
+    }
+    .btn:hover {
+      background-color: #0056b3;
+    }
+
+    /* Media queries */
+    @media (max-width: 768px) {
+      th, td {
+        font-size: 14px;
+        padding: 6px;
+      }
+      .btn {
+        font-size: 14px;
+        padding: 8px 12px;
+      }
+      .total {
+        font-size: 1em;
+      }
+    }
+
+    @media (max-width: 480px) {
+      body {
+        margin: 10px;
+      }
+      h1 {
+        font-size: 20px;
+      }
+      table {
+        font-size: 12px;
+      }
+      td input {
+        width: 40px;
+      }
+      .btn {
+        font-size: 12px;
+        padding: 6px 10px;
+      }
+      .total {
+        font-size: 0.9em;
+      }
+    }
+  </style>
+</head>
+<body>
+  <h1>Control de Comandas</h1>
+  <table>
+    <thead>
+      <tr>
+        <th>Plato</th>
+        <th>Precio</th>
+        <th>Cantidad</th>
+      </tr>
+    </thead>
+    <tbody id="menu">
+      <!-- Los platos se generarán aquí dinámicamente -->
+    </tbody>
+  </table>
+  <div class="total">Total: <span id="total">0.00</span> €</div>
+  <button class="btn" onclick="calcularTotal()">Calcular Total</button>
+
+  <script>
+    // Datos de los platos
+    const platos = [
+      { nombre: "Alitas / Wings", precio: 9 },
+      { nombre: "Rabas / Fried Squid", precio: 9 },
+      { nombre: "Aros de Cebolla / Onion Rings", precio: 9 },
+      { nombre: "Queso Cheddar / Cheddar Cheese", precio: 9 },
+      { nombre: "Croquetas / Croquettes", precio: 9 },
+      { nombre: "Burger de Pollo / Chicken Burger", precio: 9 },
+      { nombre: "Patatas Fritas / Fries", precio: 5 },
+      { nombre: "Pizza BBQ", precio: 10 },
+      { nombre: "Pizza Pepperoni", precio: 10 },
+      { nombre: "Pizza Salami", precio: 10 },
+      { nombre: "Pizza 4 Quesos / Four Cheese Pizza", precio: 10 }
+    ];
+
+    // Renderizar los platos en la tabla
+    const menu = document.getElementById("menu");
+    platos.forEach((plato, index) => {
+      const fila = document.createElement("tr");
+      fila.innerHTML = `
+        <td>${plato.nombre}</td>
+        <td>${plato.precio.toFixed(2)} €</td>
+        <td><input type="number" id="cantidad-${index}" value="0" min="0"></td>
+      `;
+      menu.appendChild(fila);
+    });
+
+    // Calcular el total
+    function calcularTotal() {
+      let total = 0;
+      platos.forEach((plato, index) => {
+        const cantidad = parseInt(document.getElementById(`cantidad-${index}`).value) || 0;
+        total += cantidad * plato.precio;
+      });
+      document.getElementById("total").textContent = total.toFixed(2);
+    }
+  </script>
+</body>
+</html>
