@@ -53,7 +53,7 @@ app.get('/api/comandas', async (req, res) => {
 app.post('/api/comandas', async (req, res) => {
   const { id, platos, total } = req.body;
   try {
-    const comanda = new Comanda({ id, platos, total });
+    const comanda = new Comanda({ Id: id, platos: platos, total: total });
     await comanda.save();
     res.status(201).send("Comanda guardada");
   } catch (err) {
@@ -66,7 +66,7 @@ app.delete('/api/comandas/:id', async (req, res) => {
   const { id } = req.params;
   console.log(id)
   try {
-    await Comanda.findByIdAndDelete(id);
+    await Comanda.findByIdAndDelete({ id: id });
     res.send("Comanda eliminada");
   } catch (err) {
     console.log(err)
