@@ -55,8 +55,26 @@
       cursor: pointer;
     }
     .btn-danger {
-      background-color: #dc3545;
+      background-color: #e74c3c; /* Rojo brillante */
+      color: white;
+      font-size: 16px;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.3s ease, transform 0.2s ease;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     }
+
+    .btn-danger:hover {
+      background-color: #c0392b; /* Rojo oscuro */
+      transform: scale(1.05);
+    }
+
+    .btn-danger:focus {
+      outline: none;
+    }
+
     .comanda {
       margin: 20px 0;
       background-color: #ffffff;
@@ -77,10 +95,6 @@
       font-weight: bold;
       font-size: 18px;
       color: #007bff;
-    }
-    .comanda .btn-danger {
-      background-color: #dc3545;
-      font-size: 14px;
     }
     .total-container {
       display: flex;
@@ -165,6 +179,8 @@
     const comandas = document.getElementById("comandas");
     const totalElement = document.getElementById("total");
 
+    let comandaCount = 1; // Variable para el contador de las comandas
+
     // Cargar el menú de platos
     platos.forEach((plato, index) => {
       const fila = document.createElement("tr");
@@ -180,82 +196,71 @@
     const calcularTotal = () => {
       let total = 0;
       platos.forEach((plato, index) => {
-        const cantidadInput = document.getElementById(`cantidad-${index}`);
-        const cantidad = Math.max(0, parseInt(cantidadInput.value) || 0);
-        cantidadInput.value = cantidad; // Evitar valores negativos
-        total += cantidad * plato.precio;
+        const cantidad = document.getElementById(`cantidad-${index}`).value;
+        total += plato.precio * cantidad;
       });
       totalElement.textContent = total.toFixed(2);
     };
 
-    // Función para guardar la comanda en Firebase
+    // Función para guardar una comanda
     const guardarComanda = () => {
-      const nuevaComanda = { platos: [], total: 0 };
+      const platosSeleccionados = platos.map((plato, index) => {
+        const cantidad = document.getElementById(`cantidad-${index}`).value;
+        return cantidad > 0 ? { ...plato, cantidad: parseInt(cantidad), subtotal: plato.precio * cantidad } : null;
+      }).filter(plato => plato !== null);
 
-      platos.forEach((plato, index) => {
-        const cantidad = parseInt(document.getElementById(`cantidad-${index}`).value) || 0;
-        if (cantidad > 0) {
-          nuevaComanda.platos.push({
-            nombre: plato.nombre,
-            cantidad,
-            precio: plato.precio,
-            subtotal: cantidad * plato.precio
-          });
-          nuevaComanda.total += cantidad * plato.precio;
-        }
-      });
+      const total = platosSeleccionados.reduce((acc, plato) => acc + plato.subtotal, 0);
 
-      if (nuevaComanda.platos.length > 0) {
-        // Guardar la comanda en Firebase
-        push(comandasRef, nuevaComanda);
-        resetCantidades();
-      } else {
-        alert("Por favor, selecciona al menos un plato.");
+      if (platosSeleccionados.length > 0) {
+        const nuevaComanda = { id: comandaCount++, platos: platosSeleccionados, total };
+        push(comandasRef, nuevaComanda).then(() => {
+          alert("Comanda guardada.");
+          mostrarComandas();
+        }).catch(error => {
+          console.error("Error al guardar la comanda: ", error);
+        });
       }
     };
 
-    // Escuchar cambios en la base de datos de Firebase y mostrar las comandas actuales
-    onChildAdded(comandasRef, (snapshot) => {
-      const comanda = snapshot.val();
-      const comandaId = snapshot.key; // Obtener ID único de la comanda
-      agregarComanda(comanda, comandaId);
-    });
-
-    // Mostrar la comanda en la interfaz
-    const agregarComanda = (comanda, comandaId) => {
-      const comandaDiv = document.createElement("div");
-      comandaDiv.classList.add("comanda");
-      comandaDiv.innerHTML = `
-        <h3>Comanda ${comandaId}</h3>
-        ${comanda.platos.map(plato => `
-          <div>
-            <span>${plato.cantidad} x ${plato.nombre} - ${plato.subtotal.toFixed(2)} €</span>
-          </div>
-        `).join('')}
-        <div class="total">Total: ${comanda.total.toFixed(2)} €</div>
-        <button class="btn-danger" onclick="eliminarComanda('${comandaId}')">Eliminar Comanda</button>
-      `;
-      comandas.appendChild(comandaDiv);
+    // Función para mostrar las comandas
+    const mostrarComandas = () => {
+      comandas.innerHTML = "";
+      onChildAdded(comandasRef, (data) => {
+        const comanda = data.val();
+        const comandaDiv = document.createElement("div");
+        comandaDiv.classList.add("comanda");
+        comandaDiv.innerHTML = `
+          <h3>Comanda ${comanda.id}</h3>
+          ${comanda.platos.map(plato => `
+            <div>
+              <span>${plato.cantidad} x ${plato.nombre} - ${plato.subtotal.toFixed(2)} €</span>
+            </div>
+          `).join('')}
+          <div class="total">Total: ${comanda.total.toFixed(2)} €</div>
+          <button class="btn-danger" onclick="eliminarComanda('${comanda.id}')">Eliminar Comanda</button>
+        `;
+        comandas.appendChild(comandaDiv);
+      });
     };
 
-    // Función para eliminar una comanda de Firebase
+    // Función para eliminar una comanda
     const eliminarComanda = (comandaId) => {
       const comandaRef = ref(db, `comandas/${comandaId}`);
       remove(comandaRef).then(() => {
         alert("Comanda eliminada.");
-        location.reload(); // Recargar la página para actualizar la lista de comandas
+        mostrarComandas(); // Actualizar la lista de comandas
       }).catch(error => {
         console.error("Error al eliminar la comanda: ", error);
       });
     };
 
-    // Función para resetear las cantidades de los platos
-    const resetCantidades = () => {
-      platos.forEach((_, index) => {
-        document.getElementById(`cantidad-${index}`).value = 0;
-      });
-      calcularTotal();
-    };
+    // Inicializar la vista de comandas
+    mostrarComandas();
+
+    // Asignar el evento de guardar comanda
+    document.getElementById("guardar-btn").addEventListener("click", guardarComanda);
+    document.getElementById("mostrar-total-btn").addEventListener("click", calcularTotal);
+
   </script>
 </body>
 </html>
