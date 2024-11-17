@@ -208,33 +208,34 @@
     }
   };
 
-  const mostrarComandas = async () => {
-    try {
-      const response = await fetch('/api/comandas');
-      if (response.ok) {
-        const comandasData = await response.json();
-        comandas.innerHTML = '';
-        comandasData.forEach(comanda => {
-          const comandaDiv = document.createElement('div');
-          comandaDiv.classList.add('comanda');
-          comandaDiv.innerHTML = `
-            <h3>Comanda ${comanda.identificador}</h3>
-            ${comanda.platos.map(plato => `
-              <div>
-                <span>${plato.nombre} (${plato.cantidad} x ${plato.precio.toFixed(2)} €)</span>
-                <span>${(plato.cantidad * plato.precio).toFixed(2)} €</span>
-              </div>
-            `).join('')}
-            <div class="total">Total: ${comanda.total.toFixed(2)} €</div>
-            <button class="btn btn-danger" onclick="eliminarComanda('${comanda.identificador}')">Eliminar</button>
-          `;
-          comandas.appendChild(comandaDiv);
-        });
-      }
-    } catch (err) {
-      alert("No se pudo obtener las comandas.");
+const mostrarComandas = async () => {
+  try {
+    const response = await fetch('/api/comandas');
+    if (response.ok) {
+      const comandasData = await response.json();
+      comandas.innerHTML = '';
+      comandasData.forEach(comanda => {
+        const comandaDiv = document.createElement('div');
+        comandaDiv.classList.add('comanda');
+        comandaDiv.innerHTML = `
+          <h3>Comanda ${comanda.identificador}</h3>
+          ${comanda.platos.map(plato => `
+            <div>
+              <span>${plato.nombre} (${plato.cantidad} x ${plato.precio.toFixed(2)} €)</span>
+              <span>${(plato.cantidad * plato.precio).toFixed(2)} €</span>
+            </div>
+          `).join('')}
+          <div class="total">Total: ${comanda.total.toFixed(2)} €</div>
+          <button class="btn btn-danger" onclick="eliminarComanda('${comanda.identificador}')">Eliminar</button>
+        `;
+        comandas.appendChild(comandaDiv);
+      });
     }
-  };
+  } catch (err) {
+    alert("No se pudo obtener las comandas.");
+  }
+};
+
 
   const eliminarComanda = async (id) => {
     try {
