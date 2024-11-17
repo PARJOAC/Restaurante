@@ -1,92 +1,90 @@
 body {
       font-family: Arial, sans-serif;
-      background-color: #f4f4f9;
       margin: 0;
       padding: 0;
+      background-color: #f0f4f7;
+      color: #333;
     }
-
-    .container {
-      max-width: 1200px;
-      margin: 20px auto;
-      padding: 20px;
-      background-color: white;
-      border-radius: 8px;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    }
-
-    h1 {
+    h1, h2 {
       text-align: center;
+      color: #444;
+      margin: 20px 0;
+    }
+    .container {
+      width: 90%;
+      max-width: 1200px;
+      margin: auto;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
       margin-bottom: 20px;
+      background-color: #fff;
+      border-radius: 8px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
     }
-
-    .comanda-list {
-      margin-top: 20px;
-    }
-
-    .comanda {
-      background-color: #f9f9f9;
-      margin-bottom: 15px;
+    th, td {
       padding: 15px;
-      border-radius: 5px;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    }
-
-    .comanda h2 {
-      margin: 0;
-      font-size: 18px;
-    }
-
-    .comanda p {
+      text-align: left;
       font-size: 16px;
-      margin: 5px 0;
+      border-bottom: 1px solid #ddd;
     }
-
-    .button {
-      background-color: #007BFF;
+    th {
+      background-color: #4CAF50;
       color: white;
+    }
+    td input {
+      width: 60px;
+      padding: 5px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      text-align: center;
+      font-size: 16px;
+    }
+    .btn {
       padding: 10px 15px;
+      font-size: 16px;
+      color: white;
+      background-color: #007bff;
       border: none;
       border-radius: 5px;
       cursor: pointer;
+      transition: background-color 0.3s ease;
     }
-
-    .button:hover {
+    .btn:hover {
       background-color: #0056b3;
     }
-
-    .form-container {
-      display: flex;
-      justify-content: center;
-      margin-bottom: 20px;
+    .btn-danger {
+      background-color: #dc3545;
     }
-
-    input, button {
-      padding: 10px;
-      margin-right: 10px;
+    .btn-danger:hover {
+      background-color: #c82333;
     }
-
-    input[type="number"] {
-      width: 100px;
+    .comanda {
+      margin: 20px 0;
+      padding: 15px;
+      background-color: #fff;
+      border-radius: 8px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
     }
-
-    .form-container button {
-      background-color: #28a745;
+    .comanda h3 {
+      margin: 0;
+      color: #333;
     }
-
-    .form-container button:hover {
-      background-color: #218838;
-    }
-
-    .comanda p span {
+    .comanda .total {
       font-weight: bold;
+      font-size: 18px;
+      color: #007bff;
     }
-
-    .login-container {
-      display: flex;
-      justify-content: center;
-      margin-bottom: 20px;
-    }
-
-    .login-container input {
-      margin-right: 10px;
+    @media (max-width: 768px) {
+      body {
+        font-size: 14px;
+      }
+      th, td {
+        font-size: 14px;
+        padding: 10px;
+      }
+      .btn {
+        font-size: 14px;
+      }
     }
