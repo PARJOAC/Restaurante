@@ -8,25 +8,81 @@
     body {
       font-family: Arial, sans-serif;
       margin: 20px;
+      background-color: #f9f9f9;
+      color: #333;
     }
     h1, h2 {
       text-align: center;
+      color: #444;
     }
     table {
       width: 100%;
       border-collapse: collapse;
       margin-bottom: 20px;
+      background-color: white;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
     }
     th, td {
-      border: 1px solid #ddd;
-      padding: 8px;
+      border: none;
+      padding: 12px 15px;
       text-align: left;
     }
     th {
-      background-color: #f4f4f4;
+      background-color: #007bff;
+      color: white;
+      text-transform: uppercase;
+      font-size: 14px;
+    }
+    td {
+      border-bottom: 1px solid #ddd;
+    }
+    td:last-child {
+      text-align: center;
     }
     td input {
-      width: 50px;
+      width: 60px;
+      padding: 5px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      text-align: center;
+    }
+    td button {
+      padding: 5px 10px;
+      border: none;
+      border-radius: 4px;
+      font-size: 12px;
+      cursor: pointer;
+    }
+    .btn {
+      display: inline-block;
+      padding: 10px 15px;
+      font-size: 16px;
+      text-align: center;
+      color: white;
+      background-color: #007bff;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      margin-right: 10px;
+      transition: background-color 0.3s;
+    }
+    .btn:hover {
+      background-color: #0056b3;
+    }
+    .btn-danger {
+      background-color: #dc3545;
+    }
+    .btn-danger:hover {
+      background-color: #a71d2a;
+    }
+    .btn-edit {
+      background-color: #ffc107;
+      color: #333;
+    }
+    .btn-edit:hover {
+      background-color: #e0a800;
     }
     .total {
       font-weight: bold;
@@ -34,50 +90,16 @@
       text-align: right;
       margin-bottom: 20px;
     }
-    .btn {
-      background-color: #007bff;
-      color: white;
-      padding: 10px 15px;
-      border: none;
-      cursor: pointer;
-      font-size: 16px;
-      margin-right: 10px;
-    }
-    .btn:hover {
-      background-color: #0056b3;
-    }
     @media (max-width: 768px) {
       th, td {
         font-size: 14px;
-        padding: 6px;
       }
       .btn {
         font-size: 14px;
         padding: 8px 12px;
       }
-      .total {
-        font-size: 1em;
-      }
-    }
-    @media (max-width: 480px) {
-      body {
-        margin: 10px;
-      }
-      h1 {
-        font-size: 20px;
-      }
-      table {
-        font-size: 12px;
-      }
       td input {
-        width: 40px;
-      }
-      .btn {
-        font-size: 12px;
-        padding: 6px 10px;
-      }
-      .total {
-        font-size: 0.9em;
+        width: 50px;
       }
     }
   </style>
@@ -136,19 +158,17 @@
     const comandas = document.getElementById("comandas");
     const totalElement = document.getElementById("total");
 
-    // Cargar las comandas desde localStorage
     const cargarComandas = () => {
       const savedComandas = JSON.parse(localStorage.getItem("comandas")) || [];
       savedComandas.forEach(comanda => agregarComanda(comanda));
     };
 
-    // Renderizar el menú
     platos.forEach((plato, index) => {
       const fila = document.createElement("tr");
       fila.innerHTML = `
         <td>${plato.nombre}</td>
         <td>${plato.precio.toFixed(2)} €</td>
-        <td><input type="number" id="cantidad-${index}" value="0" min="0"></td>
+        <td><input type="number" inputmode="numeric" id="cantidad-${index}" value="0" min="0"></td>
       `;
       menu.appendChild(fila);
     });
@@ -174,10 +194,11 @@
       fila.innerHTML = `
         <td>${comanda.nombre}</td>
         <td>${comanda.precio.toFixed(2)} €</td>
-        <td>${comanda.cantidad}</td>
+        <td><input type="number" inputmode="numeric" value="${comanda.cantidad}" min="0" onchange="modificarComanda(this)"></td>
         <td>${(comanda.precio * comanda.cantidad).toFixed(2)} €</td>
         <td>
-          <button onclick="eliminarComanda(this)">Eliminar</button>
+          <button class="btn btn-edit" onclick="editarComanda(this)">Editar</button>
+          <button class="btn btn-danger" onclick="eliminarComanda(this)">Eliminar</button>
         </td>
       `;
       comandas.appendChild(fila);
@@ -190,7 +211,6 @@
           const comanda = { nombre: plato.nombre, precio: plato.precio, cantidad };
           agregarComanda(comanda);
 
-          // Guardar en localStorage
           const savedComandas = JSON.parse(localStorage.getItem("comandas")) || [];
           savedComandas.push(comanda);
           localStorage.setItem("comandas", JSON.stringify(savedComandas));
@@ -199,12 +219,28 @@
       resetCantidades();
     };
 
+    const modificarComanda = (input) => {
+      const fila = input.parentElement.parentElement;
+      const cantidad = parseInt(input.value) || 0;
+      const precio = parseFloat(fila.children[1].textContent.replace("€", "").trim());
+      fila.children[3].textContent = `${(precio * cantidad).toFixed(2)} €`;
+
+      const nombre = fila.children[0].textContent;
+      let savedComandas = JSON.parse(localStorage.getItem("comandas")) || [];
+      savedComandas = savedComandas.map(comanda => {
+        if (comanda.nombre === nombre) {
+          comanda.cantidad = cantidad;
+        }
+        return comanda;
+      });
+      localStorage.setItem("comandas", JSON.stringify(savedComandas));
+    };
+
     const eliminarComanda = (btn) => {
       const fila = btn.parentElement.parentElement;
+      const nombre = fila.children[0].textContent;
       fila.remove();
 
-      // Actualizar localStorage
-      const nombre = fila.children[0].textContent;
       let savedComandas = JSON.parse(localStorage.getItem("comandas")) || [];
       savedComandas = savedComandas.filter(comanda => comanda.nombre !== nombre);
       localStorage.setItem("comandas", JSON.stringify(savedComandas));
