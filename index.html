@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Control de Comandas</title>
   <style>
-    /* Estilos generales */
     body {
       font-family: 'Arial', sans-serif;
       margin: 0;
@@ -16,14 +15,10 @@
       text-align: center;
       color: #444;
     }
-
-    /* Contenedor principal */
     .container {
       width: 90%;
       margin: 20px auto;
     }
-
-    /* Menú de platos */
     table {
       width: 100%;
       border-collapse: collapse;
@@ -49,32 +44,19 @@
       border-radius: 5px;
       text-align: center;
       font-size: 16px;
-      inputmode: numeric; /* Asegura que el teclado numérico se abra en dispositivos móviles */
     }
-
-    /* Botones */
     .btn {
       padding: 10px 15px;
       font-size: 16px;
-      text-align: center;
       color: white;
       background-color: #007bff;
       border: none;
       border-radius: 5px;
       cursor: pointer;
-      transition: background-color 0.3s;
-    }
-    .btn:hover {
-      background-color: #0056b3;
     }
     .btn-danger {
       background-color: #dc3545;
     }
-    .btn-danger:hover {
-      background-color: #a71d2a;
-    }
-
-    /* Comandas */
     .comanda {
       margin: 20px 0;
       background-color: #ffffff;
@@ -96,7 +78,6 @@
       font-size: 18px;
       color: #007bff;
     }
-
     .total-container {
       display: flex;
       justify-content: space-between;
@@ -104,8 +85,6 @@
       font-weight: bold;
       font-size: 1.2em;
     }
-
-    /* Medios Queries */
     @media (max-width: 768px) {
       body {
         font-size: 14px;
@@ -116,21 +95,6 @@
       }
       .btn {
         font-size: 14px;
-        padding: 8px;
-      }
-    }
-
-    @media (max-width: 576px) {
-      body {
-        font-size: 12px;
-      }
-      th, td {
-        font-size: 12px;
-        padding: 8px;
-      }
-      .btn {
-        font-size: 12px;
-        padding: 6px;
       }
     }
   </style>
@@ -138,8 +102,6 @@
 <body>
   <div class="container">
     <h1>Control de Comandas</h1>
-
-    <!-- Menú de platos -->
     <table>
       <thead>
         <tr>
@@ -148,23 +110,35 @@
           <th>Cantidad</th>
         </tr>
       </thead>
-      <tbody id="menu">
-        <!-- Platos del menú -->
-      </tbody>
+      <tbody id="menu"></tbody>
     </table>
-
     <div class="total-container">
       <div>Total: <span id="total">0.00</span> €</div>
       <button class="btn" onclick="guardarComanda()">Guardar Comanda</button>
     </div>
-
     <h2>Comandas Actuales</h2>
-    <div id="comandas">
-      <!-- Aquí se mostrarán las comandas -->
-    </div>
+    <div id="comandas"></div>
   </div>
 
+  <!-- Scripts -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database.js"></script>
   <script>
+    // Configuración de Firebase
+    const firebaseConfig = {
+      apiKey: "TU_API_KEY",
+      authDomain: "TU_AUTH_DOMAIN",
+      databaseURL: "TU_DATABASE_URL",
+      projectId: "TU_PROJECT_ID",
+      storageBucket: "TU_STORAGE_BUCKET",
+      messagingSenderId: "TU_MESSAGING_SENDER_ID",
+      appId: "TU_APP_ID"
+    };
+
+    const app = firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+    const comandasRef = db.ref("comandas");
+
     const platos = [
       { nombre: "Alitas / Wings", precio: 9 },
       { nombre: "Rabas / Fried Squid", precio: 9 },
@@ -183,9 +157,9 @@
     const comandas = document.getElementById("comandas");
     const totalElement = document.getElementById("total");
 
-    let comandaId = 0; // Identificador para cada comanda
+    let comandaId = 0;
 
-    // Cargar el menú dinámicamente
+    // Cargar el menú
     platos.forEach((plato, index) => {
       const fila = document.createElement("tr");
       fila.innerHTML = `
@@ -196,7 +170,7 @@
       menu.appendChild(fila);
     });
 
-    // Función para calcular el total
+    // Calcular el total
     const calcularTotal = () => {
       let total = 0;
       platos.forEach((plato, index) => {
@@ -206,96 +180,58 @@
       totalElement.textContent = total.toFixed(2);
     };
 
-    // Función para guardar la comanda
+    // Guardar la comanda
     const guardarComanda = () => {
-      const nuevaComanda = { id: comandaId++, platos: [] };
+      const nuevaComanda = { id: comandaId++, platos: [], total: 0 };
 
       platos.forEach((plato, index) => {
         const cantidad = parseInt(document.getElementById(`cantidad-${index}`).value) || 0;
         if (cantidad > 0) {
-          nuevaComanda.platos.push({ nombre: plato.nombre, cantidad, precio: plato.precio });
+          nuevaComanda.platos.push({
+            nombre: plato.nombre,
+            cantidad,
+            precio: plato.precio,
+            subtotal: cantidad * plato.precio
+          });
+          nuevaComanda.total += cantidad * plato.precio;
         }
       });
 
       if (nuevaComanda.platos.length > 0) {
-        agregarComanda(nuevaComanda);
-        actualizarAlmacenamiento();
+        comandasRef.push(nuevaComanda);
         resetCantidades();
       }
     };
 
-    // Función para agregar una comanda a la lista
-    const agregarComanda = ({ id, platos }) => {
+    // Escuchar cambios en Firebase
+    comandasRef.on("child_added", (snapshot) => {
+      const comanda = snapshot.val();
+      agregarComanda(comanda);
+    });
+
+    // Mostrar la comanda en la interfaz
+    const agregarComanda = (comanda) => {
       const comandaDiv = document.createElement("div");
       comandaDiv.classList.add("comanda");
-      comandaDiv.setAttribute("data-id", id);
-
-      let comandaTotal = 0;
-      let platosHTML = '';
-
-      platos.forEach(plato => {
-        const totalPlato = plato.precio * plato.cantidad;
-        comandaTotal += totalPlato;
-        platosHTML += `
-          <div>
-            <span><strong>${plato.nombre}</strong> - ${plato.cantidad} x ${plato.precio.toFixed(2)} € = ${totalPlato.toFixed(2)} €</span>
-            <button class="btn btn-danger" onclick="eliminarPlato(${id}, '${plato.nombre}')">Eliminar</button>
-          </div>
-        `;
-      });
-
       comandaDiv.innerHTML = `
-        <h3>Comanda ${id + 1}</h3>
-        ${platosHTML}
-        <div class="total">Total: ${comandaTotal.toFixed(2)} €</div>
+        <h3>Comanda ${comanda.id + 1}</h3>
+        ${comanda.platos.map(plato => `
+          <div>
+            <span><strong>${plato.nombre}</strong> - ${plato.cantidad} x ${plato.precio.toFixed(2)} € = ${plato.subtotal.toFixed(2)} €</span>
+          </div>
+        `).join("")}
+        <div class="total">Total: ${comanda.total.toFixed(2)} €</div>
       `;
-
       comandas.appendChild(comandaDiv);
     };
 
-    // Función para eliminar un plato de una comanda
-    const eliminarPlato = (comandaId, nombrePlato) => {
-      const comandaDiv = document.querySelector(`.comanda[data-id="${comandaId}"]`);
-      const platoDiv = Array.from(comandaDiv.querySelectorAll("div")).find(div => div.querySelector("strong").textContent === nombrePlato);
-      if (platoDiv) {
-        platoDiv.remove();
-        actualizarAlmacenamiento();
-        calcularTotal();
-      }
-    };
-
-    // Función para actualizar el almacenamiento local
-    const actualizarAlmacenamiento = () => {
-      const comandasData = Array.from(comandas.children).map(comandaDiv => {
-        const id = parseInt(comandaDiv.getAttribute("data-id"));
-        const platos = Array.from(comandaDiv.querySelectorAll('div')).map(platoDiv => {
-          const nombre = platoDiv.querySelector('strong').textContent;
-          const cantidad = parseInt(platoDiv.querySelector('input').value);
-          const precio = parseFloat(platoDiv.querySelector('span').textContent.replace("€", ""));
-          return { nombre, cantidad, precio };
-        });
-
-        return { id, platos };
-      });
-
-      localStorage.setItem("comandas", JSON.stringify(comandasData));
-    };
-
-    // Resetear las cantidades de los platos
+    // Resetear las cantidades
     const resetCantidades = () => {
       platos.forEach((_, index) => {
         document.getElementById(`cantidad-${index}`).value = 0;
       });
       calcularTotal();
     };
-
-    // Cargar las comandas guardadas al inicio
-    const cargarComandas = () => {
-      const datosGuardados = JSON.parse(localStorage.getItem("comandas")) || [];
-      datosGuardados.forEach(agregarComanda);
-    };
-
-    cargarComandas();
   </script>
 </body>
 </html>
