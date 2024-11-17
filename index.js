@@ -2,6 +2,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const bodyParser = require('body-parser');
+const path = require('path');
 
 // Crear aplicación Express
 const app = express();
@@ -11,7 +12,7 @@ app.use(cors());
 app.use(bodyParser.json());
 
 // Conexión a MongoDB
-mongoose.connect('mongodb+srv://SAYDO:SAYDO@saydo.rordo.mongodb.net/?retryWrites=true&w=majority&appName=SAYDO')
+mongoose.connect('mongodb+srv://SAYDO:SAYDO@saydo.rordo.mongodb.net/?retryWrites=true&w=majority&appName=SAYDO', { useNewUrlParser: true, useUnifiedTopology: true })
   .then(() => console.log("Conexión exitosa a MongoDB"))
   .catch((err) => console.log("Error en la conexión a MongoDB:", err));
 
@@ -31,6 +32,11 @@ const comandaSchema = new mongoose.Schema({
 const Comanda = mongoose.model('Comanda', comandaSchema);
 
 // Rutas
+
+// Ruta para servir el archivo index.html (la página de inicio)
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));  // Asegúrate de que index.html esté en la carpeta public
+});
 
 // Obtener todas las comandas
 app.get('/api/comandas', async (req, res) => {
