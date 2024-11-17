@@ -5,49 +5,54 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Control de Comandas</title>
   <style>
-    /* Estilos (sin cambios significativos) */
+    /* Estilos generales */
     body {
-      font-family: Arial, sans-serif;
-      margin: 20px;
-      background-color: #f9f9f9;
-      color: #333;
+      font-family: 'Arial', sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f4f7fa;
     }
     h1, h2 {
       text-align: center;
       color: #444;
     }
+
+    /* Contenedor principal */
+    .container {
+      width: 90%;
+      margin: 20px auto;
+    }
+
+    /* Menú de platos */
     table {
       width: 100%;
       border-collapse: collapse;
       margin-bottom: 20px;
-      background-color: white;
+      background-color: #fff;
       border-radius: 8px;
-      overflow: hidden;
       box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
     }
     th, td {
-      border: none;
-      padding: 12px 15px;
+      padding: 15px;
       text-align: left;
+      font-size: 16px;
+      border-bottom: 1px solid #ddd;
     }
     th {
-      background-color: #007bff;
+      background-color: #4caf50;
       color: white;
-      text-transform: uppercase;
-      font-size: 14px;
-    }
-    td {
-      border-bottom: 1px solid #ddd;
     }
     td input {
       width: 60px;
       padding: 5px;
       border: 1px solid #ddd;
-      border-radius: 4px;
+      border-radius: 5px;
       text-align: center;
+      font-size: 16px;
     }
+
+    /* Botones */
     .btn {
-      display: inline-block;
       padding: 10px 15px;
       font-size: 16px;
       text-align: center;
@@ -56,7 +61,6 @@
       border: none;
       border-radius: 5px;
       cursor: pointer;
-      margin-right: 10px;
       transition: background-color 0.3s;
     }
     .btn:hover {
@@ -68,72 +72,95 @@
     .btn-danger:hover {
       background-color: #a71d2a;
     }
-    .total {
+
+    /* Comandas */
+    .comanda {
+      margin: 20px 0;
+      background-color: #ffffff;
+      padding: 15px;
+      border-radius: 8px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+    .comanda h3 {
+      margin: 0;
+      color: #333;
+    }
+    .comanda div {
+      margin: 10px 0;
+      display: flex;
+      justify-content: space-between;
+    }
+    .comanda .total {
       font-weight: bold;
-      font-size: 1.2em;
-      text-align: right;
-      margin-bottom: 20px;
+      font-size: 18px;
+      color: #007bff;
     }
 
+    .total-container {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 20px;
+      font-weight: bold;
+      font-size: 1.2em;
+    }
+
+    /* Medios Queries */
     @media (max-width: 768px) {
       body {
-        margin: 15px;
-      }
-      h1, h2 {
-        font-size: 20px;
+        font-size: 14px;
       }
       th, td {
         font-size: 14px;
-        padding: 10px 12px;
+        padding: 10px;
       }
       .btn {
         font-size: 14px;
-        padding: 8px 12px;
+        padding: 8px;
       }
     }
 
     @media (max-width: 576px) {
       body {
-        margin: 10px;
-      }
-      h1, h2 {
-        font-size: 18px;
+        font-size: 12px;
       }
       th, td {
         font-size: 12px;
-        padding: 8px 10px;
+        padding: 8px;
       }
       .btn {
         font-size: 12px;
-        padding: 6px 10px;
+        padding: 6px;
       }
     }
   </style>
 </head>
 <body>
-  <h1>Control de Comandas</h1>
+  <div class="container">
+    <h1>Control de Comandas</h1>
 
-  <!-- Menú de selección de platos -->
-  <table>
-    <thead>
-      <tr>
-        <th>Plato</th>
-        <th>Precio</th>
-        <th>Cantidad</th>
-      </tr>
-    </thead>
-    <tbody id="menu">
-      <!-- Platos del menú -->
-    </tbody>
-  </table>
+    <!-- Menú de platos -->
+    <table>
+      <thead>
+        <tr>
+          <th>Plato</th>
+          <th>Precio</th>
+          <th>Cantidad</th>
+        </tr>
+      </thead>
+      <tbody id="menu">
+        <!-- Platos del menú -->
+      </tbody>
+    </table>
 
-  <div class="total">Total: <span id="total">0.00</span> €</div>
+    <div class="total-container">
+      <div>Total: <span id="total">0.00</span> €</div>
+      <button class="btn" onclick="guardarComanda()">Guardar Comanda</button>
+    </div>
 
-  <button class="btn" onclick="guardarComanda()">Guardar Comanda</button>
-
-  <h2>Comandas Actuales</h2>
-  <div id="comandas">
-    <!-- Aquí se mostrarán las comandas -->
+    <h2>Comandas Actuales</h2>
+    <div id="comandas">
+      <!-- Aquí se mostrarán las comandas -->
+    </div>
   </div>
 
   <script>
@@ -157,7 +184,7 @@
 
     let comandaId = 0; // Identificador para cada comanda
 
-    // Cargar menú dinámicamente
+    // Cargar el menú dinámicamente
     platos.forEach((plato, index) => {
       const fila = document.createElement("tr");
       fila.innerHTML = `
@@ -210,15 +237,16 @@
         comandaTotal += totalPlato;
         platosHTML += `
           <div>
-            <strong>${plato.nombre}</strong> - ${plato.cantidad} x ${plato.precio.toFixed(2)} € = ${totalPlato.toFixed(2)} €
+            <span><strong>${plato.nombre}</strong> - ${plato.cantidad} x ${plato.precio.toFixed(2)} € = ${totalPlato.toFixed(2)} €</span>
             <button class="btn btn-danger" onclick="eliminarPlato(${id}, '${plato.nombre}')">Eliminar</button>
           </div>
         `;
       });
 
       comandaDiv.innerHTML = `
-        <h3>Comanda ${id + 1} - Total: ${comandaTotal.toFixed(2)} €</h3>
+        <h3>Comanda ${id + 1}</h3>
         ${platosHTML}
+        <div class="total">Total: ${comandaTotal.toFixed(2)} €</div>
       `;
 
       comandas.appendChild(comandaDiv);
@@ -226,22 +254,9 @@
 
     // Función para eliminar un plato de una comanda
     const eliminarPlato = (comandaId, nombrePlato) => {
-      const comandaDiv = document.querySelector(`.comanda[data-id="${comandaId}"]`);
-      const platos = Array.from(comandaDiv.querySelectorAll('div'));
-      let totalComanda = 0;
-      comandaDiv.innerHTML = `<h3>Comanda ${comandaId + 1} - Total: </h3>`;
-
-      platos.forEach(platoDiv => {
-        const nombre = platoDiv.querySelector('strong').textContent;
-        if (nombre !== nombrePlato) {
-          comandaDiv.innerHTML += platoDiv.outerHTML;
-          const precio = parseFloat(platoDiv.querySelector('span').textContent.replace("€", ""));
-          totalComanda += precio;
-        }
-      });
-
-      // Actualiza el total de la comanda
-      comandaDiv.innerHTML += `<h3>Comanda ${comandaId + 1} - Total: ${totalComanda.toFixed(2)} €</h3>`;
+      const comandaDiv = Array.from(comandas.children).find(div => div.getAttribute("data-id") == comandaId);
+      const platoDiv = Array.from(comandaDiv.querySelectorAll("div")).find(div => div.querySelector("strong").textContent === nombrePlato);
+      platoDiv.remove();
       actualizarAlmacenamiento();
     };
 
