@@ -13,7 +13,7 @@ app.use(cors());
 app.use(bodyParser.json());
 
 // Conexión a MongoDB con variables de entorno
-mongoose.connect(process.env.MONGODB_URI)
+mongoose.connect(process.env.MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true })
   .then(() => console.log("Conexión exitosa a MongoDB"))
   .catch((err) => console.log("Error en la conexión a MongoDB:", err));
 
@@ -53,7 +53,10 @@ app.get('/api/comandas', async (req, res) => {
 app.post('/api/comandas', async (req, res) => {
   const { ide, platos, total } = req.body;
   try {
-    const comanda = new Comanda({ ide: ide, platos: platos, total: total });
+    if (typeof ide === 'undefined' || isNaN(ide)) {
+      return res.status(400).send("El valor de 'ide' debe ser un número válido.");
+    }
+    const comanda = new Comanda({ ide: Number(ide), platos: platos, total: total });
     await comanda.save();
     res.status(201).send("Comanda guardada");
   } catch (err) {
@@ -66,8 +69,8 @@ app.delete('/api/comandas/:ide', async (req, res) => {
   const { ide } = req.params;
   console.log(req.params)
   try {
-    if (isNaN(ide)) {
-      return res.status(400).send("El valor de 'ide' debe ser un número.");
+    if (typeof ide === 'undefined' || isNaN(ide)) {
+      return res.status(400).send("El valor de 'ide' debe ser un número válido.");
     }
     await Comanda.findOneAndDelete({ ide: Number(ide) });
     res.send("Comanda eliminada");
