@@ -4,164 +4,116 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Control de Comandas</title>
-  
-  <!-- Estilos CSS -->
   <style>
     body {
-        font-family: Arial, sans-serif;
-        margin: 0;
-        padding: 0;
-        background-color: #f4f4f9;
+      font-family: 'Arial', sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f0f4f7;
+      color: #333;
     }
-    
-    /* Estilos del formulario de inicio de sesión */
-    #login-form {
-        display: block;
-        text-align: center;
-        margin-top: 100px;
+    h1, h2 {
+      text-align: center;
+      color: #444;
+      margin-bottom: 20px;
     }
-    
-    #login-form input {
-        padding: 10px;
-        font-size: 16px;
-        margin: 10px;
-        border: 1px solid #ccc;
-        border-radius: 4px;
-        width: 200px;
+    .container {
+      width: 90%;
+      margin: 20px auto;
     }
-    
-    #login-form button {
-        padding: 10px 20px;
-        font-size: 16px;
-        background-color: #4CAF50;
-        color: white;
-        border: none;
-        border-radius: 4px;
-        cursor: pointer;
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 20px;
+      background-color: #fff;
+      border-radius: 8px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
     }
-    
-    #login-form button:hover {
-        background-color: #45a049;
+    th, td {
+      padding: 15px;
+      text-align: left;
+      font-size: 16px;
+      border-bottom: 1px solid #ddd;
     }
-    
-    /* Estilos de la sección de comandas */
-    #comandas {
-        margin: 20px;
-        display: none;
+    th {
+      background-color: #4CAF50;
+      color: white;
     }
-
-    h3 {
-        color: #333;
+    td input {
+      width: 60px;
+      padding: 5px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      text-align: center;
+      font-size: 16px;
     }
-
-    #comandas-list {
-        margin-top: 20px;
+    td input[type="number"] {
+      -moz-appearance: textfield;
     }
-    
-    #comandas div {
-        background-color: #fff;
-        border: 1px solid #ccc;
-        padding: 10px;
-        margin-bottom: 10px;
-        border-radius: 5px;
+    .btn {
+      padding: 10px 15px;
+      font-size: 16px;
+      color: white;
+      background-color: #007bff;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
     }
-
-    #comandas div h3 {
-        color: #444;
+    .btn:hover {
+      background-color: #0056b3;
     }
-
-    #comandas div p {
-        font-size: 16px;
-        color: #555;
-    }
-
-    button {
-        padding: 8px 16px;
-        font-size: 14px;
-        border-radius: 5px;
-        cursor: pointer;
-        margin-top: 10px;
-    }
-
     .btn-danger {
-        background-color: #e74c3c;
-        color: white;
-        border: none;
+      background-color: #dc3545;
     }
-
     .btn-danger:hover {
-        background-color: #c0392b;
+      background-color: #c82333;
     }
-
-    .btn-success {
-        background-color: #2ecc71;
-        color: white;
-        border: none;
+    .total-container {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 20px;
+      font-weight: bold;
+      font-size: 1.2em;
     }
-
-    .btn-success:hover {
-        background-color: #27ae60;
+    .comanda {
+      margin: 20px 0;
+      background-color: #ffffff;
+      padding: 15px;
+      border-radius: 8px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
     }
-
-    /* Estilos para el teclado numérico */
-    input[type="number"] {
-        -moz-appearance: textfield;
-        -webkit-appearance: none;
-        padding: 8px;
-        font-size: 16px;
+    .comanda h3 {
+      margin: 0;
+      color: #333;
     }
-
-    /* Evitar zoom en dispositivos móviles */
-    input[type="number"], input[type="text"], input[type="password"] {
-        -webkit-appearance: none;
-        -moz-appearance: none;
-        appearance: none;
-        font-size: 16px;
+    .comanda div {
+      margin: 10px 0;
+      display: flex;
+      justify-content: space-between;
     }
-
-    /* Estilos para la tabla de cantidades */
-    .quantity-input {
-        width: 60px;
-        padding: 5px;
-        text-align: center;
-        border-radius: 4px;
-        border: 1px solid #ccc;
+    .comanda .total {
+      font-weight: bold;
+      font-size: 18px;
+      color: #007bff;
     }
-
-    /* Ajustes para pantallas pequeñas */
-    @media (max-width: 600px) {
-        body {
-            font-size: 14px;
-        }
-
-        #login-form input, #login-form button {
-            width: 100%;
-            margin: 5px 0;
-        }
-
-        #comandas-list {
-            margin-left: 10px;
-            margin-right: 10px;
-        }
+    @media (max-width: 768px) {
+      body {
+        font-size: 14px;
+      }
+      th, td {
+        font-size: 14px;
+        padding: 10px;
+      }
+      .btn {
+        font-size: 14px;
+      }
     }
   </style>
 </head>
 <body>
-
-  <!-- Formulario de inicio de sesión -->
-  <div id="login-form">
-    <h2>Iniciar sesión</h2>
-    <input type="text" id="username" placeholder="Usuario" required>
-    <input type="password" id="password" placeholder="Contraseña" required>
-    <button onclick="iniciarSesion()">Iniciar sesión</button>
-    <p id="login-error" style="color: red; display: none;">Usuario o contraseña incorrectos</p>
-  </div>
-
-  <!-- Sección de comandas (oculta hasta iniciar sesión) -->
-  <div id="comandas">
-    <h3>Control de Comandas</h3>
-
-    <!-- Tabla de platos -->
+  <div class="container">
+    <h1>Control de Comandas</h1>
     <table>
       <thead>
         <tr>
@@ -172,130 +124,145 @@
       </thead>
       <tbody id="menu"></tbody>
     </table>
-
-    <div>
-      <button class="btn-success" onclick="guardarComanda()">Guardar Comanda</button>
-      <button class="btn-danger" onclick="eliminarTodasLasComandas()">Eliminar Todas las Comandas</button>
+    <div class="total-container">
+      <div>Total: <span id="total">0.00</span> €</div>
+      <button class="btn" onclick="guardarComanda()">Guardar Comanda</button>
+      <button class="btn" onclick="calcularTotal()">Ver Total</button>
     </div>
-
-    <h3>Comandas Actuales</h3>
-    <div id="comandas-list"></div>
+    <h2>Comandas Actuales</h2>
+    <div id="comandas"></div>
+    <button class="btn btn-danger" onclick="eliminarTodasLasComandas()">Eliminar todas las comandas</button>
   </div>
 
-  <!-- Scripts -->
-  <script>
-    // Datos de ejemplo de platos
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
+    import { getDatabase, ref, push, onChildAdded, remove } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-database.js";
+
+    // Configuración de Firebase
+    const firebaseConfig = {
+      apiKey: "AIzaSyCBGPG0BovYYzE1HD-Shau6t7bAMH-XqXk",
+      authDomain: "saydo-d9bf1.firebaseapp.com",
+      databaseURL: "https://saydo-d9bf1-default-rtdb.firebaseio.com",
+      projectId: "saydo-d9bf1",
+      storageBucket: "saydo-d9bf1.appspot.com",
+      messagingSenderId: "222383911991",
+      appId: "1:222383911991:web:1598a9b2fb2b5a548bbbb2",
+      measurementId: "G-DRSZXT2R8K"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+    const comandasRef = ref(db, "comandas");
+
     const platos = [
-      { nombre: "Alitas", precio: 9 },
-      { nombre: "Rabas", precio: 9 },
-      { nombre: "Aros de Cebolla", precio: 9 },
-      { nombre: "Queso Cheddar", precio: 9 },
-      { nombre: "Croquetas", precio: 9 },
-      { nombre: "Burger de Pollo", precio: 9 },
-      { nombre: "Patatas Fritas", precio: 5 },
+      { nombre: "Alitas / Wings", precio: 9 },
+      { nombre: "Rabas / Fried Squid", precio: 9 },
+      { nombre: "Aros de Cebolla / Onion Rings", precio: 9 },
+      { nombre: "Queso Cheddar / Cheddar Cheese", precio: 9 },
+      { nombre: "Croquetas / Croquettes", precio: 9 },
+      { nombre: "Burger de Pollo / Chicken Burger", precio: 9 },
+      { nombre: "Patatas Fritas / Fries", precio: 5 },
       { nombre: "Pizza BBQ", precio: 10 },
       { nombre: "Pizza Pepperoni", precio: 10 },
       { nombre: "Pizza Salami", precio: 10 },
-      { nombre: "Pizza 4 Quesos", precio: 10 }
+      { nombre: "Pizza 4 Quesos / Four Cheese Pizza", precio: 10 }
     ];
 
     const menu = document.getElementById("menu");
-    const comandasList = document.getElementById("comandas-list");
+    const comandas = document.getElementById("comandas");
     const totalElement = document.getElementById("total");
-    const loginForm = document.getElementById("login-form");
-    const comandasSection = document.getElementById("comandas");
 
-    // Cargar menú
+    // Cargar el menú
     platos.forEach((plato, index) => {
       const fila = document.createElement("tr");
       fila.innerHTML = `
         <td>${plato.nombre}</td>
         <td>${plato.precio.toFixed(2)} €</td>
-        <td><input class="quantity-input" type="number" id="cantidad-${index}" value="0" min="0" onchange="calcularTotal()"></td>
+        <td><input type="number" id="cantidad-${index}" value="0" min="0" oninput="calcularTotal()"></td>
       `;
       menu.appendChild(fila);
     });
 
-    // Función de login
-    function iniciarSesion() {
-      const username = document.getElementById("username").value;
-      const password = document.getElementById("password").value;
-      const loginError = document.getElementById("login-error");
-
-      if (username === "saydo" && password === "saydo") {
-        loginForm.style.display = "none";
-        comandasSection.style.display = "block";
-        loginError.style.display = "none";
-      } else {
-        loginError.style.display = "block";
-      }
-    }
-
-    // Calcular el total de la comanda
-    function calcularTotal() {
+    // Calcular el total
+    const calcularTotal = () => {
       let total = 0;
       platos.forEach((plato, index) => {
         const cantidadInput = document.getElementById(`cantidad-${index}`);
-        const cantidad = parseInt(cantidadInput.value) || 0;
+        const cantidad = Math.max(0, parseInt(cantidadInput.value) || 0);
+        cantidadInput.value = cantidad; // Evitar valores negativos
         total += cantidad * plato.precio;
       });
-      totalElement.textContent = total.toFixed(2) + " €";
-    }
+      totalElement.textContent = total.toFixed(2);
+    };
 
     // Guardar la comanda
-    function guardarComanda() {
-      const platosSeleccionados = [];
-      let totalComanda = 0;
+    const guardarComanda = () => {
+      const nuevaComanda = { platos: [], total: 0 };
 
       platos.forEach((plato, index) => {
         const cantidad = parseInt(document.getElementById(`cantidad-${index}`).value) || 0;
         if (cantidad > 0) {
-          platosSeleccionados.push({ nombre: plato.nombre, cantidad, precio: plato.precio });
-          totalComanda += cantidad * plato.precio;
+          nuevaComanda.platos.push({
+            nombre: plato.nombre,
+            cantidad,
+            precio: plato.precio,
+            subtotal: cantidad * plato.precio
+          });
+          nuevaComanda.total += cantidad * plato.precio;
         }
       });
 
-      if (platosSeleccionados.length > 0) {
-        const nuevaComanda = { id: Date.now(), platos: platosSeleccionados, total: totalComanda };
-        // Aquí, normalmente se enviaría la comanda al backend
-        agregarComanda(nuevaComanda);
+      if (nuevaComanda.platos.length > 0) {
+        push(comandasRef, nuevaComanda);
         resetCantidades();
       } else {
         alert("Por favor, selecciona al menos un plato.");
       }
-    }
-
-    // Mostrar la comanda en la lista
-    function agregarComanda(comanda) {
-      const comandaDiv = document.createElement("div");
-      comandaDiv.innerHTML = `
-        <h4>Comanda ${comanda.id}</h4>
-        ${comanda.platos.map(plato => `
-          <p><strong>${plato.nombre}</strong> - ${plato.cantidad} x ${plato.precio.toFixed(2)} € = ${(plato.cantidad * plato.precio).toFixed(2)} €</p>
-        `).join("")}
-        <p><strong>Total:</strong> ${comanda.total.toFixed(2)} €</p>
-        <button class="btn-danger" onclick="eliminarComanda(${comanda.id})">Eliminar Comanda</button>
-      `;
-      comandasList.appendChild(comandaDiv);
-    }
-
-    // Eliminar una comanda
-    function eliminarComanda(id) {
-      const comandaDiv = document.querySelector(`#comandas-list div h4:contains('Comanda ${id}')`).parentNode;
-      comandasList.removeChild(comandaDiv);
-    }
+    };
 
     // Eliminar todas las comandas
-    function eliminarTodasLasComandas() {
-      comandasList.innerHTML = "";
-    }
+    const eliminarTodasLasComandas = () => {
+      remove(comandasRef);
+      alert("Todas las comandas han sido eliminadas.");
+    };
 
-    // Reiniciar cantidades
-    function resetCantidades() {
+    // Escuchar cambios en Firebase
+    onChildAdded(comandasRef, (snapshot) => {
+      const comanda = snapshot.val();
+      agregarComanda(comanda, snapshot.key);
+    });
+
+    // Mostrar la comanda en la interfaz
+    const agregarComanda = (comanda, id) => {
+      const comandaDiv = document.createElement("div");
+      comandaDiv.classList.add("comanda");
+      comandaDiv.innerHTML = `
+        <h3>Comanda ${id}</h3>
+        ${comanda.platos.map(plato => `
+          <div>
+            <span>${plato.nombre}</span> x${plato.cantidad} - ${plato.subtotal.toFixed(2)} €
+          </div>
+        `).join("")}
+        <div class="total">Total: ${comanda.total.toFixed(2)} €</div>
+        <button class="btn btn-danger" onclick="eliminarComanda('${id}')">Eliminar Comanda</button>
+      `;
+      comandas.appendChild(comandaDiv);
+    };
+
+    // Eliminar una comanda
+    const eliminarComanda = (id) => {
+      const comandaRef = ref(db, `comandas/${id}`);
+      remove(comandaRef);
+      alert("Comanda eliminada.");
+    };
+
+    // Reiniciar las cantidades en el formulario
+    const resetCantidades = () => {
       platos.forEach((plato, index) => {
         document.getElementById(`cantidad-${index}`).value = 0;
       });
-    }
+      calcularTotal();
+    };
   </script>
 </body>
 </html>
