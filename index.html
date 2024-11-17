@@ -5,104 +5,26 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Gestión de Comandas</title>
   <link rel="stylesheet" href="style.css">
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background-color: #f4f4f9;
-      margin: 0;
-      padding: 0;
-    }
-
-    .container {
-      max-width: 1200px;
-      margin: 20px auto;
-      padding: 20px;
-      background-color: white;
-      border-radius: 8px;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    }
-
-    h1 {
-      text-align: center;
-      margin-bottom: 20px;
-    }
-
-    .comanda-list {
-      margin-top: 20px;
-    }
-
-    .comanda {
-      background-color: #f9f9f9;
-      margin-bottom: 15px;
-      padding: 15px;
-      border-radius: 5px;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    }
-
-    .comanda h2 {
-      margin: 0;
-      font-size: 18px;
-    }
-
-    .comanda p {
-      font-size: 16px;
-      margin: 5px 0;
-    }
-
-    .button {
-      background-color: #007BFF;
-      color: white;
-      padding: 10px 15px;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-    }
-
-    .button:hover {
-      background-color: #0056b3;
-    }
-
-    .form-container {
-      display: flex;
-      justify-content: center;
-      margin-bottom: 20px;
-    }
-
-    input, button {
-      padding: 10px;
-      margin-right: 10px;
-    }
-
-    input[type="number"] {
-      width: 100px;
-    }
-
-    .form-container button {
-      background-color: #28a745;
-    }
-
-    .form-container button:hover {
-      background-color: #218838;
-    }
-
-    .comanda p span {
-      font-weight: bold;
-    }
-  </style>
 </head>
 <body>
 
   <div class="container">
     <h1>Gestión de Comandas</h1>
 
+    <!-- Formulario de inicio de sesión -->
+    <div class="login-container" id="login-container">
+      <input id="username" type="text" placeholder="Usuario" required>
+      <input id="password" type="password" placeholder="Contraseña" required>
+      <button class="button" id="login-btn">Iniciar sesión</button>
+    </div>
+
     <!-- Formulario para añadir nueva comanda -->
-    <div class="form-container">
+    <div class="form-container" id="form-container" style="display:none;">
       <input id="comanda-id" type="number" placeholder="ID de comanda">
       <input id="plato-nombre" type="text" placeholder="Nombre del plato">
       <input id="plato-cantidad" type="number" placeholder="Cantidad" min="1">
       <input id="plato-precio" type="number" placeholder="Precio" step="0.01">
       <button class="button" id="agregar-comanda">Añadir Comanda</button>
-      <button class="button" id="calcular-total">Ver Total</button>
     </div>
 
     <!-- Lista de las comandas -->
@@ -112,7 +34,20 @@
   </div>
 
   <script>
-    // Función para obtener las comandas desde el servidor
+    let isLoggedIn = false;
+
+    // Función para verificar si el usuario está logueado
+    function checkLogin() {
+      if (isLoggedIn) {
+        document.getElementById('login-container').style.display = 'none';
+        document.getElementById('form-container').style.display = 'flex';
+        cargarComandas(); // Cargar las comandas al iniciar sesión
+      } else {
+        alert('Por favor, inicia sesión');
+      }
+    }
+
+    // Función para cargar las comandas desde el servidor
     async function cargarComandas() {
       const response = await fetch('/api/comandas');
       const comandas = await response.json();
@@ -135,9 +70,6 @@
         comandaList.appendChild(comandaElement);
       });
     }
-
-    // Cargar las comandas al cargar la página
-    window.onload = cargarComandas;
 
     // Función para añadir una nueva comanda
     document.getElementById('agregar-comanda').addEventListener('click', async () => {
@@ -182,12 +114,18 @@
       cargarComandas(); // Recargar las comandas después de eliminar todas
     });
 
-    // Función para calcular el total
-    document.getElementById('calcular-total').addEventListener('click', () => {
-      const cantidad = document.getElementById('plato-cantidad').value;
-      const precio = document.getElementById('plato-precio').value;
-      const total = cantidad * precio;
-      alert('El total de la comanda es: €' + total);
+    // Función de inicio de sesión
+    document.getElementById('login-btn').addEventListener('click', () => {
+      const username = document.getElementById('username').value;
+      const password = document.getElementById('password').value;
+
+      // Verifica usuario y contraseña (esto puede cambiar según el servidor)
+      if (username === 'admin' && password === '1234') {
+        isLoggedIn = true;
+        checkLogin(); // Al iniciar sesión, se carga la interfaz de la aplicación
+      } else {
+        alert('Credenciales incorrectas');
+      }
     });
   </script>
 </body>
