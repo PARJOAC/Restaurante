@@ -138,6 +138,19 @@
     const comandas = document.getElementById("comandas");
     const totalElement = document.getElementById("total");
 
+    const renderizarMenu = () => {
+      menu.innerHTML = ""; // Limpia cualquier contenido previo
+      platos.forEach((plato, index) => {
+        const row = document.createElement("tr");
+        row.innerHTML = `
+          <td>${plato.nombre}</td>
+          <td>${plato.precio.toFixed(2)} €</td>
+          <td><input type="number" id="cantidad-${index}" value="0" min="0" onchange="calcularTotal()"></td>
+        `;
+        menu.appendChild(row);
+      });
+    };
+
     const calcularTotal = () => {
       let total = 0;
       platos.forEach((plato, index) => {
@@ -243,6 +256,7 @@
     };
 
     document.addEventListener('DOMContentLoaded', () => {
+      renderizarMenu(); // Renderiza los platos
       mostrarComandas();
       calcularTotal();
     });
