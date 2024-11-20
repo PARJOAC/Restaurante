@@ -72,24 +72,9 @@ const formatearFecha = (fecha) => {
     const lastComanda = await Comanda.findOne().sort({ identificador: -1 });
     const identificador = lastComanda ? lastComanda.identificador + 1 : 1;
     const fechaFinal = formatearFecha(fecha);
-    const comanda = new Comanda({ identificador, platos, fechaFinal, total });
+    const comanda = new Comanda({ identificador, platos, fecha: fechaFinal, total });
     await comanda.save();
 
-    res.status(201).json({ message: "Comanda guardada con éxito", comanda });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: "Error al guardar la comanda", details: err.message });
-  }
-});
-
-app.post('/api/comandas', async (req, res) => {
-  const { platos, total } = req.body;
-  try {
-    const lastComanda = await Comanda.findOne().sort({ identificador: -1 });
-    const identificador = lastComanda ? lastComanda.identificador + 1 : 1;
-
-    const comanda = new Comanda({ identificador, platos, fecha, total });
-    await comanda.save();
     res.status(201).json({ message: "Comanda guardada con éxito", comanda });
   } catch (err) {
     console.error(err);
