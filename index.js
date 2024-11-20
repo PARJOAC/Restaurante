@@ -46,6 +46,7 @@ app.post('/api/comandas', async (req, res) => {
   const { platos, total } = req.body;
 
   try {
+    const fecha = new Date();
 const formatearFecha = (fecha) => {
   const opciones = {
     year: 'numeric',
@@ -70,8 +71,8 @@ const formatearFecha = (fecha) => {
     
     const lastComanda = await Comanda.findOne().sort({ identificador: -1 });
     const identificador = lastComanda ? lastComanda.identificador + 1 : 1;
-    const fecha = formatearFecha(fecha);
-    const comanda = new Comanda({ identificador, platos, fecha, total });
+    const fechaFinal = formatearFecha(fecha);
+    const comanda = new Comanda({ identificador, platos, fechaFinal, total });
     await comanda.save();
 
     res.status(201).json({ message: "Comanda guardada con éxito", comanda });
