@@ -76,6 +76,12 @@ body {
       font-size: 18px;
       color: #007bff;
     }
+
+    .comanda .fecha {
+      font-weight: bold;
+      font-size: 18px;
+      color: #f8512d;
+    }
     @media (max-width: 768px) {
       body {
         font-size: 14px;
