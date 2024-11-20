@@ -79,7 +79,7 @@ body {
 
     .comanda .fecha {
       font-weight: bold;
-      font-size: 13px;
+      font-size: 15px;
       color: #f8512d;
     }
     @media (max-width: 768px) {
