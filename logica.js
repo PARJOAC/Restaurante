@@ -144,6 +144,7 @@ const eliminarTodasLasComandas = async () => {
 };
 
 document.addEventListener('DOMContentLoaded', () => {
+    console.log('Archivo logica.js ejecutado');
     renderizarMenu();
     mostrarComandas();
     calcularTotal();
