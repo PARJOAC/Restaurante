@@ -46,8 +46,6 @@ app.post('/api/comandas', async (req, res) => {
   const { platos, total } = req.body;
 
   try {
-    const fecha = new Date();
-
 const formatearFecha = (fecha) => {
   const opciones = {
     year: 'numeric',
