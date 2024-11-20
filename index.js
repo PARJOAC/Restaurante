@@ -32,6 +32,7 @@ const comandaSchema = new mongoose.Schema({
       precio: { type: Number, required: true, min: 0 }
     }
   ],
+  fecha: { type: String, required: true },
   total: { type: Number, required: true, min: 0 }
 });
 
