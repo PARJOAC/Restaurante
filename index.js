@@ -3,17 +3,14 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 const bodyParser = require('body-parser');
 const path = require('path');
-require('dotenv').config(); // Cargar variables de entorno
+require('dotenv').config();
 
-// Crear aplicación Express
 const app = express();
 
-// Usar middleware
 app.use(cors());
 app.use(bodyParser.json());
 app.use(express.static('public'));
 
-// Conexión a MongoDB con manejo de errores
 const MONGODB_URI = process.env.MONGODB_URI;
 if (!MONGODB_URI) {
   console.error("Falta la variable de entorno MONGODB_URI");
@@ -26,9 +23,8 @@ mongoose.connect(MONGODB_URI)
     process.exit(1);
   });
 
-// Crear el esquema para las comandas
 const comandaSchema = new mongoose.Schema({
-  identificador: { type: Number, required: true, unique: true }, // Campo único
+  identificador: { type: Number, required: true, unique: true },
   platos: [
     {
       nombre: { type: String, required: true },
@@ -41,19 +37,14 @@ const comandaSchema = new mongoose.Schema({
 
 const Comanda = mongoose.model('Comanda', comandaSchema);
 
-// Rutas
-
-// Ruta para servir el archivo index.html
 app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'index.html')); // Asegúrate de que index.html esté en la carpeta public
+  res.sendFile(path.join(__dirname, 'index.html'));
 });
 
-// Obtener todas las comandas
 app.post('/api/comandas', async (req, res) => {
   const { platos, total } = req.body;
 
   try {
-    // Buscar el último identificador y asignar uno nuevo
     const lastComanda = await Comanda.findOne().sort({ identificador: -1 });
     const identificador = lastComanda ? lastComanda.identificador + 1 : 1;
 
@@ -67,11 +58,9 @@ app.post('/api/comandas', async (req, res) => {
   }
 });
 
-// Crear una nueva comanda
 app.post('/api/comandas', async (req, res) => {
   const { platos, total } = req.body;
   try {
-    // Buscar el último identificador y asignar uno nuevo
     const lastComanda = await Comanda.findOne().sort({ identificador: -1 });
     const identificador = lastComanda ? lastComanda.identificador + 1 : 1;
 
@@ -84,7 +73,6 @@ app.post('/api/comandas', async (req, res) => {
   }
 });
 
-// Obtener todas las comandas
 app.get('/api/comandas', async (req, res) => {
   try {
     const comandas = await Comanda.find();
@@ -96,9 +84,8 @@ app.get('/api/comandas', async (req, res) => {
 });
 
 
-// Eliminar una comanda
 app.delete('/api/comandas/:id', async (req, res) => {
-  const id = parseInt(req.params.id, 10); // Convertir a número
+  const id = parseInt(req.params.id, 10);
   if (isNaN(id)) {
     return res.status(400).json({ error: "ID inválido" });
   }
@@ -115,7 +102,6 @@ app.delete('/api/comandas/:id', async (req, res) => {
   }
 });
 
-// Eliminar todas las comandas
 app.delete('/api/comandas', async (req, res) => {
   try {
     await Comanda.deleteMany();
@@ -126,7 +112,6 @@ app.delete('/api/comandas', async (req, res) => {
   }
 });
 
-// Iniciar servidor
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Servidor escuchando en puerto ${PORT}`);
