@@ -103,7 +103,7 @@ const mostrarComandas = async () => {
               <span>${(plato.cantidad * plato.precio).toFixed(2)} €</span>
             </div>
           `).join('')}
-          <div class="total">Fecha: ${comanda.fecha}</div>
+          <div class="fecha">Fecha: ${comanda.fecha}</div>
           <div class="total">Total: ${comanda.total.toFixed(2)} €</div>
           <button class="btn btn-danger" onclick="eliminarComanda('${comanda.identificador}')">Eliminar</button>
         `;
