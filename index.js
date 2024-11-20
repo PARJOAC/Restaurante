@@ -62,11 +62,11 @@ const formatearFecha = (fecha) => {
   const fechaFormateada = new Intl.DateTimeFormat('es-ES', opciones).format(fecha);
 
   // Ajuste para que siga el formato DD/MM/YYYY HH:mm:ss
-  const [dia, mes, anio, hora] = fechaFormateada
+  const [dia, mes, anio, hora, minutos, segundos] = fechaFormateada
     .replace(',', '')
     .split(/\/| |:/);
 
-  return `${dia}/${mes}/${anio} ${hora}`;
+  return `${dia}/${mes}/${anio} ${hora}:${minutos}:${segundos}`;
 };
     
     const lastComanda = await Comanda.findOne().sort({ identificador: -1 });
