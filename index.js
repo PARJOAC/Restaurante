@@ -46,10 +46,34 @@ app.post('/api/comandas', async (req, res) => {
   const { platos, total } = req.body;
 
   try {
+    const fecha = new Date();
+
+const formatearFecha = (fecha) => {
+  const opciones = {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+    hour12: false,
+    timeZone: 'Europe/Madrid',
+  };
+
+  const fechaFormateada = new Intl.DateTimeFormat('es-ES', opciones).format(fecha);
+
+  // Ajuste para que siga el formato DD/MM/YYYY HH:mm:ss
+  const [dia, mes, anio, hora] = fechaFormateada
+    .replace(',', '')
+    .split(/\/| |:/);
+
+  return `${dia}/${mes}/${anio} ${hora}`;
+};
+    
     const lastComanda = await Comanda.findOne().sort({ identificador: -1 });
     const identificador = lastComanda ? lastComanda.identificador + 1 : 1;
-
-    const comanda = new Comanda({ identificador, platos, total });
+    const fecha = formatearFecha(fecha);
+    const comanda = new Comanda({ identificador, platos, fecha, total });
     await comanda.save();
 
     res.status(201).json({ message: "Comanda guardada con éxito", comanda });
@@ -65,7 +89,7 @@ app.post('/api/comandas', async (req, res) => {
     const lastComanda = await Comanda.findOne().sort({ identificador: -1 });
     const identificador = lastComanda ? lastComanda.identificador + 1 : 1;
 
-    const comanda = new Comanda({ identificador, platos, total });
+    const comanda = new Comanda({ identificador, platos, fecha, total });
     await comanda.save();
     res.status(201).json({ message: "Comanda guardada con éxito", comanda });
   } catch (err) {
