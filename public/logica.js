@@ -1,4 +1,5 @@
 const platos = [
+    { nombre: "Gambas / Shrimp", precio: 9 },
     { nombre: "Alitas / Wings", precio: 9 },
     { nombre: "Rabas / Fried Squid", precio: 9 },
     { nombre: "Aros de Cebolla / Onion Rings", precio: 9 },
