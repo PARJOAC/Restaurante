@@ -7,6 +7,13 @@ const path = require("path");
 const bcrypt = require("bcrypt");
 const session = require("express-session");
 require("dotenv").config();
+const https = require("https");
+const fs = require("fs");
+
+const sslOptions = {
+  key: fs.readFileSync(path.join(__dirname, "certs", "server.key")),
+  cert: fs.readFileSync(path.join(__dirname, "certs", "server.cert")),
+};
 
 const Plato = require("./models/Platos");
 const Comanda = require("./models/Comandas");
@@ -351,9 +358,18 @@ app.get("/:mesa/comanda.html", (req, res) => {
 
 // Servir estáticos
 app.use(express.static(path.join(__dirname, "public")));
-
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`✅ Servidor en http://localhost:${PORT}`));
-app.listen(PORT, "0.0.0.0", () => {
-  console.log(`Servidor escuchando en http://0.0.0.0:${PORT}`);
+
+// Crear servidor HTTPS con certificados
+https.createServer(sslOptions, app).listen(PORT, () => {
+  console.log(`✅ Servidor HTTPS escuchando en https://localhost:${PORT}`);
 });
+
+// (Opcional) Servidor HTTP para redirigir todo a HTTPS en puerto 80
+const http = require("http");
+http
+  .createServer((req, res) => {
+    res.writeHead(301, { Location: `https://${req.headers.host}${req.url}` });
+    res.end();
+  })
+  .listen(80);

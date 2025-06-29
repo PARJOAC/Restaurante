@@ -41,14 +41,19 @@
 
 /* 3. Imagen */
 .item-img {
-  width: 100%;
-  height: auto;
-  max-height: 160px;
-  object-fit: contain;
+  width: 100%; /* que ocupe todo el ancho de su contenedor */
+  height: 160px; /* altura fija para uniformidad */
+  object-fit: cover; /* recorta la imagen para que rellene sin deformar */
   display: block;
   background: #f0f0f0;
   border-bottom: 1px solid #eee;
   border-radius: 14px 14px 0 0;
+}
+
+@media (max-width: 767px) {
+  .item-img {
+    height: 140px; /* un poco más pequeño en móvil */
+  }
 }
 
 /* 4. Contenido */
