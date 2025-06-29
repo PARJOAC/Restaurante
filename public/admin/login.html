@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin – Iniciar sesión</title>
+    <link rel="stylesheet" href="/general.css" />
+    <link rel="stylesheet" href="/admin/login.css" />
+  </head>
+  <body>
+    <main class="login-container" role="main">
+      <div class="login-box" aria-labelledby="loginTitle">
+        <h2 id="loginTitle">Admin Login</h2>
+        <form id="login-form" novalidate>
+          <label for="usuario" class="sr-only">Usuario</label>
+          <input
+            type="text"
+            id="usuario"
+            name="usuario"
+            placeholder="Usuario"
+            required
+            autocomplete="username"
+            aria-required="true"
+            aria-describedby="error"
+          />
+
+          <label for="contraseña" class="sr-only">Contraseña</label>
+          <input
+            type="password"
+            id="contraseña"
+            name="contraseña"
+            placeholder="Contraseña"
+            required
+            autocomplete="current-password"
+            aria-required="true"
+            aria-describedby="error"
+          />
+
+          <button type="submit">Entrar</button>
+          <p id="error" class="error" aria-live="assertive"></p>
+        </form>
+      </div>
+    </main>
+
+    <script>
+      const form = document.getElementById("login-form");
+      const errorEl = document.getElementById("error");
+      form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        errorEl.textContent = "";
+        const usuario = form.usuario.value.trim();
+        const contraseña = form.contraseña.value;
+        try {
+          const res = await fetch("/api/admin/login", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ usuario, contraseña }),
+          });
+          if (res.ok) {
+            window.location.href = "/admin/panel.html";
+          } else {
+            const data = await res.json();
+            errorEl.textContent = data.error || "Error inesperado";
+          }
+        } catch {
+          errorEl.textContent = "Error de conexión";
+        }
+      });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Admin Panel</title>
+    <link rel="stylesheet" href="/general.css" />
+    <link rel="stylesheet" href="/admin/admin-panel.css" />
+  </head>
+  <body>
+    <button class="sidebar-toggle" id="toggleSidebar">☰ Menú</button>
+
+    <div class="admin-container">
+      <nav class="sidebar">
+        <h2>Admin</h2>
+        <ul>
+          <li data-section="platos" class="active">Platos</li>
+          <li data-section="comandas">Comandas</li>
+          <li data-section="config">Configuración</li>
+        </ul>
+        <button id="logout" class="btn logout">Cerrar sesión</button>
+      </nav>
+
+      <main class="content">
+        <!-- Platos section -->
+        <section id="platos" class="panel-section active">
+          <h2>Gestión de Platos</h2>
+          <div class="form-grid">
+            <form id="plato-form">
+              <input name="id" type="hidden" />
+              <input name="nombre" placeholder="Nombre" required />
+              <input
+                name="precio"
+                type="number"
+                step="0.01"
+                min="0"
+                placeholder="Precio"
+                required
+              />
+              <input name="imagen" placeholder="URL imagen" required />
+              <input name="descripcion" placeholder="Descripción" />
+              <button type="submit" class="btn">Guardar plato</button>
+            </form>
+            <table>
+              <thead>
+                <tr>
+                  <th>Imagen</th>
+                  <th>Nombre</th>
+                  <th>Precio</th>
+                  <th>Acciones</th>
+                </tr>
+              </thead>
+              <tbody id="platos-body"></tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- Comandas section -->
+        <section id="comandas" class="panel-section">
+          <h2>Comandas Recientes</h2>
+          <table>
+            <thead>
+              <tr>
+                <th>Mesa</th>
+                <th>Fecha</th>
+                <th>Total €</th>
+                <th>Detalles</th>
+              </tr>
+            </thead>
+            <tbody id="comandas-body"></tbody>
+          </table>
+        </section>
+
+        <!-- Configuración section -->
+        <section id="config" class="panel-section">
+          <h2>Cambiar Contraseña</h2>
+          <form id="pwd-form" class="config-form">
+            <label for="current-password">Contraseña actual</label>
+            <input
+              type="password"
+              id="current-password"
+              name="current"
+              autocomplete="current-password"
+              required
+            />
+
+            <label for="new-password">Nueva contraseña</label>
+            <input
+              type="password"
+              id="new-password"
+              name="new"
+              autocomplete="new-password"
+              required
+            />
+
+            <label for="confirm-password">Confirmar nueva contraseña</label>
+            <input
+              type="password"
+              id="confirm-password"
+              name="confirm"
+              autocomplete="new-password"
+              required
+            />
+
+            <button type="submit" class="btn">Actualizar contraseña</button>
+            <p id="pwd-msg" class="config-msg"></p>
+          </form>
+        </section>
+      </main>
+    </div>
+
+    <script src="/admin/admin-panel.js"></script>
+
+    <!-- Código para cerrar la sidebar en móviles al pulsar un elemento -->
+    <script>
+      const sidebar = document.querySelector(".sidebar");
+      const toggleBtn = document.querySelector(".sidebar-toggle");
+
+      toggleBtn.addEventListener("click", () => {
+        sidebar.classList.toggle("open");
+        document.body.classList.toggle("sidebar-open");
+      });
+
+      // Cierra automáticamente al hacer clic en cualquier enlace del menú
+      document.querySelectorAll(".sidebar ul li").forEach((li) => {
+        li.addEventListener("click", () => {
+          sidebar.classList.remove("open");
+          document.body.classList.remove("sidebar-open");
+        });
+      });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,118 @@
+/* --------------------------------------------------
+   general.css - Estilos globales y secciones clave
+   -------------------------------------------------- */
+
+/* 1. Reset básico y tipografía */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: clamp(15px, 1vw, 18px);
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  color: #333;
+  background: #f5f7fa;
+  line-height: 1.6;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Estilo general de enlaces y botones */
+a {
+  color: #0077cc;
+  text-decoration: none;
+}
+a:hover {
+  text-decoration: underline;
+}
+
+button,
+.btn {
+  cursor: pointer;
+  border: none;
+  background: #0077cc;
+  color: #fff;
+  padding: 0.65rem 1.2rem;
+  border-radius: 4px;
+  font-size: 1rem;
+  transition: background 0.3s ease;
+}
+button:hover,
+.btn:hover {
+  background: #005fa3;
+}
+
+/* Encabezado y pie de página */
+header,
+footer {
+  background: #fff;
+  padding: 1rem;
+  text-align: center;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+header .logo {
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+/* Contenedores principales */
+main {
+  flex: 1;
+  width: 95%;
+  max-width: 1100px;
+  margin: 1.5rem auto;
+}
+
+/* Estilo para la bienvenida */
+.welcome-container {
+  max-width: 600px;
+  margin: 3rem auto;
+  padding: 2rem;
+  background: #fff;
+  border-radius: 8px;
+  text-align: center;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+.welcome-container h1 {
+  margin-bottom: 1rem;
+  font-size: 1.8rem;
+}
+.instructions {
+  text-align: left;
+  margin: 1.5rem 0;
+}
+.instructions h2 {
+  margin-bottom: 0.5rem;
+  font-size: 1.3rem;
+  color: #0077cc;
+}
+.instructions ol {
+  padding-left: 1.2rem;
+  margin-bottom: 1rem;
+}
+.instructions li {
+  margin-bottom: 0.5rem;
+  font-size: 1rem;
+}
+
+/* Pie de página pequeño */
+footer p {
+  font-size: 0.9rem;
+  color: #666;
+}
+
+/* Responsive avanzado */
+@media (min-width: 768px) {
+  body {
+    font-size: 1rem;
+  }
+}
