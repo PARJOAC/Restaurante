@@ -1,4 +1,3 @@
-// index.js
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
@@ -7,17 +6,11 @@ const path = require("path");
 const bcrypt = require("bcrypt");
 const session = require("express-session");
 require("dotenv").config();
-const https = require("https");
-const fs = require("fs");
-
-const sslOptions = {
-  key: fs.readFileSync(path.join(__dirname, "certs", "server.key")),
-  cert: fs.readFileSync(path.join(__dirname, "certs", "server.cert")),
-};
 
 const Plato = require("./models/Platos");
 const Comanda = require("./models/Comandas");
 const Admin = require("./models/Admin");
+const Categoria = require("./models/Categorias");
 
 // Función para insertar datos de test
 async function insertarDatosDeTest() {
@@ -225,6 +218,7 @@ function requireAdmin(req, res, next) {
 app.get("/admin", (req, res) => {
   res.sendFile(path.join(__dirname, "public/admin/login.html"));
 });
+
 app.post("/api/admin/login", async (req, res) => {
   const { usuario, contraseña } = req.body;
   try {
@@ -247,10 +241,11 @@ app.post("/api/admin/logout", (req, res) => {
 });
 
 // Panel admin (protegido)
-app.get("/admin/panel.html", requireAdmin, (req, res) => {
-  res.sendFile(path.join(__dirname, "public/admin/panel.html"));
+app.get("/admin/panel", requireAdmin, (req, res) => {
+  res.sendFile(path.join(__dirname, "public/admin/admin-panel.html"));
 });
 
+// Cambiar contraseña
 app.post("/api/admin/change-password", requireAdmin, async (req, res) => {
   const { current, new: newPwd } = req.body;
   try {
@@ -268,22 +263,27 @@ app.post("/api/admin/change-password", requireAdmin, async (req, res) => {
 });
 
 // CRUD Platos (solo admin)
+// Obtener todos los platos con categoría poblada
 app.get("/api/platos", requireAdmin, async (req, res) => {
   try {
-    res.json(await Plato.find());
+    const platos = await Plato.find().populate("categoria");
+    res.json(platos);
   } catch (e) {
     res.status(500).json({ error: e.message });
   }
 });
+
+// Obtener plato por ID con categoría poblada
 app.get("/api/platos/:id", requireAdmin, async (req, res) => {
   try {
-    const p = await Plato.findById(req.params.id);
+    const p = await Plato.findById(req.params.id).populate("categoria");
     if (!p) return res.status(404).json({ error: "Plato no encontrado" });
     res.json(p);
   } catch (e) {
     res.status(500).json({ error: e.message });
   }
 });
+
 app.post("/api/platos", requireAdmin, async (req, res) => {
   try {
     res.status(201).json(await new Plato(req.body).save());
@@ -291,15 +291,20 @@ app.post("/api/platos", requireAdmin, async (req, res) => {
     res.status(500).json({ error: e.message });
   }
 });
+
 app.put("/api/platos/:id", requireAdmin, async (req, res) => {
   try {
-    res.json(
-      await Plato.findByIdAndUpdate(req.params.id, req.body, { new: true })
-    );
+    const updatedPlato = await Plato.findByIdAndUpdate(
+      req.params.id,
+      req.body,
+      { new: true }
+    ).populate("categoria");
+    res.json(updatedPlato);
   } catch (e) {
     res.status(500).json({ error: e.message });
   }
 });
+
 app.delete("/api/platos/:id", requireAdmin, async (req, res) => {
   try {
     await Plato.findByIdAndDelete(req.params.id);
@@ -312,7 +317,8 @@ app.delete("/api/platos/:id", requireAdmin, async (req, res) => {
 // API pública — ver platos y enviar comandas
 app.get("/public/platos", async (req, res) => {
   try {
-    res.json(await Plato.find());
+    const platos = await Plato.find().populate("categoria");
+    res.json(platos);
   } catch (e) {
     res.status(500).json({ error: e.message });
   }
@@ -348,28 +354,96 @@ app.get("/api/comandas", requireAdmin, async (req, res) => {
   }
 });
 
+// CRUD Categorías (solo admin)
+app.get("/api/categorias", requireAdmin, async (req, res) => {
+  try {
+    const categorias = await Categoria.find();
+    res.json(categorias);
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
+});
+
+app.get("/api/categorias/:id", requireAdmin, async (req, res) => {
+  try {
+    const categoria = await Categoria.findById(req.params.id);
+    if (!categoria)
+      return res.status(404).json({ error: "Categoría no encontrada" });
+    res.json(categoria);
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
+});
+
+app.post("/api/categorias", requireAdmin, async (req, res) => {
+  try {
+    // Convertir a minúsculas y eliminar espacios extra
+    const nombre = req.body.nombre.trim().toLowerCase();
+
+    // Verificar si ya existe una categoría con ese nombre en minúsculas
+    const existe = await Categoria.findOne({ nombre });
+    if (existe) {
+      return res.status(409).json({ error: "Categoría ya existe" });
+    }
+
+    const nuevaCategoria = new Categoria({ nombre });
+    await nuevaCategoria.save();
+    res.status(201).json(nuevaCategoria);
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
+});
+
+app.put("/api/categorias/:id", requireAdmin, async (req, res) => {
+  try {
+    const categoriaActualizada = await Categoria.findByIdAndUpdate(
+      req.params.id,
+      { nombre: req.body.nombre },
+      { new: true }
+    );
+    if (!categoriaActualizada)
+      return res.status(404).json({ error: "Categoría no encontrada" });
+    res.json(categoriaActualizada);
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
+});
+
+// Eliminar categoría (solo admin)
+app.delete("/api/categorias/:id", requireAdmin, async (req, res) => {
+  try {
+    const categoriaId = req.params.id;
+
+    // Actualizar platos que tienen esa categoría, asignándoles categoria null (sin categoría)
+    await Plato.updateMany(
+      { categoria: categoriaId },
+      { $unset: { categoria: null } } // o { categoria: null } si prefieres
+    );
+
+    // Borrar la categoría
+    const categoriaEliminada = await Categoria.findByIdAndDelete(categoriaId);
+    if (!categoriaEliminada)
+      return res.status(404).json({ error: "Categoría no encontrada" });
+
+    res.json({ message: "Categoría eliminada y platos actualizados" });
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
+});
+
 // Front-end público
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "public/index.html"));
 });
-app.get("/:mesa/comanda.html", (req, res) => {
+app.get("/:mesa/comanda", (req, res) => {
   res.sendFile(path.join(__dirname, "public/mesa/comanda.html"));
 });
 
 // Servir estáticos
 app.use(express.static(path.join(__dirname, "public")));
+
 const PORT = process.env.PORT || 3000;
-
-// Crear servidor HTTPS con certificados
-https.createServer(sslOptions, app).listen(PORT, () => {
-  console.log(`✅ Servidor HTTPS escuchando en https://localhost:${PORT}`);
+app.listen(PORT, () => console.log(`✅ Servidor en http://localhost:${PORT}`));
+app.listen(PORT, "0.0.0.0", () => {
+  console.log(`Servidor escuchando en http://0.0.0.0:${PORT}`);
 });
-
-// (Opcional) Servidor HTTP para redirigir todo a HTTPS en puerto 80
-const http = require("http");
-http
-  .createServer((req, res) => {
-    res.writeHead(301, { Location: `https://${req.headers.host}${req.url}` });
-    res.end();
-  })
-  .listen(80);

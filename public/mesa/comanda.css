@@ -1,20 +1,19 @@
 /* 1. Grid de tarjetas */
 .menu-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
   gap: 1.5rem;
   margin-top: 2rem;
   padding-bottom: 2rem;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
 }
 
-/* En móvil, 2 columnas (ej: hasta 767px ancho) */
+/* Ajustes responsivos del grid */
 @media (max-width: 767px) {
   .menu-grid {
     grid-template-columns: repeat(2, 1fr);
   }
 }
 
-/* En móvil muy pequeño, 1 columna */
 @media (max-width: 400px) {
   .menu-grid {
     grid-template-columns: 1fr;
@@ -41,9 +40,9 @@
 
 /* 3. Imagen */
 .item-img {
-  width: 100%; /* que ocupe todo el ancho de su contenedor */
-  height: 160px; /* altura fija para uniformidad */
-  object-fit: cover; /* recorta la imagen para que rellene sin deformar */
+  width: 100%;
+  height: 160px;
+  object-fit: cover;
   display: block;
   background: #f0f0f0;
   border-bottom: 1px solid #eee;
@@ -52,7 +51,7 @@
 
 @media (max-width: 767px) {
   .item-img {
-    height: 140px; /* un poco más pequeño en móvil */
+    height: 140px;
   }
 }
 
@@ -98,7 +97,6 @@
   cursor: pointer;
   transition: background 0.3s ease;
 }
-
 .item-footer button:hover {
   background: #005fa3;
 }
@@ -146,7 +144,7 @@
 
 /* Botones eliminar */
 #lista-resumen li button {
-  background-color: #e55353; /* rojo fuerte */
+  background-color: #e55353;
   border: none;
   color: white;
   padding: 0.2rem 0.5rem;
@@ -162,24 +160,21 @@
   height: 26px;
   user-select: none;
 }
-
 #lista-resumen li button:hover {
-  background-color: #c03939; /* rojo más oscuro al hover */
+  background-color: #c03939;
 }
 
-/* Iconos dentro de los botones */
+/* Iconos en botones */
 #lista-resumen li button::before {
   content: attr(title);
-  display: none; /* ocultar texto y mostrar solo iconos */
+  display: none;
 }
-
 #lista-resumen li button[title="Eliminar 1"]::before {
-  content: "-1"; /* signo menos */
+  content: "-1";
   font-size: 1.2rem;
 }
-
 #lista-resumen li button[title="Eliminar todas"]::before {
-  content: "🗑️"; /* icono papelera */
+  content: "🗑️";
   font-size: 1.1rem;
 }
 
@@ -194,7 +189,6 @@
   border-radius: 6px;
   transition: background 0.3s ease;
 }
-
 #resumen-pedido button[type="submit"]:hover {
   background: #218838;
 }
@@ -206,7 +200,6 @@
   }
 }
 
-/* Ajustes móviles para botones */
 @media (max-width: 480px) {
   #lista-resumen li button {
     padding: 0.15rem 0.4rem;
@@ -241,7 +234,6 @@
   cursor: pointer;
   transition: background 0.3s ease;
 }
-
 .resumen-footer button:hover {
   background: #218838;
 }
@@ -251,4 +243,63 @@
   margin: 0;
   font-size: 1.1rem;
   font-weight: 600;
+}
+
+/* Cada grupo de categoría uno debajo de otro (bloque vertical) */
+.categoria-grupo {
+  margin-bottom: 2rem;
+}
+
+/* Título de cada categoría */
+.categoria-grupo h3 {
+  cursor: pointer;
+  position: relative;
+  padding-right: 20px;
+  margin-bottom: 1rem;
+  border-bottom: 2px solid #0077cc;
+  padding-bottom: 0.3rem;
+  color: #0077cc;
+  user-select: none;
+}
+
+/* Flecha simple al lado del título */
+.categoria-grupo h3 .flecha {
+  position: absolute;
+  right: 5px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 0;
+  height: 0;
+  border-left: 6px solid transparent;
+  border-right: 6px solid transparent;
+  border-top: 8px solid #0077cc;
+  transition: transform 0.3s ease;
+}
+
+/* Cuando está plegada, girar la flecha */
+.categoria-grupo h3 .flecha.flecha-rotada {
+  transform: translateY(-50%) rotate(-90deg);
+}
+
+/* Contenido colapsable por categoría */
+.categoria-contenido {
+  overflow: hidden;
+  max-height: 0;
+  transition: max-height 0.3s ease, padding 0.3s ease;
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
+/* Cuando esté abierto */
+.categoria-contenido.abierto {
+  max-height: none;
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+}
+
+/* Contenedor general de categorías apiladas */
+#items-menu {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
 }

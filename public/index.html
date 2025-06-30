@@ -5,10 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Bienvenido – Contra Corriente</title>
     <link rel="stylesheet" href="/general.css" />
-    <script
-      src="https://unpkg.com/html5-qrcode"
-      type="text/javascript"
-    ></script>
     <style>
       .welcome-container {
         max-width: 480px;
@@ -30,45 +26,16 @@
       </p>
       <div class="instructions">
         <h2>📌 Instrucciones:</h2>
-        <ol>
+        <ol type="1">
           <li>Escanea el QR impreso en tu mesa.</li>
           <li>Serás redirigido automáticamente a tu pedido.</li>
           <li>Selecciona los platos que desees y envía tu comanda.</li>
         </ol>
       </div>
       <p>
-        Si necesitas ayuda, contacta con el personal. ¡Gracias por visitarnos!
+        Si necesitas ayuda, contacta con el personal.
       </p>
-
-      <!-- Contenedor para la cámara y escaneo -->
-      <div id="reader"></div>
+      <p>¡Gracias por visitarnos!</p>
     </main>
-
-    <script>
-      function onScanSuccess(decodedText, decodedResult) {
-        // Parar el escaneo para no leer más códigos
-        html5QrcodeScanner
-          .clear()
-          .then(() => {
-            // Redirigir a la URL leída en el código QR
-            window.location.href = decodedText;
-          })
-          .catch((error) => {
-            console.error("Error al limpiar escáner", error);
-          });
-      }
-
-      function onScanFailure(error) {
-        // No hacer nada o mostrar un mensaje si quieres
-        // console.warn(`Escaneo fallido: ${error}`);
-      }
-
-      let html5QrcodeScanner = new Html5QrcodeScanner(
-        "reader",
-        { fps: 10, qrbox: 250 },
-        false
-      );
-      html5QrcodeScanner.render(onScanSuccess, onScanFailure);
-    </script>
   </body>
 </html>

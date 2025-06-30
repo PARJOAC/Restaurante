@@ -6,9 +6,13 @@
   overflow-x: hidden;
 }
 
-/* Sidebar */
+/* Sidebar fijo con ancho fijo */
 .sidebar {
-  flex: 0 0 220px;
+  width: 220px; /* ancho fijo */
+  position: fixed; /* fijo */
+  top: 0;
+  left: 0;
+  height: 100vh; /* altura total viewport */
   background: #fff;
   border-right: 1px solid #ddd;
   padding: 2rem 1rem;
@@ -16,15 +20,29 @@
   flex-direction: column;
   justify-content: space-between;
   box-shadow: 2px 0 6px rgba(0, 0, 0, 0.05);
-  transition: transform 0.3s ease;
+  z-index: 1000;
+  overflow-y: auto; /* para scroll si es necesario */
 }
 
+/* Ajustar contenido para dejar espacio al sidebar fijo */
+.content {
+  margin-left: 220px; /* igual que sidebar width */
+  flex: 1;
+  padding: 2rem;
+  background: #f4f7fa;
+  overflow-y: auto;
+  width: calc(100% - 220px);
+  box-sizing: border-box;
+}
+
+/* Sidebar título */
 .sidebar h2 {
   text-align: center;
   font-size: 1.5rem;
   margin-bottom: 2rem;
 }
 
+/* Sidebar lista */
 .sidebar ul {
   list-style: none;
   padding: 0;
@@ -52,29 +70,88 @@
   background-color: #005fa3;
 }
 
+/* Botón cerrar sesión */
 .btn.logout {
   width: 100%;
-  padding: 0.75rem;
+  padding: 0.5rem 0;
   background: #d9534f;
   color: white;
   border: none;
   border-radius: 4px;
   margin-top: 2rem;
   transition: background 0.3s;
+  font-size: 0.9rem;
+  cursor: pointer;
 }
 
 .btn.logout:hover {
   background: #c9302c;
 }
 
-/* Contenido principal */
-.content {
-  flex: 1;
-  padding: 2rem;
-  background: #f4f7fa;
-  overflow-y: auto;
-  width: 100%;
-  box-sizing: border-box;
+/* Botones generales (Guardar, etc.) - estilo grande para formularios */
+.btn {
+  padding: 0.6rem 1.2rem;
+  font-size: 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+  border: none;
+  transition: background 0.3s ease;
+  color: white;
+  background-color: #0077cc;
+}
+
+.btn:hover {
+  background-color: #005fa3;
+}
+
+/* Botones pequeños dentro de tablas (editar, borrar) */
+.btn-small {
+  padding: 0.15rem 0.4rem;
+  font-size: 0.75rem;
+  border-radius: 4px;
+  border: none;
+  cursor: pointer;
+  margin-right: 0.3rem;
+  transition: background-color 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  min-width: 28px;
+  height: 24px;
+  color: white;
+  font-weight: 600;
+}
+
+/* Botón Editar pequeño */
+.btn-small.edit-btn {
+  background-color: #0077cc;
+}
+
+.btn-small.edit-btn:hover {
+  background-color: #005fa3;
+}
+
+/* Botón Borrar pequeño */
+.btn-small.delete-btn {
+  background-color: #d9534f;
+}
+
+.btn-small.delete-btn:hover {
+  background-color: #c9302c;
+}
+
+/* Iconos antes del texto (Unicode) para botones pequeños */
+.btn-small.edit-btn::before {
+  content: "✏️";
+  font-size: 0.85rem;
+  display: inline-block;
+}
+
+.btn-small.delete-btn::before {
+  content: "🗑️";
+  font-size: 0.85rem;
+  display: inline-block;
 }
 
 /* Secciones ocultas/visibles */
@@ -96,7 +173,8 @@
 }
 
 /* Formulario platos */
-#plato-form {
+#plato-form,
+#categoria-form {
   background: #fff;
   padding: 1.5rem;
   border-radius: 6px;
@@ -105,7 +183,9 @@
   flex-direction: column;
 }
 
-#plato-form input {
+#plato-form input,
+#plato-form select,
+#categoria-form input {
   margin-bottom: 1rem;
   padding: 0.6rem;
   font-size: 1rem;
@@ -113,9 +193,11 @@
   border-radius: 4px;
 }
 
-#plato-form button {
+#plato-form button,
+#categoria-form button {
   align-self: flex-end;
   padding: 0.7rem 1.5rem;
+  font-size: 1rem;
 }
 
 /* Tabla de platos y comandas */
@@ -183,23 +265,10 @@ table img {
 .config-form button {
   margin-top: 1.2rem;
   width: 100%;
+  font-size: 1rem;
 }
 
-.config-msg {
-  margin-top: 1rem;
-  text-align: center;
-  font-size: 0.95rem;
-}
-
-.config-msg.success {
-  color: #28a745;
-}
-
-.config-msg.error {
-  color: #dc3545;
-}
-
-/* BOTÓN DE TOGGLE OCULTO POR DEFECTO */
+/* BOTÓN DE TOGGLE (solo visible en móvil) */
 .sidebar-toggle {
   display: none;
 }
@@ -227,6 +296,8 @@ table img {
   }
 
   .content {
+    margin-left: 0;
+    width: 100%;
     padding: 5rem 1rem 1rem 1rem;
   }
 
@@ -249,6 +320,7 @@ table img {
     font-size: 1.3rem;
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
     transition: background 0.3s ease, opacity 0.3s ease;
+    cursor: pointer;
   }
 
   .sidebar-toggle:hover {
@@ -259,5 +331,50 @@ table img {
   body.sidebar-open .sidebar-toggle {
     opacity: 0;
     pointer-events: none;
+  }
+}
+
+.table-wrapper {
+  width: 100%;
+  overflow-x: visible; /* por defecto no hay scroll horizontal */
+  border-radius: 6px;
+  box-shadow: none;
+  background: transparent;
+}
+
+.table-wrapper table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+/* En móvil sí scroll horizontal */
+@media (max-width: 768px) {
+  .table-wrapper {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    box-shadow: 0 1px 6px rgba(0, 0, 0, 0.1);
+    background: white;
+  }
+
+  .table-wrapper table {
+    min-width: 600px; /* fija el ancho para obligar scroll en móvil */
+  }
+
+  table th,
+  table td {
+    font-size: 0.85rem;
+    padding: 0.5rem 0.7rem;
+  }
+
+  .btn-small {
+    min-width: 26px;
+    height: 26px;
+    font-size: 0.75rem;
+    padding: 0.15rem 0.4rem;
+  }
+
+  table img {
+    width: 50px;
+    height: 30px;
   }
 }

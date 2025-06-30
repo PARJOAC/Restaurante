@@ -7,6 +7,9 @@ async function cargarPlatos() {
     const res = await fetch("/public/platos");
     if (!res.ok) throw new Error(res.statusText);
     platos = await res.json();
+
+    console.log("Platos recibidos del servidor:", platos);
+
     if (!Array.isArray(platos) || platos.length === 0) {
       document.getElementById("items-menu").innerHTML =
         "<p>No hay platos disponibles actualmente.</p>";
@@ -23,20 +26,74 @@ async function cargarPlatos() {
 function initComanda() {
   const cont = document.getElementById("items-menu");
   cont.innerHTML = "";
+
+  // Agrupamos platos por categoría
+  const grupos = {};
+
   platos.forEach((p) => {
-    const div = document.createElement("div");
-    div.className = "menu-item";
-    div.innerHTML = `
-      <img src="${p.imagen}" alt="${p.nombre}" class="item-img" />
-      <h4 class="item-nombre">${p.nombre}</h4>
-      ${p.descripcion ? `<p class="item-desc">${p.descripcion}</p>` : ""}
-      <div class="item-footer">
-        <span class="item-precio">€${p.precio.toFixed(2)}</span>
-        <button type="button" onclick="agregarItem('${p._id}')">Añadir</button>
-      </div>
-    `;
-    cont.appendChild(div);
+    const cat =
+      p.categoria && p.categoria.nombre
+        ? p.categoria.nombre.toUpperCase()
+        : "SIN CATEGORÍA";
+
+    if (!grupos[cat]) {
+      grupos[cat] = [];
+    }
+    grupos[cat].push(p);
   });
+
+  for (const categoria in grupos) {
+    // Contenedor categoría
+    const grupoDiv = document.createElement("div");
+    grupoDiv.className = "categoria-grupo";
+
+    // Título categoría (clicable)
+    const titulo = document.createElement("h3");
+    titulo.textContent = categoria;
+
+    // Crear flecha y añadirla al título
+    const flecha = document.createElement("span");
+    flecha.className = "flecha";
+    titulo.appendChild(flecha);
+
+    grupoDiv.appendChild(titulo);
+
+    // Contenedor de contenido colapsable
+    const contenido = document.createElement("div");
+    contenido.className = "categoria-contenido abierto"; // abierto por defecto
+
+    // Grid para platos
+    const gridDiv = document.createElement("div");
+    gridDiv.className = "menu-grid";
+
+    grupos[categoria].forEach((p) => {
+      const div = document.createElement("div");
+      div.className = "menu-item";
+      div.innerHTML = `
+        <img src="${p.imagen}" alt="${p.nombre}" class="item-img" />
+        <h4 class="item-nombre">${p.nombre}</h4>
+        ${p.descripcion ? `<p class="item-desc">${p.descripcion}</p>` : ""}
+        <div class="item-footer">
+          <span class="item-precio">${p.precio.toFixed(2)}€</span>
+          <button type="button" onclick="agregarItem('${
+            p._id
+          }')">Añadir</button>
+        </div>
+      `;
+      gridDiv.appendChild(div);
+    });
+
+    contenido.appendChild(gridDiv);
+    grupoDiv.appendChild(contenido);
+    cont.appendChild(grupoDiv);
+
+    // Evento para desplegar/plegar categoría y rotar flecha
+    titulo.addEventListener("click", () => {
+      const abierto = contenido.classList.toggle("abierto");
+      flecha.classList.toggle("flecha-rotada", !abierto);
+    });
+  }
+
   actualizarResumen();
 }
 

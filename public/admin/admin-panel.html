@@ -15,6 +15,7 @@
         <h2>Admin</h2>
         <ul>
           <li data-section="platos" class="active">Platos</li>
+          <li data-section="categorias">Categorías</li>
           <li data-section="comandas">Comandas</li>
           <li data-section="config">Configuración</li>
         </ul>
@@ -39,36 +40,72 @@
               />
               <input name="imagen" placeholder="URL imagen" required />
               <input name="descripcion" placeholder="Descripción" />
+              <select name="categoria">
+                <option value="" disabled selected>Selecciona categoría</option>
+              </select>
+
               <button type="submit" class="btn">Guardar plato</button>
             </form>
-            <table>
-              <thead>
-                <tr>
-                  <th>Imagen</th>
-                  <th>Nombre</th>
-                  <th>Precio</th>
-                  <th>Acciones</th>
-                </tr>
-              </thead>
-              <tbody id="platos-body"></tbody>
-            </table>
+            <div class="table-wrapper">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Imagen</th>
+                    <th>Nombre</th>
+                    <th>Precio</th>
+                    <th>Categoría</th>
+                    <th>Acciones</th>
+                  </tr>
+                </thead>
+                <tbody id="platos-body"></tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- Categorías section -->
+        <section id="categorias" class="panel-section">
+          <h2>Gestión de Categorías</h2>
+          <div class="form-grid">
+            <form id="categoria-form">
+              <input name="id" type="hidden" />
+              <input
+                name="nombre"
+                placeholder="Nombre de la categoría"
+                required
+              />
+              <button type="submit" class="btn">Guardar categoría</button>
+            </form>
+            <div class="table-wrapper">
+              <table id="categorias">
+                <thead>
+                  <tr>
+                    <th>Nombre</th>
+                    <th>Acciones</th>
+                  </tr>
+                </thead>
+                <tbody id="categorias-body"></tbody>
+              </table>
+            </div>
           </div>
         </section>
 
         <!-- Comandas section -->
         <section id="comandas" class="panel-section">
           <h2>Comandas Recientes</h2>
-          <table>
-            <thead>
-              <tr>
-                <th>Mesa</th>
-                <th>Fecha</th>
-                <th>Total €</th>
-                <th>Detalles</th>
-              </tr>
-            </thead>
-            <tbody id="comandas-body"></tbody>
-          </table>
+          <div class="table-wrapper">
+            <table>
+              <thead>
+                <tr>
+                  <th>Mesa</th>
+                  <th>Fecha</th>
+                  <th>Total €</th>
+                  <th>Detalles</th>
+                </tr>
+              </thead>
+              <tbody id="comandas-body"></tbody>
+            </table>
+          </div>
         </section>
 
         <!-- Configuración section -->
@@ -111,7 +148,6 @@
 
     <script src="/admin/admin-panel.js"></script>
 
-    <!-- Código para cerrar la sidebar en móviles al pulsar un elemento -->
     <script>
       const sidebar = document.querySelector(".sidebar");
       const toggleBtn = document.querySelector(".sidebar-toggle");
@@ -121,7 +157,6 @@
         document.body.classList.toggle("sidebar-open");
       });
 
-      // Cierra automáticamente al hacer clic en cualquier enlace del menú
       document.querySelectorAll(".sidebar ul li").forEach((li) => {
         li.addEventListener("click", () => {
           sidebar.classList.remove("open");

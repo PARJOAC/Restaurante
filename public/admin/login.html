@@ -57,7 +57,7 @@
             body: JSON.stringify({ usuario, contraseña }),
           });
           if (res.ok) {
-            window.location.href = "/admin/panel.html";
+            window.location.href = "/admin/panel";
           } else {
             const data = await res.json();
             errorEl.textContent = data.error || "Error inesperado";
