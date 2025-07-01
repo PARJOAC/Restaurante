@@ -1,19 +1,27 @@
 <!DOCTYPE html>
 <html lang="es">
   <head>
+    <!-- Configuración básica del documento -->
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Admin Panel</title>
+
+    <!-- Estilos generales y específicos del panel -->
     <link rel="stylesheet" href="/general.css" />
     <link rel="stylesheet" href="/admin/admin-panel.css" />
   </head>
+
   <body>
+    <!-- Botón visible solo en móvil para mostrar/ocultar el menú lateral -->
     <button class="sidebar-toggle" id="toggleSidebar">☰ Menú</button>
 
+    <!-- Contenedor principal que incluye el menú lateral y el contenido -->
     <div class="admin-container">
+      <!-- Menú lateral (sidebar) con las secciones del panel -->
       <nav class="sidebar">
         <h2>Admin</h2>
         <ul>
+          <!-- Cada <li> representa una sección del panel -->
           <li data-section="platos" class="active">Platos</li>
           <li data-section="categorias">Categorías</li>
           <li data-section="comandas">Comandas</li>
@@ -21,14 +29,18 @@
           <li data-section="cocineros">Cocineros</li>
           <li data-section="config">Configuración</li>
         </ul>
+
+        <!-- Botón para cerrar sesión -->
         <button id="logout" class="btn logout">Cerrar sesión</button>
       </nav>
 
+      <!-- Contenido principal del panel -->
       <main class="content">
-        <!-- Platos section -->
+        <!-- Sección: Gestión de Platos -->
         <section id="platos" class="panel-section active">
           <h2>Gestión de Platos</h2>
           <div class="form-grid">
+            <!-- Formulario para añadir/editar platos -->
             <form id="plato-form">
               <input name="id" type="hidden" />
               <input name="nombre" placeholder="Nombre" required />
@@ -45,9 +57,10 @@
               <select name="categoria">
                 <option value="" disabled selected>Selecciona categoría</option>
               </select>
-
               <button type="submit" class="btn">Guardar plato</button>
             </form>
+
+            <!-- Tabla con la lista de platos -->
             <div class="table-wrapper">
               <table>
                 <thead>
@@ -65,10 +78,11 @@
           </div>
         </section>
 
-        <!-- Categorías section -->
+        <!-- Sección: Categorías -->
         <section id="categorias" class="panel-section">
           <h2>Gestión de Categorías</h2>
           <div class="form-grid">
+            <!-- Formulario para añadir/editar categorías -->
             <form id="categoria-form">
               <input name="id" type="hidden" />
               <input
@@ -78,6 +92,8 @@
               />
               <button type="submit" class="btn">Guardar categoría</button>
             </form>
+
+            <!-- Tabla de categorías -->
             <div class="table-wrapper">
               <table id="categorias">
                 <thead>
@@ -92,7 +108,7 @@
           </div>
         </section>
 
-        <!-- Comandas section -->
+        <!-- Sección: Comandas -->
         <section id="comandas" class="panel-section">
           <h2>Comandas Recientes</h2>
           <div class="table-wrapper">
@@ -110,9 +126,10 @@
           </div>
         </section>
 
-        <!-- Camareros section -->
+        <!-- Sección: Camareros -->
         <section id="camareros" class="panel-section">
           <h2>Gestión de Camareros</h2>
+          <!-- Formulario para añadir camarero -->
           <form id="camarero-form">
             <input name="usuario" placeholder="Usuario" required />
             <input
@@ -123,6 +140,8 @@
             />
             <button type="submit" class="btn">Crear Camarero</button>
           </form>
+
+          <!-- Tabla con los camareros existentes -->
           <table>
             <thead>
               <tr>
@@ -134,9 +153,10 @@
           </table>
         </section>
 
-        <!-- Cocinero section -->
+        <!-- Sección: Cocineros -->
         <section id="cocineros" class="panel-section">
           <h2>Gestión de Cocineros</h2>
+          <!-- Formulario para añadir cocinero -->
           <form id="cocinero-form">
             <input name="usuario" placeholder="Usuario" required />
             <input
@@ -147,6 +167,8 @@
             />
             <button type="submit" class="btn">Crear Cocinero</button>
           </form>
+
+          <!-- Tabla con los cocineros existentes -->
           <table>
             <thead>
               <tr>
@@ -158,7 +180,7 @@
           </table>
         </section>
 
-        <!-- Configuración section -->
+        <!-- Sección: Configuración (cambiar contraseña del admin) -->
         <section id="config" class="panel-section">
           <h2>Cambiar Contraseña</h2>
           <form id="pwd-form" class="config-form">
@@ -196,17 +218,21 @@
       </main>
     </div>
 
+    <!-- Script principal del panel de administración -->
     <script src="/admin/admin-panel.js"></script>
 
+    <!-- Script para controlar el toggle del menú en móviles -->
     <script>
       const sidebar = document.querySelector(".sidebar");
       const toggleBtn = document.querySelector(".sidebar-toggle");
 
+      // Muestra/oculta el menú lateral al hacer clic en el botón ☰
       toggleBtn.addEventListener("click", () => {
         sidebar.classList.toggle("open");
         document.body.classList.toggle("sidebar-open");
       });
 
+      // Cierra el menú lateral automáticamente cuando se selecciona una opción en móvil
       document.querySelectorAll(".sidebar ul li").forEach((li) => {
         li.addEventListener("click", () => {
           sidebar.classList.remove("open");

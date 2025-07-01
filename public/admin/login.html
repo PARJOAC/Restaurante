@@ -2,17 +2,29 @@
 <html lang="es">
   <head>
     <meta charset="UTF-8" />
+    <!-- Define la codificación de caracteres como UTF-8 -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- Para que sea responsive en móviles -->
     <title>Admin – Iniciar sesión</title>
+    <!-- Título que se muestra en la pestaña del navegador -->
     <link rel="stylesheet" href="/general.css" />
+    <!-- Hoja de estilos general -->
     <link rel="stylesheet" href="/admin/login.css" />
+    <!-- Hoja de estilos específica para la página de login -->
   </head>
   <body>
+    <!-- Contenedor principal centrado vertical y horizontalmente -->
     <main class="login-container" role="main">
+      <!-- Caja blanca del login con identificador accesible -->
       <div class="login-box" aria-labelledby="loginTitle">
+        <!-- Título visual del formulario -->
         <h2 id="loginTitle">Admin Login</h2>
+
+        <!-- Formulario de inicio de sesión -->
         <form id="login-form" novalidate>
+          <!-- Campo de usuario -->
           <label for="usuario" class="sr-only">Usuario</label>
+          <!-- Oculto visualmente pero útil para lectores de pantalla -->
           <input
             type="text"
             id="usuario"
@@ -24,7 +36,9 @@
             aria-describedby="error"
           />
 
+          <!-- Campo de contraseña -->
           <label for="contraseña" class="sr-only">Contraseña</label>
+          <!-- También solo para lectores de pantalla -->
           <input
             type="password"
             id="contraseña"
@@ -36,33 +50,48 @@
             aria-describedby="error"
           />
 
+          <!-- Botón de enviar -->
           <button type="submit">Entrar</button>
+
+          <!-- Elemento para mostrar mensajes de error -->
           <p id="error" class="error" aria-live="assertive"></p>
+          <!-- aria-live permite anunciar errores automáticamente -->
         </form>
       </div>
     </main>
 
+    <!-- Script JS para manejar el envío del formulario -->
     <script>
-      const form = document.getElementById("login-form");
-      const errorEl = document.getElementById("error");
+      const form = document.getElementById("login-form"); // Referencia al formulario
+      const errorEl = document.getElementById("error"); // Referencia al contenedor de errores
+
+      // Evento que se ejecuta al enviar el formulario
       form.addEventListener("submit", async (e) => {
-        e.preventDefault();
-        errorEl.textContent = "";
+        e.preventDefault(); // Previene el envío clásico (recarga la página)
+        errorEl.textContent = ""; // Limpia errores anteriores
+
+        // Obtiene los valores ingresados por el usuario
         const usuario = form.usuario.value.trim();
         const contraseña = form.contraseña.value;
+
         try {
+          // Envia los datos al backend por POST
           const res = await fetch("/api/admin/login", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ usuario, contraseña }),
           });
+
           if (res.ok) {
+            // Si es correcto, redirige al panel
             window.location.href = "/admin/panel";
           } else {
+            // Si hay error, muestra mensaje devuelto por el servidor
             const data = await res.json();
             errorEl.textContent = data.error || "Error inesperado";
           }
         } catch {
+          // Si falla la conexión con el servidor
           errorEl.textContent = "Error de conexión";
         }
       });

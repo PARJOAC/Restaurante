@@ -1,17 +1,21 @@
-// Manejo de navegación lateral
+// Selecciona todos los botones del menú lateral y las secciones del panel
 const sidebarItems = document.querySelectorAll(".sidebar ul li");
 const panels = document.querySelectorAll(".panel-section");
 
+// Recorre cada botón de menú y asigna su comportamiento al hacer clic
 sidebarItems.forEach((item) => {
   item.addEventListener("click", () => {
-    // Activar sección
+    // Quita la clase 'active' de todos los botones del menú
     sidebarItems.forEach((i) => i.classList.remove("active"));
+    // Agrega la clase 'active' solo al ítem clicado
     item.classList.add("active");
 
+    // Oculta todas las secciones
     panels.forEach((p) => p.classList.remove("active"));
+    // Muestra la sección correspondiente al ítem clicado (usando el data-section)
     document.getElementById(item.dataset.section).classList.add("active");
 
-    // Cargar datos según sección activa
+    // Carga los datos de la sección activa
     if (item.dataset.section === "platos") loadPlatos();
     else if (item.dataset.section === "categorias") loadCategorias();
     else if (item.dataset.section === "comandas") loadComandas();
@@ -20,14 +24,16 @@ sidebarItems.forEach((item) => {
   });
 });
 
-// Abrir sección por defecto al cargar la página
+// Al cargar la página, activa automáticamente la sección 'Platos'
 window.addEventListener("DOMContentLoaded", () => {
   document.querySelector('[data-section="platos"]').click();
 });
 
-// Logout
+// Evento al hacer clic en el botón de cerrar sesión
 document.getElementById("logout").addEventListener("click", async () => {
+  // Llama a la API para cerrar sesión
   await fetch("/api/admin/logout", { method: "POST" });
+  // Redirige al login
   window.location = "/admin";
 });
 
@@ -36,6 +42,7 @@ document.getElementById("logout").addEventListener("click", async () => {
 // --------------------
 const camareroForm = document.getElementById("camarero-form");
 
+// Cargar camareros existentes desde la API
 async function loadCamareros() {
   const res = await fetch("/api/camareros");
   const lista = res.ok ? await res.json() : [];
@@ -52,21 +59,25 @@ async function loadCamareros() {
     .join("");
 }
 
+// Eliminar camarero con confirmación
 async function delCamarero(id) {
   if (!confirm("¿Eliminar este camarero?")) return;
   await fetch(`/api/camareros/${id}`, { method: "DELETE" });
   loadCamareros();
 }
 
+// Crear nuevo camarero desde el formulario
 camareroForm?.addEventListener("submit", async (e) => {
   e.preventDefault();
   const u = camareroForm.usuario.value.trim();
   const p = camareroForm.contraseña.value;
+
   const res = await fetch("/api/camareros", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ usuario: u, contraseña: p }),
   });
+
   if (!res.ok) {
     const err = await res.json();
     alert("Error: " + err.error);
@@ -81,6 +92,7 @@ camareroForm?.addEventListener("submit", async (e) => {
 // --------------------
 const cocineroForm = document.getElementById("cocinero-form");
 
+// Cargar cocineros desde la API
 async function loadCocineros() {
   const res = await fetch("/api/cocineros");
   const lista = res.ok ? await res.json() : [];
@@ -97,21 +109,25 @@ async function loadCocineros() {
     .join("");
 }
 
+// Eliminar cocinero
 async function delCocinero(id) {
   if (!confirm("¿Eliminar este cocinero?")) return;
   await fetch(`/api/cocineros/${id}`, { method: "DELETE" });
   loadCocineros();
 }
 
+// Crear cocinero
 cocineroForm?.addEventListener("submit", async (e) => {
   e.preventDefault();
   const u = cocineroForm.usuario.value.trim();
   const p = cocineroForm.contraseña.value;
+
   const res = await fetch("/api/cocineros", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ usuario: u, contraseña: p }),
   });
+
   if (!res.ok) {
     const err = await res.json();
     alert("Error: " + err.error);
@@ -127,6 +143,7 @@ cocineroForm?.addEventListener("submit", async (e) => {
 const pwdForm = document.getElementById("pwd-form");
 const pwdMsg = document.getElementById("pwd-msg");
 
+// Enviar nueva contraseña
 pwdForm?.addEventListener("submit", async (e) => {
   e.preventDefault();
   pwdMsg.textContent = "";
@@ -136,12 +153,14 @@ pwdForm?.addEventListener("submit", async (e) => {
   const nw = pwdForm.new.value.trim();
   const confirm = pwdForm.confirm.value.trim();
 
+  // Validar coincidencia
   if (nw !== confirm) {
     pwdMsg.textContent = "Las contraseñas no coinciden";
     pwdMsg.classList.add("error");
     return;
   }
 
+  // Enviar petición al servidor
   const res = await fetch("/api/admin/change-password", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -165,6 +184,7 @@ pwdForm?.addEventListener("submit", async (e) => {
 const categoriasBody = document.getElementById("categorias-body");
 const categoriaForm = document.getElementById("categoria-form");
 
+// Cargar categorías desde API y mostrarlas
 async function loadCategorias() {
   try {
     const res = await fetch("/api/categorias");
@@ -187,6 +207,7 @@ async function loadCategorias() {
       )
       .join("");
 
+    // Actualiza también el selector de categorías del formulario de platos
     actualizarSelectorCategorias(categorias);
   } catch {
     categoriasBody.innerHTML =
@@ -194,6 +215,7 @@ async function loadCategorias() {
   }
 }
 
+// Rellena el selector de categorías en el formulario de platos
 function actualizarSelectorCategorias(categorias) {
   const select = document.querySelector("#plato-form select[name=categoria]");
   select.innerHTML = `<option value="" disabled selected>Selecciona categoría</option>`;
@@ -205,6 +227,7 @@ function actualizarSelectorCategorias(categorias) {
   });
 }
 
+// Editar una categoría existente
 async function editCategoria(id) {
   const res = await fetch(`/api/categorias/${id}`);
   if (res.ok) {
@@ -214,12 +237,14 @@ async function editCategoria(id) {
   }
 }
 
+// Eliminar una categoría
 async function delCategoria(id) {
   if (!confirm("¿Estás seguro?")) return;
   await fetch(`/api/categorias/${id}`, { method: "DELETE" });
   loadCategorias();
 }
 
+// Guardar categoría (nueva o editada)
 categoriaForm.addEventListener("submit", async (e) => {
   e.preventDefault();
   const data = { nombre: categoriaForm.nombre.value.trim().toLowerCase() };
@@ -239,6 +264,7 @@ categoriaForm.addEventListener("submit", async (e) => {
 const platosBody = document.getElementById("platos-body");
 const platoForm = document.getElementById("plato-form");
 
+// Cargar platos y mostrarlos en tabla
 async function loadPlatos() {
   const res = await fetch("/api/platos");
   const platos = res.ok ? await res.json() : [];
@@ -265,11 +291,13 @@ async function loadPlatos() {
   actualizarSelectorCategorias(await fetchCategorias());
 }
 
+// Petición para obtener las categorías
 async function fetchCategorias() {
   const res = await fetch("/api/categorias");
   return res.ok ? await res.json() : [];
 }
 
+// Rellena el formulario con los datos del plato seleccionado para editar
 async function editPlato(id) {
   const res = await fetch(`/api/platos/${id}`);
   if (res.ok) {
@@ -283,12 +311,14 @@ async function editPlato(id) {
   }
 }
 
+// Eliminar un plato
 async function delPlato(id) {
   if (!confirm("¿Estás seguro?")) return;
   await fetch(`/api/platos/${id}`, { method: "DELETE" });
   loadPlatos();
 }
 
+// Guardar plato (nuevo o editado)
 platoForm.addEventListener("submit", async (e) => {
   e.preventDefault();
   const data = {
@@ -311,6 +341,7 @@ platoForm.addEventListener("submit", async (e) => {
 // --------------------
 // Gestión de Comandas
 // --------------------
+// Cargar comandas y mostrarlas con detalles de platos
 async function loadComandas() {
   const res = await fetch("/api/comandas");
   const cmds = res.ok ? await res.json() : [];
@@ -318,8 +349,9 @@ async function loadComandas() {
 
   tbody.innerHTML = cmds
     .map((c) => {
+      // Genera lista de platos dentro de cada comanda
       const detalles = (c.platos || [])
-        .map((i) => `<li>${i.nombre} × ${i.cantidad}</li>`)
+        .map((i) => `<li>${i.nombre} x ${i.cantidad}</li>`)
         .join("");
       return `
       <tr>

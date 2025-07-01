@@ -1,80 +1,84 @@
-/* Contenedor general */
+/* Contenedor general del panel de administración */
 .admin-container {
-  display: flex;
-  min-height: 100vh;
-  font-family: "Segoe UI", sans-serif;
-  overflow-x: hidden;
+  display: flex; /* organiza los hijos (sidebar y contenido) en fila */
+  min-height: 100vh; /* ocupa toda la altura de la ventana */
+  font-family: "Segoe UI", sans-serif; /* tipografía del contenido */
+  overflow-x: hidden; /* evita scroll horizontal innecesario */
 }
 
-/* Sidebar fijo con ancho fijo */
+/* Sidebar (barra lateral) fija a la izquierda */
 .sidebar {
-  width: 220px; /* ancho fijo */
-  position: fixed; /* fijo */
-  top: 0;
-  left: 0;
-  height: 100vh; /* altura total viewport */
-  background: #fff;
-  border-right: 1px solid #ddd;
-  padding: 2rem 1rem;
-  display: flex;
+  width: 220px; /* ancho constante */
+  position: fixed; /* siempre visible al hacer scroll */
+  top: 0; /* empieza desde la parte superior */
+  left: 0; /* alineado a la izquierda */
+  height: 100vh; /* ocupa toda la altura de la pantalla */
+  background: #fff; /* fondo blanco */
+  border-right: 1px solid #ddd; /* línea separadora derecha */
+  padding: 2rem 1rem; /* espaciado interior */
+  display: flex; /* organiza elementos internos en columna */
   flex-direction: column;
-  justify-content: space-between;
-  box-shadow: 2px 0 6px rgba(0, 0, 0, 0.05);
-  z-index: 1000;
-  overflow-y: auto; /* para scroll si es necesario */
+  justify-content: space-between; /* distribuye partes superior e inferior */
+  box-shadow: 2px 0 6px rgba(0, 0, 0, 0.05); /* sombra lateral suave */
+  z-index: 1000; /* por encima del contenido */
+  overflow-y: auto; /* permite scroll si hay muchos elementos */
 }
 
-/* Ajustar contenido para dejar espacio al sidebar fijo */
+/* Contenido principal, al lado derecho del sidebar */
 .content {
-  margin-left: 220px; /* igual que sidebar width */
-  flex: 1;
-  padding: 2rem;
-  background: #f4f7fa;
-  overflow-y: auto;
-  width: calc(100% - 220px);
-  box-sizing: border-box;
+  margin-left: 220px; /* deja espacio al sidebar */
+  flex: 1; /* ocupa el resto del ancho disponible */
+  padding: 2rem; /* espaciado interno */
+  background: #f4f7fa; /* color de fondo claro */
+  overflow-y: auto; /* scroll vertical si se necesita */
+  width: calc(100% - 220px); /* se adapta al ancho restante */
+  box-sizing: border-box; /* incluye padding en el cálculo del ancho */
 }
 
-/* Sidebar título */
+/* Título dentro del sidebar */
 .sidebar h2 {
-  text-align: center;
-  font-size: 1.5rem;
-  margin-bottom: 2rem;
+  text-align: center; /* centrado */
+  font-size: 1.5rem; /* tamaño de fuente grande */
+  margin-bottom: 2rem; /* separación inferior */
 }
 
-/* Sidebar lista */
+/* Lista del sidebar (menú) sin estilo por defecto */
 .sidebar ul {
-  list-style: none;
+  list-style: none; /* quita los puntos */
   padding: 0;
   margin: 0;
 }
 
+/* Ítems del menú del sidebar */
 .sidebar ul li {
-  padding: 0.8rem 1rem;
-  border-radius: 6px;
-  margin-bottom: 0.5rem;
-  cursor: pointer;
-  transition: all 0.3s ease;
+  padding: 0.8rem 1rem; /* espaciado interno */
+  border-radius: 6px; /* esquinas redondeadas */
+  margin-bottom: 0.5rem; /* espacio entre ítems */
+  cursor: pointer; /* cursor de mano al pasar por encima */
+  transition: all 0.3s ease; /* animación suave */
 }
 
+/* Efecto hover para los ítems del menú */
 .sidebar ul li:hover {
   background-color: #e8f0fe;
 }
 
+/* Ítem activo del menú */
 .sidebar ul li.active {
-  background-color: #0077cc;
-  color: white;
+  background-color: #0077cc; /* azul principal */
+  color: white; /* texto blanco */
 }
 
+/* Ítem activo con hover (oscurecido) */
 .sidebar ul li.active:hover {
   background-color: #005fa3;
 }
 
-/* Botón cerrar sesión */
+/* Botón de cerrar sesión */
 .btn.logout {
-  width: 100%;
-  padding: 0.5rem 0;
-  background: #d9534f;
+  width: 100%; /* ocupa todo el ancho */
+  padding: 0.5rem 0; /* altura */
+  background: #d9534f; /* rojo */
   color: white;
   border: none;
   border-radius: 4px;
@@ -84,11 +88,12 @@
   cursor: pointer;
 }
 
+/* Hover para el botón de cerrar sesión */
 .btn.logout:hover {
   background: #c9302c;
 }
 
-/* Botones generales (Guardar, etc.) - estilo grande para formularios */
+/* Botones generales (ej. guardar) */
 .btn {
   padding: 0.6rem 1.2rem;
   font-size: 1rem;
@@ -100,11 +105,12 @@
   background-color: #0077cc;
 }
 
+/* Hover para botones generales */
 .btn:hover {
   background-color: #005fa3;
 }
 
-/* Botones pequeños dentro de tablas (editar, borrar) */
+/* Botones pequeños (editar, borrar) */
 .btn-small {
   padding: 0.15rem 0.4rem;
   font-size: 0.75rem;
@@ -123,7 +129,7 @@
   font-weight: 600;
 }
 
-/* Botón Editar pequeño */
+/* Botón de edición */
 .btn-small.edit-btn {
   background-color: #0077cc;
 }
@@ -132,7 +138,7 @@
   background-color: #005fa3;
 }
 
-/* Botón Borrar pequeño */
+/* Botón de borrado */
 .btn-small.delete-btn {
   background-color: #d9534f;
 }
@@ -141,38 +147,37 @@
   background-color: #c9302c;
 }
 
-/* Iconos antes del texto (Unicode) para botones pequeños */
+/* Iconos para botones pequeños (antes del texto) */
 .btn-small.edit-btn::before {
-  content: "✏️";
+  content: "✏️"; /* ícono de lápiz */
   font-size: 0.85rem;
   display: inline-block;
 }
 
 .btn-small.delete-btn::before {
-  content: "🗑️";
+  content: "🗑️"; /* ícono de papelera */
   font-size: 0.85rem;
   display: inline-block;
 }
 
-/* Secciones ocultas/visibles */
+/* Secciones que se ocultan o muestran según clase activa */
 .panel-section {
   display: none;
 }
-
 .panel-section.active {
   display: block;
 }
 
-/* Grid entre formulario y tabla */
+/* Grid para dividir el formulario y la tabla */
 .form-grid {
   display: grid;
-  grid-template-columns: 1fr 2fr;
+  grid-template-columns: 1fr 2fr; /* 1 parte vs 2 partes */
   gap: 2rem;
   align-items: start;
   margin-top: 1.5rem;
 }
 
-/* Formulario platos */
+/* Formularios generales */
 #plato-form,
 #categoria-form {
   background: #fff;
@@ -183,6 +188,7 @@
   flex-direction: column;
 }
 
+/* Inputs de formularios */
 #plato-form input,
 #plato-form select,
 #categoria-form input,
@@ -195,6 +201,7 @@
   border-radius: 4px;
 }
 
+/* Botones en formularios */
 #plato-form button,
 #categoria-form button {
   align-self: flex-end;
@@ -202,7 +209,7 @@
   font-size: 1rem;
 }
 
-/* Tabla de platos y comandas */
+/* Tablas de datos (platos, comandas...) */
 table {
   width: 100%;
   background: #fff;
@@ -212,11 +219,13 @@ table {
   box-shadow: 0 1px 6px rgba(0, 0, 0, 0.05);
 }
 
+/* Encabezado de la tabla */
 table thead {
   background: #0077cc;
   color: #fff;
 }
 
+/* Celdas de la tabla */
 th,
 td {
   padding: 0.9rem 1rem;
@@ -224,10 +233,12 @@ td {
   text-align: left;
 }
 
+/* Efecto hover en filas */
 tr:hover {
   background: #f1f5f9;
 }
 
+/* Imágenes dentro de tablas */
 table img {
   width: 70px;
   height: 45px;
@@ -235,12 +246,12 @@ table img {
   border-radius: 4px;
 }
 
-/* Comandas */
+/* Última celda de cada fila en comandas centrada */
 #comandas-body td:last-child {
   text-align: center;
 }
 
-/* Configuración (cambiar contraseña) */
+/* Formulario de configuración (cambio de contraseña) */
 .config-form {
   background: #fff;
   padding: 1.5rem;
@@ -250,12 +261,14 @@ table img {
   margin-top: 2rem;
 }
 
+/* Etiquetas del formulario de configuración */
 .config-form label {
   font-weight: 600;
   margin-top: 1rem;
   display: block;
 }
 
+/* Inputs del formulario de configuración */
 .config-form input {
   width: 100%;
   padding: 0.6rem;
@@ -264,47 +277,42 @@ table img {
   border-radius: 4px;
 }
 
+/* Botón del formulario de configuración */
 .config-form button {
   margin-top: 1.2rem;
   width: 100%;
   font-size: 1rem;
 }
 
-/* BOTÓN DE TOGGLE (solo visible en móvil) */
+/* Botón de abrir/cerrar el sidebar en móvil */
 .sidebar-toggle {
-  display: none;
+  display: none; /* oculto por defecto, solo se muestra en móvil */
 }
 
-/* ----------- RESPONSIVE ----------- */
+/* ------------------ RESPONSIVE (pantallas pequeñas) ------------------ */
 @media (max-width: 768px) {
   .admin-container {
-    flex-direction: column;
+    flex-direction: column; /* los elementos se apilan en vertical */
   }
 
   .sidebar {
     position: fixed;
-    top: 0;
-    left: 0;
-    transform: translateX(-100%);
-    height: 100%;
-    z-index: 1000;
-    width: 220px;
-    background: #fff;
+    transform: translateX(-100%); /* oculto por defecto */
     transition: transform 0.3s ease;
   }
 
   .sidebar.open {
-    transform: translateX(0);
+    transform: translateX(0); /* visible cuando tiene clase open */
   }
 
   .content {
     margin-left: 0;
     width: 100%;
-    padding: 5rem 1rem 1rem 1rem;
+    padding: 5rem 1rem 1rem 1rem; /* espacio para el botón toggle */
   }
 
   .form-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: 1fr; /* una sola columna */
     gap: 1rem;
   }
 
@@ -329,16 +337,17 @@ table img {
     background: #005fa3;
   }
 
-  /* Oculta el botón si el body tiene la clase sidebar-open */
+  /* Oculta el botón cuando el sidebar está abierto */
   body.sidebar-open .sidebar-toggle {
     opacity: 0;
     pointer-events: none;
   }
 }
 
+/* Contenedor de tabla, usado para habilitar scroll horizontal en móvil */
 .table-wrapper {
   width: 100%;
-  overflow-x: visible; /* por defecto no hay scroll horizontal */
+  overflow-x: visible;
   border-radius: 6px;
   box-shadow: none;
   background: transparent;
@@ -349,7 +358,7 @@ table img {
   border-collapse: collapse;
 }
 
-/* En móvil sí scroll horizontal */
+/* Scroll horizontal en móvil para tablas anchas */
 @media (max-width: 768px) {
   .table-wrapper {
     overflow-x: auto;
@@ -359,7 +368,7 @@ table img {
   }
 
   .table-wrapper table {
-    min-width: 600px; /* fija el ancho para obligar scroll en móvil */
+    min-width: 600px; /* obliga a hacer scroll si no cabe */
   }
 
   table th,

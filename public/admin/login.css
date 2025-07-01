@@ -1,97 +1,102 @@
-/* Contenedor general centrado */
+/* Contenedor general centrado en pantalla */
 .login-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 100vh;
-  background: linear-gradient(135deg, #eef2f7, #d9e2ec);
-  padding: 1rem;
-  box-sizing: border-box;
+  display: flex; /* organiza los elementos hijos (centra horizontalmente) */
+  justify-content: center; /* centra horizontalmente */
+  align-items: center; /* centra verticalmente */
+  min-height: 100vh; /* ocupa toda la altura de la pantalla */
+  background: linear-gradient(
+    135deg,
+    #eef2f7,
+    #d9e2ec
+  ); /* fondo con degradado suave */
+  padding: 1rem; /* margen interior para evitar bordes pegados */
+  box-sizing: border-box; /* incluye padding dentro del tamaño total */
 }
 
-/* Caja blanca */
+/* Caja del login (formulario) */
 .login-box {
-  background: #fff;
-  width: 100%;
-  max-width: 400px;
-  padding: 2rem 2.5rem;
-  border-radius: 12px;
-  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.1);
-  box-sizing: border-box;
-  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  background: #fff; /* fondo blanco */
+  width: 100%; /* ocupa todo el ancho disponible */
+  max-width: 400px; /* pero no pasa de 400px */
+  padding: 2rem 2.5rem; /* espacio interior amplio */
+  border-radius: 12px; /* esquinas redondeadas */
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.1); /* sombra sutil */
+  box-sizing: border-box; /* incluye padding en el ancho */
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif; /* fuente moderna */
 }
 
-/* Título */
+/* Título del formulario */
 .login-box h2 {
-  text-align: center;
-  margin-bottom: 2rem;
-  font-size: 1.8rem;
-  color: #222;
+  text-align: center; /* centrado horizontal */
+  margin-bottom: 2rem; /* separación respecto a los campos */
+  font-size: 1.8rem; /* tamaño de fuente grande */
+  color: #222; /* color gris oscuro */
 }
 
-/* Inputs */
+/* Campos de texto (usuario y contraseña) */
 .login-box input[type="text"],
 .login-box input[type="password"] {
-  width: 100%;
-  padding: 0.75rem 1rem;
-  border: 1.5px solid #ccc;
-  border-radius: 8px;
-  font-size: 1rem;
-  margin-bottom: 1.5rem;
-  transition: border-color 0.3s ease;
+  width: 100%; /* ocupa todo el ancho disponible */
+  padding: 0.75rem 1rem; /* espacio interior */
+  border: 1.5px solid #ccc; /* borde gris claro */
+  border-radius: 8px; /* esquinas redondeadas */
+  font-size: 1rem; /* tamaño cómodo para texto */
+  margin-bottom: 1.5rem; /* separación entre campos */
+  transition: border-color 0.3s ease; /* transición suave al enfocar */
   box-sizing: border-box;
 }
 
-/* Focus inputs */
+/* Efecto al enfocar los inputs */
 .login-box input[type="text"]:focus,
 .login-box input[type="password"]:focus {
-  border-color: #0077cc;
-  outline: none;
-  box-shadow: 0 0 6px rgba(0, 119, 204, 0.3);
+  border-color: #0077cc; /* azul al enfocar */
+  outline: none; /* elimina el borde por defecto */
+  box-shadow: 0 0 6px rgba(0, 119, 204, 0.3); /* brillo sutil */
 }
 
-/* Botón entrar */
+/* Botón de enviar */
 .login-box button[type="submit"] {
-  width: 100%;
-  padding: 0.85rem;
-  background: #0077cc;
-  color: #fff;
-  font-size: 1.1rem;
-  font-weight: 600;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: background 0.3s ease;
+  width: 100%; /* ocupa todo el ancho */
+  padding: 0.85rem; /* altura cómoda */
+  background: #0077cc; /* azul principal */
+  color: #fff; /* texto blanco */
+  font-size: 1.1rem; /* texto un poco más grande */
+  font-weight: 600; /* negrita */
+  border: none; /* sin borde */
+  border-radius: 8px; /* esquinas redondeadas */
+  cursor: pointer; /* cursor tipo mano */
+  transition: background 0.3s ease; /* efecto suave al pasar por encima */
   box-sizing: border-box;
 }
 
+/* Efecto hover o focus en botón */
 .login-box button[type="submit"]:hover,
 .login-box button[type="submit"]:focus {
-  background: #005fa3;
+  background: #005fa3; /* azul más oscuro */
   outline: none;
 }
 
-/* Mensaje error */
+/* Mensaje de error */
 .error {
-  margin-top: 1rem;
-  color: #b00020;
-  text-align: center;
-  font-size: 1rem;
-  min-height: 1.4em;
+  margin-top: 1rem; /* separación superior */
+  color: #b00020; /* rojo oscuro (error) */
+  text-align: center; /* centrado */
+  font-size: 1rem; /* tamaño estándar */
+  min-height: 1.4em; /* asegura altura mínima para no mover elementos */
 }
 
-/* Responsive */
+/* Estilos para pantallas pequeñas */
 @media (max-width: 480px) {
   .login-box {
-    padding: 1.5rem 1.75rem;
-    border-radius: 10px;
+    padding: 1.5rem 1.75rem; /* menos padding en móviles */
+    border-radius: 10px; /* esquinas un poco menos redondeadas */
   }
 
   .login-box h2 {
-    font-size: 1.5rem;
+    font-size: 1.5rem; /* reduce el tamaño del título */
   }
 
   .login-box button[type="submit"] {
-    font-size: 1rem;
+    font-size: 1rem; /* reduce tamaño del botón */
   }
 }
