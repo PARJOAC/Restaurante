@@ -2,44 +2,51 @@
    general.css - Estilos globales y secciones clave
    -------------------------------------------------- */
 
-/* 1. Reset básico y tipografía */
+/* 1. Reset básico y control del box model */
 *,
 *::before,
 *::after {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
+  box-sizing: border-box; /* Todos los elementos cuentan padding y borde dentro del ancho/alto */
+  margin: 0; /* Elimina márgenes por defecto */
+  padding: 0; /* Elimina rellenos por defecto */
 }
 
+/* 2. Tamaño base de fuente y scroll suave */
 html {
-  font-size: clamp(15px, 1vw, 18px);
-  scroll-behavior: smooth;
+  font-size: clamp(
+    15px,
+    1vw,
+    18px
+  ); /* Tamaño flexible según el ancho de pantalla */
+  scroll-behavior: smooth; /* Desplazamiento suave al hacer scroll o usar anchors */
 }
 
+/* 3. Estilo general del cuerpo */
 body {
-  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-  color: #333;
-  background: #f5f7fa;
-  line-height: 1.6;
-  min-height: 100vh;
-  display: flex;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif; /* Fuente principal */
+  color: #333; /* Color del texto */
+  background: #f5f7fa; /* Color de fondo claro y limpio */
+  line-height: 1.6; /* Espaciado entre líneas */
+  min-height: 100vh; /* Altura mínima pantalla completa */
+  display: flex; /* Usado para mantener footer al final */
   flex-direction: column;
 }
 
-/* Estilo general de enlaces y botones */
+/* 4. Estilo general de enlaces */
 a {
-  color: #0077cc;
-  text-decoration: none;
+  color: #0077cc; /* Azul */
+  text-decoration: none; /* Sin subrayado por defecto */
 }
 a:hover {
-  text-decoration: underline;
+  text-decoration: underline; /* Subrayado al pasar el ratón */
 }
 
+/* 5. Botones y clases .btn */
 button,
 .btn {
   cursor: pointer;
   border: none;
-  background: #0077cc;
+  background: #0077cc; /* Azul */
   color: #fff;
   padding: 0.65rem 1.2rem;
   border-radius: 4px;
@@ -48,37 +55,39 @@ button,
 }
 button:hover,
 .btn:hover {
-  background: #005fa3;
+  background: #005fa3; /* Azul más oscuro al hacer hover */
 }
 
-/* Encabezado y pie de página */
+/* 6. Encabezado y pie de página */
 header,
 footer {
   background: #fff;
   padding: 1rem;
   text-align: center;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); /* Sombra sutil */
 }
+
+/* 7. Título de logo (usado en header) */
 header .logo {
   font-size: 1.5rem;
   font-weight: bold;
 }
 
-/* Contenedores principales */
+/* 8. Contenedor principal para el contenido */
 main {
-  flex: 1;
+  flex: 1; /* Ocupa el espacio disponible (para que el footer quede abajo) */
   width: 95%;
   max-width: 1100px;
   margin: 1.5rem auto;
 }
 
-/* Pie de página pequeño */
+/* 9. Pie de página con texto pequeño y color gris */
 footer p {
   font-size: 0.9rem;
   color: #666;
 }
 
-/* Responsive avanzado */
+/* 10. Ajuste de fuente en pantallas grandes */
 @media (min-width: 768px) {
   body {
     font-size: 1rem;

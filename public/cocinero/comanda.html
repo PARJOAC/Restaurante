@@ -1,26 +1,38 @@
 <!DOCTYPE html>
 <html lang="es">
   <head>
+    <!-- Codificación del documento -->
     <meta charset="UTF-8" />
+
+    <!-- Título que se muestra en la pestaña del navegador -->
     <title>Panel de Cocina</title>
+
+    <!-- Configuración para que el diseño sea responsive -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- Hoja de estilos general (colores, fuentes, etc.) -->
     <link rel="stylesheet" href="/css/general.css" />
-    <link rel="stylesheet" href="/cocinero/comanda.css" />
+
+    <!-- Hoja de estilos específica del panel del cocinero -->
+    <link rel="stylesheet" href="/css/cocinero.css" />
   </head>
+
   <body>
+    <!-- Encabezado con el nombre del panel -->
     <header>
       <div class="logo">Contra Corriente – Cocina</div>
     </header>
 
-    <!-- Contenedor de comandas activas -->
+    <!-- Contenedor donde se mostrarán las comandas activas -->
     <div id="comandas-activas"></div>
 
-    <!-- Contenedor de comandas finalizadas -->
+    <!-- Contenedor para mostrar las comandas que ya han sido finalizadas -->
     <div id="comandas-finalizadas" class="finalizadas-section"></div>
 
-    <!-- Botón flotante -->
+    <!-- Botón flotante con un icono de ojo para mostrar/ocultar las comandas finalizadas -->
     <button id="toggle-finalizadas" onclick="toggleFinalizadas()">👁</button>
 
+    <!-- Script JavaScript que gestiona la lógica del panel del cocinero -->
     <script src="/cocinero/comandas.js"></script>
   </body>
 </html>

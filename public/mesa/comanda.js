@@ -1,21 +1,23 @@
+// Arrays para guardar los platos disponibles, el pedido actual y el total del pedido
 let platos = [];
 let pedido = [];
 let total = 0;
 
+// Carga los platos desde el servidor
 async function cargarPlatos() {
   try {
-    const res = await fetch("/public/platos");
-    if (!res.ok) throw new Error(res.statusText);
-    platos = await res.json();
+    const res = await fetch("/public/platos"); // Solicita los platos al backend
+    if (!res.ok) throw new Error(res.statusText); // Lanza error si hay fallo de red
+    platos = await res.json(); // Almacena los platos en el array global
 
-    console.log("Platos recibidos del servidor:", platos);
-
+    // Si no hay platos disponibles, mostrar mensaje
     if (!Array.isArray(platos) || platos.length === 0) {
       document.getElementById("items-menu").innerHTML =
         "<p>No hay platos disponibles actualmente.</p>";
       return;
     }
-    initComanda();
+
+    initComanda(); // Si todo va bien, inicializa el menú
   } catch (e) {
     console.error("Error cargando platos:", e);
     document.getElementById("items-menu").innerHTML =
@@ -23,49 +25,40 @@ async function cargarPlatos() {
   }
 }
 
+// Muestra los platos organizados por categoría
 function initComanda() {
   const cont = document.getElementById("items-menu");
   cont.innerHTML = "";
 
-  // Agrupamos platos por categoría
-  const grupos = {};
+  const grupos = {}; // Agrupar platos por categoría
 
+  // Clasifica los platos
   platos.forEach((p) => {
-    const cat =
-      p.categoria && p.categoria.nombre
-        ? p.categoria.nombre.toUpperCase()
-        : "SIN CATEGORÍA";
-
-    if (!grupos[cat]) {
-      grupos[cat] = [];
-    }
+    const cat = p.categoria?.nombre?.toUpperCase() || "SIN CATEGORÍA";
+    if (!grupos[cat]) grupos[cat] = [];
     grupos[cat].push(p);
   });
 
+  // Recorre cada categoría y la dibuja en pantalla
   for (const categoria in grupos) {
-    // Contenedor categoría
     const grupoDiv = document.createElement("div");
     grupoDiv.className = "categoria-grupo";
 
-    // Título categoría (clicable)
     const titulo = document.createElement("h3");
     titulo.textContent = categoria;
 
-    // Crear flecha y añadirla al título
     const flecha = document.createElement("span");
     flecha.className = "flecha";
     titulo.appendChild(flecha);
-
     grupoDiv.appendChild(titulo);
 
-    // Contenedor de contenido colapsable
     const contenido = document.createElement("div");
-    contenido.className = "categoria-contenido abierto"; // abierto por defecto
+    contenido.className = "categoria-contenido abierto";
 
-    // Grid para platos
     const gridDiv = document.createElement("div");
     gridDiv.className = "menu-grid";
 
+    // Añade cada plato dentro de su categoría
     grupos[categoria].forEach((p) => {
       const div = document.createElement("div");
       div.className = "menu-item";
@@ -87,16 +80,17 @@ function initComanda() {
     grupoDiv.appendChild(contenido);
     cont.appendChild(grupoDiv);
 
-    // Evento para desplegar/plegar categoría y rotar flecha
+    // Alternar visibilidad al hacer clic en el título de la categoría
     titulo.addEventListener("click", () => {
       const abierto = contenido.classList.toggle("abierto");
       flecha.classList.toggle("flecha-rotada", !abierto);
     });
   }
 
-  actualizarResumen();
+  actualizarResumen(); // Muestra el resumen del pedido
 }
 
+// Agrega un plato al pedido
 function agregarItem(id) {
   const p = platos.find((x) => x._id === id);
   const existente = pedido.find((i) => i.nombre === p.nombre);
@@ -110,21 +104,22 @@ function agregarItem(id) {
   actualizarResumen();
 }
 
+// Elimina una unidad del plato del pedido
 function eliminarUno(nombre) {
   const index = pedido.findIndex((i) => i.nombre === nombre);
   if (index !== -1) {
+    const precioUnidad = platos.find((p) => p.nombre === nombre).precio;
     pedido[index].cantidad -= 1;
-    pedido[index].precio -= platos.find((p) => p.nombre === nombre).precio;
-    total -= platos.find((p) => p.nombre === nombre).precio;
+    pedido[index].precio -= precioUnidad;
+    total -= precioUnidad;
 
-    if (pedido[index].cantidad <= 0) {
-      pedido.splice(index, 1);
-    }
+    if (pedido[index].cantidad <= 0) pedido.splice(index, 1);
     if (total < 0) total = 0;
     actualizarResumen();
   }
 }
 
+// Elimina todas las unidades de un plato
 function eliminarTodos(nombre) {
   const index = pedido.findIndex((i) => i.nombre === nombre);
   if (index !== -1) {
@@ -135,6 +130,7 @@ function eliminarTodos(nombre) {
   }
 }
 
+// Actualiza la lista de resumen del pedido
 function actualizarResumen() {
   const lista = document.getElementById("lista-resumen");
   lista.innerHTML = pedido
@@ -148,17 +144,17 @@ function actualizarResumen() {
         <button title="Eliminar todas" onclick="eliminarTodos('${
           i.nombre
         }')">🗑️</button>
-      </li>
-    `
+      </li>`
     )
     .join("");
   document.getElementById("total").textContent = total.toFixed(2);
 }
 
+// Envía la comanda al servidor
 async function enviarComanda() {
   if (pedido.length === 0) return alert("Añade al menos un plato");
 
-  const mesa = window.__mesa;
+  const mesa = window.__mesa; // Se obtiene del HTML al cargar la página
 
   if (!mesa) {
     alert("Error: no se detectó el número de mesa.");
@@ -171,6 +167,7 @@ async function enviarComanda() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ mesa, platos: pedido, total }),
     });
+
     if (res.ok) {
       alert(`Comanda enviada - Mesa ${mesa}`);
       pedido = [];
