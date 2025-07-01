@@ -96,6 +96,30 @@ app.post("/api/admin/logout", (req, res) => {
   });
 });
 
+// Cambiar contraseña de admin
+app.post("/api/admin/change-password", requireAdmin, async (req, res) => {
+  const { current, new: newPass } = req.body;
+  try {
+    const adm = await Admin.findById(req.session.adminId);
+    if (!adm) return res.status(400).json({ error: "Admin no encontrado" });
+
+    const dbHash = String(adm.contraseña).trim();
+    const match = await bcrypt.compare(current, dbHash);
+
+    if (!match) {
+      return res.status(400).json({ error: "Contraseña actual incorrecta" });
+    }
+
+    const hash = await bcrypt.hash(newPass, 10);
+    adm.contraseña = hash;
+    await adm.save();
+    res.json({ message: "Contraseña actualizada correctamente" });
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ error: "Error al actualizar contraseña" });
+  }
+});
+
 // Rutas de autenticación para camarero
 app.get("/camarero", (req, res) =>
   res.sendFile(path.join(__dirname, "public/camarero/login.html"))
