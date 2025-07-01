@@ -1,17 +1,23 @@
-let platos = [];
-let pedido = [];
-let total = 0;
+// Variables globales
+let platos = []; // Lista de platos disponibles
+let pedido = []; // Pedido actual (lo que el camarero va añadiendo)
+let total = 0; // Total en euros del pedido actual
 
+// Función para cargar los platos desde el servidor
 async function cargarPlatos() {
   try {
-    const res = await fetch("/public/platos");
-    if (!res.ok) throw new Error(res.statusText);
-    platos = await res.json();
+    const res = await fetch("/public/platos"); // Petición GET a la API pública
+    if (!res.ok) throw new Error(res.statusText); // Error si falla
+    platos = await res.json(); // Se guardan los platos en la variable global
+
+    // Si no hay platos, mostrar mensaje
     if (!Array.isArray(platos) || platos.length === 0) {
       document.getElementById("items-menu").innerHTML =
         "<p>No hay platos disponibles</p>";
       return;
     }
+
+    // Si hay platos, inicializar la carta
     initComanda();
   } catch (e) {
     console.error("Error cargando platos:", e);
@@ -20,22 +26,27 @@ async function cargarPlatos() {
   }
 }
 
+// Renderiza todos los platos agrupados por categoría
 function initComanda() {
   const cont = document.getElementById("items-menu");
   cont.innerHTML = "";
-  const grupos = {};
+  const grupos = {}; // Diccionario por categoría
 
+  // Agrupar platos por categoría
   platos.forEach((p) => {
     const cat = p.categoria?.nombre?.toUpperCase() || "SIN CATEGORÍA";
     if (!grupos[cat]) grupos[cat] = [];
     grupos[cat].push(p);
   });
 
+  // Crear HTML por cada grupo de categoría
   for (const cat in grupos) {
     const grupoDiv = document.createElement("div");
     grupoDiv.className = "categoria-grupo";
+
     const titulo = document.createElement("h3");
     titulo.textContent = cat;
+
     const flecha = document.createElement("span");
     flecha.className = "flecha";
     titulo.appendChild(flecha);
@@ -47,6 +58,7 @@ function initComanda() {
     const grid = document.createElement("div");
     grid.className = "menu-grid";
 
+    // Añadir cada plato como tarjeta
     grupos[cat].forEach((p) => {
       const div = document.createElement("div");
       div.className = "menu-item";
@@ -65,6 +77,7 @@ function initComanda() {
     grupoDiv.appendChild(contenido);
     cont.appendChild(grupoDiv);
 
+    // Al hacer clic en el título, se colapsa el grupo
     titulo.addEventListener("click", () => {
       const abierto = contenido.classList.toggle("abierto");
       flecha.classList.toggle("flecha-rotada", !abierto);
@@ -74,19 +87,23 @@ function initComanda() {
   actualizarResumen();
 }
 
+// Añadir un plato al pedido
 function agregarItem(id) {
-  const p = platos.find((x) => x._id === id);
-  const ex = pedido.find((i) => i.nombre === p.nombre);
+  const p = platos.find((x) => x._id === id); // Buscar el plato
+  const ex = pedido.find((i) => i.nombre === p.nombre); // Buscar si ya está en el pedido
+
   if (ex) {
     ex.cantidad++;
     ex.precio += p.precio;
   } else {
     pedido.push({ nombre: p.nombre, cantidad: 1, precio: p.precio });
   }
+
   total += p.precio;
   actualizarResumen();
 }
 
+// Eliminar una unidad de un plato del pedido
 function eliminarUno(nombre) {
   const idx = pedido.findIndex((i) => i.nombre === nombre);
   if (idx !== -1) {
@@ -94,12 +111,15 @@ function eliminarUno(nombre) {
     pedido[idx].cantidad--;
     pedido[idx].precio -= p.precio;
     total -= p.precio;
+
     if (pedido[idx].cantidad <= 0) pedido.splice(idx, 1);
     if (total < 0) total = 0;
+
     actualizarResumen();
   }
 }
 
+// Eliminar completamente un plato del pedido
 function eliminarTodos(nombre) {
   const idx = pedido.findIndex((i) => i.nombre === nombre);
   if (idx !== -1) {
@@ -110,6 +130,7 @@ function eliminarTodos(nombre) {
   }
 }
 
+// Mostrar el resumen del pedido en el panel derecho
 function actualizarResumen() {
   const lista = document.getElementById("lista-resumen");
   lista.innerHTML = pedido
@@ -125,6 +146,7 @@ function actualizarResumen() {
   document.getElementById("total").textContent = total.toFixed(2);
 }
 
+// Enviar la comanda al backend
 async function enviarComanda() {
   const mesaInput = document.getElementById("mesa").value.trim();
   if (!mesaInput) return alert("Indica el número de mesa");
@@ -136,6 +158,7 @@ async function enviarComanda() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ mesa: mesaInput, platos: pedido, total }),
     });
+
     if (res.ok) {
       alert(`Comanda enviada - Mesa ${mesaInput}`);
       pedido = [];
@@ -152,4 +175,5 @@ async function enviarComanda() {
   }
 }
 
+// Cuando carga el DOM, empieza cargando los platos
 window.addEventListener("DOMContentLoaded", cargarPlatos);

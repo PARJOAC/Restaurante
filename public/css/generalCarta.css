@@ -1,26 +1,30 @@
 /* 1. Grid de tarjetas */
 .menu-grid {
-  display: grid;
-  gap: 1.5rem;
+  display: grid; /* usa sistema de cuadrícula */
+  gap: 1.5rem; /* espacio entre tarjetas */
   margin-top: 2rem;
   padding-bottom: 2rem;
-  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  grid-template-columns: repeat(
+    auto-fit,
+    minmax(230px, 1fr)
+  ); /* columnas adaptables */
 }
 
-/* Ajustes responsivos del grid */
+/* Grid de 2 columnas en móviles */
 @media (max-width: 767px) {
   .menu-grid {
     grid-template-columns: repeat(2, 1fr);
   }
 }
 
+/* Grid de una columna en pantallas muy pequeñas */
 @media (max-width: 400px) {
   .menu-grid {
     grid-template-columns: 1fr;
   }
 }
 
-/* 2. Tarjeta de plato */
+/* 2. Tarjeta de cada plato */
 .menu-item {
   display: flex;
   flex-direction: column;
@@ -34,28 +38,29 @@
   min-height: 360px;
 }
 .menu-item:hover {
-  transform: translateY(-6px);
+  transform: translateY(-6px); /* efecto al pasar el cursor */
   box-shadow: 0 14px 28px rgba(0, 0, 0, 0.15);
 }
 
-/* 3. Imagen */
+/* 3. Imagen del plato */
 .item-img {
   width: 100%;
   height: 160px;
-  object-fit: cover;
+  object-fit: cover; /* recorte proporcional */
   display: block;
   background: #f0f0f0;
   border-bottom: 1px solid #eee;
   border-radius: 14px 14px 0 0;
 }
 
+/* Imagen un poco más baja en móviles */
 @media (max-width: 767px) {
   .item-img {
     height: 140px;
   }
 }
 
-/* 4. Contenido */
+/* 4. Nombre del plato */
 .item-nombre {
   margin: 1rem 1rem 0.25rem;
   font-size: 1.25rem;
@@ -63,6 +68,7 @@
   color: #222;
 }
 
+/* Descripción del plato */
 .item-desc {
   flex: 1;
   margin: 0.3rem 1rem 1rem;
@@ -70,7 +76,7 @@
   color: #555;
 }
 
-/* 5. Pie de tarjeta */
+/* 5. Pie de la tarjeta: precio + botón */
 .item-footer {
   display: flex;
   justify-content: space-between;
@@ -80,13 +86,14 @@
   border-top: 1px solid #eee;
 }
 
+/* Precio del plato */
 .item-precio {
   font-size: 1.1rem;
   font-weight: bold;
   color: #0077cc;
 }
 
-/* 6. Botón Añadir */
+/* 6. Botón de añadir al pedido */
 .item-footer button {
   background: #0077cc;
   color: #fff;
@@ -101,7 +108,7 @@
   background: #005fa3;
 }
 
-/* 7. Resumen del pedido */
+/* 7. Contenedor del resumen del pedido */
 #resumen-pedido {
   background: #fff;
   border-radius: 14px;
@@ -110,11 +117,13 @@
   margin-top: 2rem;
 }
 
+/* Título del resumen */
 #resumen-pedido h3 {
   margin-bottom: 0.75rem;
   font-size: 1.25rem;
 }
 
+/* Lista de platos en el resumen */
 #lista-resumen {
   list-style: none;
   max-height: 260px;
@@ -123,7 +132,7 @@
   padding: 0;
 }
 
-/* Lista resumen con botones */
+/* Ítems individuales del resumen */
 #lista-resumen li {
   display: flex;
   align-items: center;
@@ -134,6 +143,7 @@
   font-size: 0.95rem;
 }
 
+/* Texto del nombre del plato en el resumen */
 #lista-resumen li span {
   flex-grow: 1;
   margin-right: 0.5rem;
@@ -142,7 +152,7 @@
   text-overflow: ellipsis;
 }
 
-/* Botones eliminar */
+/* Botones para eliminar platos */
 #lista-resumen li button {
   background-color: #e55353;
   border: none;
@@ -164,7 +174,7 @@
   background-color: #c03939;
 }
 
-/* Iconos en botones */
+/* Iconos en botones con pseudoelementos */
 #lista-resumen li button::before {
   content: attr(title);
   display: none;
@@ -178,7 +188,7 @@
   font-size: 1.1rem;
 }
 
-/* 8. Botón de envío */
+/* 8. Botón para enviar el pedido */
 #resumen-pedido button[type="submit"] {
   width: 100%;
   padding: 0.75rem;
@@ -193,13 +203,14 @@
   background: #218838;
 }
 
-/* 9. Responsividad */
+/* 9. Ajustes para pantallas más grandes */
 @media (min-width: 768px) {
   .menu-grid {
     grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
   }
 }
 
+/* 10. Ajustes visuales para móviles pequeños */
 @media (max-width: 480px) {
   #lista-resumen li button {
     padding: 0.15rem 0.4rem;
@@ -215,7 +226,7 @@
   }
 }
 
-/* Contenedor para total y botón */
+/* Pie del resumen: total + botón */
 .resumen-footer {
   display: flex;
   align-items: center;
@@ -223,7 +234,7 @@
   margin-top: 1rem;
 }
 
-/* Ajustes del botón en el resumen */
+/* Botón dentro del pie del resumen */
 .resumen-footer button {
   padding: 0.6rem 1rem;
   background: #28a745;
@@ -238,19 +249,19 @@
   background: #218838;
 }
 
-/* Ajuste del texto total para que no tenga margen que afecte */
+/* Texto de total en el pie del resumen */
 .resumen-footer p {
   margin: 0;
   font-size: 1.1rem;
   font-weight: 600;
 }
 
-/* Cada grupo de categoría uno debajo de otro (bloque vertical) */
+/* Agrupación de platos por categoría */
 .categoria-grupo {
   margin-bottom: 2rem;
 }
 
-/* Título de cada categoría */
+/* Título de cada categoría con flecha */
 .categoria-grupo h3 {
   cursor: pointer;
   position: relative;
@@ -262,7 +273,7 @@
   user-select: none;
 }
 
-/* Flecha simple al lado del título */
+/* Flecha visual al lado del título */
 .categoria-grupo h3 .flecha {
   position: absolute;
   right: 5px;
@@ -276,12 +287,12 @@
   transition: transform 0.3s ease;
 }
 
-/* Cuando está plegada, girar la flecha */
+/* Gira la flecha si está abierta */
 .categoria-grupo h3 .flecha.flecha-rotada {
   transform: translateY(-50%) rotate(-90deg);
 }
 
-/* Contenido colapsable por categoría */
+/* Contenedor que se puede colapsar */
 .categoria-contenido {
   overflow: hidden;
   max-height: 0;
@@ -290,16 +301,55 @@
   padding-bottom: 0;
 }
 
-/* Cuando esté abierto */
+/* Contenido expandido */
 .categoria-contenido.abierto {
   max-height: none;
   padding-top: 1rem;
   padding-bottom: 1rem;
 }
 
-/* Contenedor general de categorías apiladas */
+/* Contenedor general de todas las categorías */
 #items-menu {
   display: flex;
   flex-direction: column;
   gap: 2rem;
+}
+
+/* Campo para introducir el número de mesa */
+.mesa-input {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 1rem auto 2rem;
+  padding: 1rem;
+  max-width: 220px;
+  background: #f8f9fa;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+/* Etiqueta del campo mesa */
+.mesa-input label {
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: #333;
+  margin-bottom: 0.4rem;
+}
+
+/* Input de la mesa */
+.mesa-input input {
+  width: 100%;
+  padding: 0.4rem 0.6rem;
+  font-size: 0.95rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Estilo al enfocar el input */
+.mesa-input input:focus {
+  outline: none;
+  border-color: #0077cc;
+  box-shadow: 0 0 0 2px rgba(0, 119, 204, 0.15);
 }

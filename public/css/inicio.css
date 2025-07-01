@@ -1,0 +1,31 @@
+/* Estilo para la bienvenida */
+.welcome-container {
+  max-width: 600px;
+  margin: 3rem auto;
+  padding: 2rem;
+  background: #fff;
+  border-radius: 8px;
+  text-align: center;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+.welcome-container h1 {
+  margin-bottom: 1rem;
+  font-size: 1.8rem;
+}
+.instructions {
+  text-align: left;
+  margin: 1.5rem 0;
+}
+.instructions h2 {
+  margin-bottom: 0.5rem;
+  font-size: 1.3rem;
+  color: #0077cc;
+}
+.instructions ol {
+  padding-left: 1.2rem;
+  margin-bottom: 1rem;
+}
+.instructions li {
+  margin-bottom: 0.5rem;
+  font-size: 1rem;
+}
