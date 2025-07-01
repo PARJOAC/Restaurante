@@ -41,11 +41,6 @@ h1 {
   font-weight: bold;
 }
 
-.ocultar {
-  margin-top: 2rem;
-  text-align: center;
-}
-
 button {
   padding: 0.5rem 1rem;
   font-size: 1rem;
@@ -83,4 +78,40 @@ button:hover {
 small {
   font-size: 0.85rem;
   color: #555;
+}
+
+.ocultar {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.finalizadas-section {
+  margin-top: 3rem;
+  border-top: 2px dashed #bbb;
+  padding-top: 1rem;
+}
+
+#toggle-finalizadas {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: #0077cc;
+  color: white;
+  font-size: 1.6rem;
+  border: none;
+  cursor: pointer;
+  z-index: 999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  line-height: 1;
+  text-align: center;
+}
+
+#toggle-finalizadas:hover {
+  background: #005fa3;
 }

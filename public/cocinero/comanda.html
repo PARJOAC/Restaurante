@@ -8,17 +8,18 @@
     <link rel="stylesheet" href="/cocinero/comanda.css" />
   </head>
   <body>
-     <header>
+    <header>
       <div class="logo">Contra Corriente – Cocina</div>
     </header>
-    <div id="comandas"></div>
 
-    <div class="ocultar">
-      <button onclick="ocultarFinalizadas()">Ocultar finalizadas</button>
-      <button onclick="mostrarFinalizadas()">Mostrar todas</button>
-    </div>
+    <!-- Contenedor de comandas activas -->
+    <div id="comandas-activas"></div>
 
-    <div id="comandas"></div>
+    <!-- Contenedor de comandas finalizadas -->
+    <div id="comandas-finalizadas" class="finalizadas-section"></div>
+
+    <!-- Botón flotante -->
+    <button id="toggle-finalizadas" onclick="toggleFinalizadas()">👁</button>
 
     <script src="/cocinero/comandas.js"></script>
   </body>

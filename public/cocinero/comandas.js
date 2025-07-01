@@ -1,4 +1,5 @@
 let todasLasComandas = [];
+let mostrarFinalizadasActivas = false;
 
 async function cargarComandas() {
   const res = await fetch("/api/comandas/cocina");
@@ -8,8 +9,11 @@ async function cargarComandas() {
 }
 
 function renderizarComandas() {
-  const contenedor = document.getElementById("comandas");
-  contenedor.innerHTML = "";
+  const contenedorActivas = document.getElementById("comandas-activas");
+  const contenedorFinalizadas = document.getElementById("comandas-finalizadas");
+
+  contenedorActivas.innerHTML = "";
+  contenedorFinalizadas.innerHTML = "";
 
   todasLasComandas.forEach((comanda, i) => {
     const div = document.createElement("div");
@@ -20,17 +24,16 @@ function renderizarComandas() {
       .map((p, idx) => {
         const hechos = p.ready || 0;
         const total = p.cantidad;
-
         return `
-          <div class="plato">
-            <button onclick="marcarPlato(${i}, ${idx})" class="btn-marca">${
+        <div class="plato">
+          <button onclick="marcarPlato(${i}, ${idx})" class="btn-marca">${
           hechos < total ? "✔" : "❌"
         }</button>
-            <div>
-              <span>${total} × ${p.nombre}</span><br/>
-              <small>Hechos: ${hechos} / ${total}</small>
-            </div>
-          </div>`;
+          <div>
+            <span>${total} × ${p.nombre}</span><br/>
+            <small>Hechos: ${hechos} / ${total}</small>
+          </div>
+        </div>`;
       })
       .join("");
 
@@ -41,14 +44,15 @@ function renderizarComandas() {
       comanda
     )}</span></div>`;
 
-    div.classList.add(claseEstado(comanda));
+    const clase = claseEstado(comanda);
+    div.classList.add(clase);
 
-    // Ocultar automáticamente si está finalizada
-    if (estadoComanda(comanda) === "Finalizada" && !mostrarFinalizadasActivas) {
-      div.style.display = "none";
+    const esFinalizada = estadoComanda(comanda) === "Finalizada";
+    if (esFinalizada) {
+      if (mostrarFinalizadasActivas) contenedorFinalizadas.appendChild(div);
+    } else {
+      contenedorActivas.appendChild(div);
     }
-
-    contenedor.appendChild(div);
   });
 }
 
@@ -86,19 +90,11 @@ async function marcarPlato(comandaIndex, platoIndex) {
     body: JSON.stringify({ platos: comanda.platos }),
   });
 
-  renderizarComandas(); // Se vuelve a renderizar y ocultará si ya está finalizada
-}
-
-// Control de visualización finalizadas
-let mostrarFinalizadasActivas = false;
-
-function ocultarFinalizadas() {
-  mostrarFinalizadasActivas = false;
   renderizarComandas();
 }
 
-function mostrarFinalizadas() {
-  mostrarFinalizadasActivas = true;
+function toggleFinalizadas() {
+  mostrarFinalizadasActivas = !mostrarFinalizadasActivas;
   renderizarComandas();
 }
 
