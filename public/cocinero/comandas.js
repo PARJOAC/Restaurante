@@ -35,7 +35,7 @@ function renderizarComandas() {
       .join("");
 
     div.innerHTML = `
-      <h2>Mesa ${comanda.mesa}</h2>
+      <h2>Mesa ${comanda.mesa} - ${comanda.fecha}</h2>
       ${platosHtml}
       <div class="estado" id="estado-${i}">Estado: <span>${estadoComanda(
       comanda
