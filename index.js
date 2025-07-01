@@ -1,3 +1,4 @@
+// Importación de módulos necesarios
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
@@ -7,6 +8,7 @@ const bcrypt = require("bcrypt");
 const session = require("express-session");
 require("dotenv").config();
 
+// Modelos de la base de datos
 const Plato = require("./models/Platos");
 const Comanda = require("./models/Comandas");
 const Admin = require("./models/Admin");
@@ -14,179 +16,7 @@ const Camarero = require("./models/Camarero");
 const Cocinero = require("./models/Cocinero");
 const Categoria = require("./models/Categorias");
 
-// Función para inicializar datos de prueba
-async function insertarDatosDeTest() {
-  const hayPlatos = await Plato.countDocuments();
-  const hayComandas = await Comanda.countDocuments();
-
-  if (hayPlatos === 0) {
-    const platos = [
-      {
-        nombre: "Paella Valenciana",
-        precio: 12.5,
-        imagen:
-          "https://via.placeholder.com/300x200.png?text=Paella+Valenciana",
-        descripcion:
-          "Arroz con pollo, conejo, garrofó y judías, aromatizado con azafrán y acabado con socarrat crujiente.",
-      },
-      {
-        nombre: "Tortilla Española",
-        precio: 6.0,
-        imagen:
-          "https://via.placeholder.com/300x200.png?text=Tortilla+Española",
-        descripcion:
-          "Omelette grueso de patata y cebolla, jugoso por dentro y dorado por fuera — clásico tapas.",
-      },
-      {
-        nombre: "Croquetas Caseras",
-        precio: 5.5,
-        imagen:
-          "https://via.placeholder.com/300x200.png?text=Croquetas+Caseras",
-        descripcion:
-          "Crujientes por fuera, suaves en su interior de bechamel con jamón ibérico.",
-      },
-      {
-        nombre: "Pulpo a la Gallega",
-        precio: 13.0,
-        imagen:
-          "https://via.placeholder.com/300x200.png?text=Pulpo+a+la+Gallega",
-        descripcion:
-          "Pulpo cocido tierno, espolvoreado con pimentón, sal gorda y aceite de oliva.",
-      },
-      {
-        nombre: "Gazpacho Andaluz",
-        precio: 4.5,
-        imagen: "https://via.placeholder.com/300x200.png?text=Gazpacho+Andaluz",
-        descripcion:
-          "Sopa fría de tomate, pimiento y pepino, fresca y perfecta para el verano.",
-      },
-      {
-        nombre: "Ensaladilla Rusa",
-        precio: 5.0,
-        imagen: "https://via.placeholder.com/300x200.png?text=Ensaladilla+Rusa",
-        descripcion:
-          "Ensalada cremosa de patata, zanahoria, guisantes y atún con mayonesa.",
-      },
-      {
-        nombre: "Calamares a la Romana",
-        precio: 8.0,
-        imagen:
-          "https://via.placeholder.com/300x200.png?text=Calamares+a+la+Romana",
-        descripcion:
-          "Anillas de calamar rebozadas y fritas, doradas y crujientes.",
-      },
-      {
-        nombre: "Salmorejo Cordobés",
-        precio: 5.0,
-        imagen:
-          "https://via.placeholder.com/300x200.png?text=Salmorejo+Cordobes",
-        descripcion:
-          "Crema fría espesa de tomate y pan, servida con huevo duro y jamón en taquitos.",
-      },
-      {
-        nombre: "Albóndigas con Tomate",
-        precio: 7.5,
-        imagen:
-          "https://via.placeholder.com/300x200.png?text=Albondigas+con+Tomate",
-        descripcion:
-          "Albóndigas caseras en salsa de tomate, tiernas y sabrosas.",
-      },
-      {
-        nombre: "Pisto Manchego",
-        precio: 6.0,
-        imagen: "https://via.placeholder.com/300x200.png?text=Pisto+Manchego",
-        descripcion:
-          "Guiso de verduras (tomate, pimiento, calabacín) cocinado lentamente.",
-      },
-    ];
-    await Plato.insertMany(platos);
-    console.log("✔ Platos insertados");
-  }
-
-  if (hayComandas === 0) {
-    const platosDB = await Plato.find();
-    const comandas = [
-      {
-        mesa: "1",
-        platos: [
-          {
-            nombre: platosDB[0].nombre,
-            cantidad: 2,
-            precio: platosDB[0].precio,
-          },
-          {
-            nombre: platosDB[1].nombre,
-            cantidad: 1,
-            precio: platosDB[1].precio,
-          },
-        ],
-        fecha: new Date().toLocaleString("es-ES", {
-          day: "2-digit",
-          month: "2-digit",
-          year: "numeric",
-          hour: "2-digit",
-          minute: "2-digit",
-          second: "2-digit",
-          hour12: false,
-          timeZone: "Europe/Madrid",
-        }),
-        total: platosDB[0].precio * 2 + platosDB[1].precio,
-      },
-      {
-        mesa: "3",
-        platos: [
-          {
-            nombre: platosDB[3].nombre,
-            cantidad: 1,
-            precio: platosDB[3].precio,
-          },
-          {
-            nombre: platosDB[5].nombre,
-            cantidad: 2,
-            precio: platosDB[5].precio,
-          },
-        ],
-        fecha: new Date().toLocaleString("es-ES", {
-          day: "2-digit",
-          month: "2-digit",
-          year: "numeric",
-          hour: "2-digit",
-          minute: "2-digit",
-          second: "2-digit",
-          hour12: false,
-          timeZone: "Europe/Madrid",
-        }),
-        total: platosDB[3].precio + platosDB[5].precio * 2,
-      },
-      {
-        mesa: "5",
-        platos: [
-          {
-            nombre: platosDB[6].nombre,
-            cantidad: 3,
-            precio: platosDB[6].precio,
-          },
-        ],
-        fecha: new Date().toLocaleString("es-ES", {
-          day: "2-digit",
-          month: "2-digit",
-          year: "numeric",
-          hour: "2-digit",
-          minute: "2-digit",
-          second: "2-digit",
-          hour12: false,
-          timeZone: "Europe/Madrid",
-        }),
-        total: platosDB[6].precio * 3,
-      },
-    ];
-    await Comanda.insertMany(comandas);
-    console.log("✔ Comandas insertadas");
-  }
-}
-
-insertarDatosDeTest();
-
+// Inicialización de la app Express y middlewares básicos
 const app = express();
 app.use(cors());
 app.use(bodyParser.json());
@@ -199,7 +29,7 @@ app.use(
   })
 );
 
-// Conexión a MongoDB
+// Conexión a MongoDB usando la URI de entorno
 if (!process.env.MONGODB_URI) {
   console.error("❌ Falta MONGODB_URI");
   process.exit(1);
@@ -212,7 +42,7 @@ mongoose
     process.exit(1);
   });
 
-// Crear admin y camarero por defecto
+// Crea usuarios por defecto si no existen (admin)
 (async () => {
   try {
     if ((await Admin.countDocuments()) === 0) {
@@ -220,22 +50,12 @@ mongoose
       await new Admin({ usuario: "admin", contraseña: hash }).save();
       console.log("🔐 Admin por defecto (admin/admin)");
     }
-    if ((await Camarero.countDocuments()) === 0) {
-      const hash2 = await bcrypt.hash("camarero", 10);
-      await new Camarero({ usuario: "camarero", contraseña: hash2 }).save();
-      console.log("🔐 Camarero por defecto (camarero/camarero)");
-    }
-    if ((await Cocinero.countDocuments()) === 0) {
-      const hash2 = await bcrypt.hash("cocinero", 10);
-      await new Cocinero({ usuario: "cocinero", contraseña: hash2 }).save();
-      console.log("🔐 Cocinero por defecto (cocinero/cocinero)");
-    }
   } catch (e) {
     console.error("❌ Error por defecto:", e.message);
   }
 })();
 
-// Middlewares
+// Middlewares de autenticación para proteger rutas según el rol
 function requireAdmin(req, res, next) {
   if (req.session?.adminId) return next();
   res.redirect("/admin");
@@ -244,19 +64,20 @@ function requireCamarero(req, res, next) {
   if (req.session?.camareroId) return next();
   res.redirect("/camarero");
 }
-function puedeCrearComanda(req, res, next) {
-  return next(); // permite público o camarero
-}
-
 function requireCocinero(req, res, next) {
   if (req.session?.cocineroId) return next();
   res.redirect("/cocinero");
 }
+function puedeCrearComanda(req, res, next) {
+  return next(); // permite público o camarero
+}
 
-// Rutas auth admin
+// Rutas de autenticación para admin
 app.get("/admin", (req, res) =>
   res.sendFile(path.join(__dirname, "public/admin/login.html"))
 );
+
+// Login de admin
 app.post("/api/admin/login", async (req, res) => {
   const { usuario, contraseña } = req.body;
   const adm = await Admin.findOne({ usuario });
@@ -265,6 +86,8 @@ app.post("/api/admin/login", async (req, res) => {
   req.session.adminId = adm._id;
   res.json({ message: "OK" });
 });
+
+// Logout de admin
 app.post("/api/admin/logout", (req, res) => {
   req.session.destroy((err) => {
     if (err) return res.status(500).json({ error: "Error logout" });
@@ -273,10 +96,12 @@ app.post("/api/admin/logout", (req, res) => {
   });
 });
 
-// Rutas auth camarero
+// Rutas de autenticación para camarero
 app.get("/camarero", (req, res) =>
   res.sendFile(path.join(__dirname, "public/camarero/login.html"))
 );
+
+// Login de camarero
 app.post("/api/camarero/login", async (req, res) => {
   const { usuario, contraseña } = req.body;
   const cam = await Camarero.findOne({ usuario });
@@ -285,6 +110,8 @@ app.post("/api/camarero/login", async (req, res) => {
   req.session.camareroId = cam._id;
   res.json({ message: "OK" });
 });
+
+// Logout de camarero
 app.post("/api/camarero/logout", (req, res) => {
   req.session.destroy((err) => {
     if (err) return res.status(500).json({ error: "Error logout" });
@@ -293,10 +120,12 @@ app.post("/api/camarero/logout", (req, res) => {
   });
 });
 
-// Rutas auth camarero
+// Rutas de autenticación para cocinero
 app.get("/cocinero", (req, res) =>
   res.sendFile(path.join(__dirname, "public/cocinero/login.html"))
 );
+
+// Login de cocinero
 app.post("/api/cocinero/login", async (req, res) => {
   const { usuario, contraseña } = req.body;
   const cam = await Cocinero.findOne({ usuario });
@@ -305,6 +134,8 @@ app.post("/api/cocinero/login", async (req, res) => {
   req.session.cocineroId = cam._id;
   res.json({ message: "OK" });
 });
+
+// Logout de cocinero
 app.post("/api/cocinero/logout", (req, res) => {
   req.session.destroy((err) => {
     if (err) return res.status(500).json({ error: "Error logout" });
@@ -313,12 +144,13 @@ app.post("/api/cocinero/logout", (req, res) => {
   });
 });
 
-// Admin crea/elimina camareros
+// CRUD de camareros (admin)
 app.get("/api/camareros", requireAdmin, async (req, res) => {
   const lista = await Camarero.find({}, "usuario");
   res.json(lista);
 });
 
+// Crear un nuevo camarero
 app.post("/api/camareros", requireAdmin, async (req, res) => {
   const { usuario, contraseña } = req.body;
 
@@ -341,6 +173,7 @@ app.post("/api/camareros", requireAdmin, async (req, res) => {
   }
 });
 
+// Eliminar un camarero
 app.delete("/api/camareros/:id", requireAdmin, async (req, res) => {
   try {
     const eliminado = await Camarero.findByIdAndDelete(req.params.id);
@@ -351,12 +184,13 @@ app.delete("/api/camareros/:id", requireAdmin, async (req, res) => {
   }
 });
 
-// Admin crea/elimina camareros
+// CRUD de cocineros (admin)
 app.get("/api/cocineros", requireAdmin, async (req, res) => {
   const lista = await Cocinero.find({}, "usuario");
   res.json(lista);
 });
 
+// Crear un nuevo cocinero
 app.post("/api/cocineros", requireAdmin, async (req, res) => {
   const { usuario, contraseña } = req.body;
 
@@ -379,6 +213,7 @@ app.post("/api/cocineros", requireAdmin, async (req, res) => {
   }
 });
 
+// Eliminar un cocinero
 app.delete("/api/cocineros/:id", requireAdmin, async (req, res) => {
   try {
     const eliminado = await Cocinero.findByIdAndDelete(req.params.id);
@@ -389,7 +224,7 @@ app.delete("/api/cocineros/:id", requireAdmin, async (req, res) => {
   }
 });
 
-// Vistas
+// Vistas protegidas según el rol
 app.get("/admin/panel", requireAdmin, (req, res) =>
   res.sendFile(path.join(__dirname, "public/admin/admin-panel.html"))
 );
@@ -421,7 +256,7 @@ app.post("/api/comandas", puedeCrearComanda, async (req, res) => {
   }
 });
 
-// Resto rutas públicas y protegidas
+// Obtener platos públicos
 app.get("/public/platos", async (req, res) => {
   try {
     const platos = await Plato.find().populate("categoria");
@@ -430,6 +265,8 @@ app.get("/public/platos", async (req, res) => {
     res.status(500).json({ error: e.message });
   }
 });
+
+// CRUD Comandas (admin)
 app.get("/api/comandas", requireAdmin, async (req, res) => {
   try {
     const lista = await Comanda.find().sort({ fecha: -1 });
@@ -439,7 +276,7 @@ app.get("/api/comandas", requireAdmin, async (req, res) => {
   }
 });
 
-// Ruta específica para cocina (comandas para cocinero)
+// Comandas para cocina (cocinero)
 app.get("/api/comandas/cocina", requireCocinero, async (req, res) => {
   try {
     const comandas = await Comanda.find().sort({ fecha: -1 });
@@ -449,6 +286,7 @@ app.get("/api/comandas/cocina", requireCocinero, async (req, res) => {
   }
 });
 
+// Obtener una comanda por ID (cocinero)
 app.delete("/api/comandas/:id", requireCocinero, async (req, res) => {
   try {
     const eliminada = await Comanda.findByIdAndDelete(req.params.id);
@@ -460,6 +298,7 @@ app.delete("/api/comandas/:id", requireCocinero, async (req, res) => {
   }
 });
 
+// Actualizar una comanda (cocinero)
 app.patch("/api/comandas/:id", requireCocinero, async (req, res) => {
   try {
     const { id } = req.params;
@@ -478,6 +317,7 @@ app.patch("/api/comandas/:id", requireCocinero, async (req, res) => {
   }
 });
 
+// Actualizar el estado de un plato (cocinero)
 app.put("/api/comandas/:id/plato", requireCocinero, async (req, res) => {
   try {
     const { platoIndex, nuevosHechos } = req.body;
@@ -494,47 +334,62 @@ app.put("/api/comandas/:id/plato", requireCocinero, async (req, res) => {
   }
 });
 
-// CRUD Platos (solo admin)
+// CRUD Platos (admin)
 app.get("/api/platos", requireAdmin, async (req, res) => {
   const platos = await Plato.find().populate("categoria");
   res.json(platos);
 });
+
+// Obtener un plato por ID (admin)
 app.get("/api/platos/:id", requireAdmin, async (req, res) => {
   const p = await Plato.findById(req.params.id).populate("categoria");
   if (!p) return res.status(404).json({ error: "No encontrado" });
   res.json(p);
 });
+
+// Crear un nuevo plato (admin)
 app.post("/api/platos", requireAdmin, async (req, res) => {
   res.status(201).json(await new Plato(req.body).save());
 });
+
+// Actualizar un plato (admin)
 app.put("/api/platos/:id", requireAdmin, async (req, res) => {
   const updated = await Plato.findByIdAndUpdate(req.params.id, req.body, {
     new: true,
   }).populate("categoria");
   res.json(updated);
 });
+
+// Eliminar un plato (admin)
 app.delete("/api/platos/:id", requireAdmin, async (req, res) => {
   await Plato.findByIdAndDelete(req.params.id);
   res.json({ message: "Eliminado" });
 });
 
-// CRUD Categorías (solo admin)
+// CRUD Categorías (admin)
 app.get("/api/categorias", requireAdmin, async (req, res) =>
   res.json(await Categoria.find())
 );
+
+// Obtener una categoría por ID (admin)
 app.get("/api/categorias/:id", requireAdmin, async (req, res) => {
   const cat = await Categoria.findById(req.params.id);
-  if (!cat) return res.status(404).json({ error: "No encontrada" });
+  if (!cat)
+    return res.status(404).json({ error: "No se ha encontrado la categoría." });
   res.json(cat);
 });
+
+// Crear una nueva categoría (admin)
 app.post("/api/categorias", requireAdmin, async (req, res) => {
   const nombre = req.body.nombre.trim().toLowerCase();
   if (await Categoria.findOne({ nombre }))
-    return res.status(409).json({ error: "Ya existe" });
+    return res.status(409).json({ error: "Ya existe esa categoría." });
   const nueva = new Categoria({ nombre });
   await nueva.save();
   res.status(201).json(nueva);
 });
+
+// Actualizar una categoría (admin)
 app.put("/api/categorias/:id", requireAdmin, async (req, res) => {
   const updated = await Categoria.findByIdAndUpdate(
     req.params.id,
@@ -544,6 +399,8 @@ app.put("/api/categorias/:id", requireAdmin, async (req, res) => {
   if (!updated) return res.status(404).json({ error: "No encontrada" });
   res.json(updated);
 });
+
+// Eliminar una categoría (admin) y actualizar platos
 app.delete("/api/categorias/:id", requireAdmin, async (req, res) => {
   await Plato.updateMany(
     { categoria: req.params.id },
@@ -554,14 +411,19 @@ app.delete("/api/categorias/:id", requireAdmin, async (req, res) => {
   res.json({ message: "Eliminada y platos actualizados" });
 });
 
-// Front-end público
+// Rutas públicas para el frontend
 app.get("/", (req, res) =>
   res.sendFile(path.join(__dirname, "public/index.html"))
 );
+
+// Rutas para público
 app.get("/:mesa/comanda", (req, res) =>
   res.sendFile(path.join(__dirname, "public/mesa/comanda.html"))
 );
+
+// Esta ruta sirve los archivos estáticos del frontend
 app.use(express.static(path.join(__dirname, "public")));
 
+// Arranque del servidor
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`✅ Servidor en http://localhost:${PORT}`));
