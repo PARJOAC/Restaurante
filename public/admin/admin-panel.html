@@ -17,6 +17,8 @@
           <li data-section="platos" class="active">Platos</li>
           <li data-section="categorias">Categorías</li>
           <li data-section="comandas">Comandas</li>
+          <li data-section="camareros">Camareros</li>
+          <li data-section="cocineros">Cocineros</li>
           <li data-section="config">Configuración</li>
         </ul>
         <button id="logout" class="btn logout">Cerrar sesión</button>
@@ -106,6 +108,54 @@
               <tbody id="comandas-body"></tbody>
             </table>
           </div>
+        </section>
+
+        <!-- Camareros section -->
+        <section id="camareros" class="panel-section">
+          <h2>Gestión de Camareros</h2>
+          <form id="camarero-form">
+            <input name="usuario" placeholder="Usuario" required />
+            <input
+              name="contraseña"
+              type="password"
+              placeholder="Contraseña"
+              required
+            />
+            <button type="submit" class="btn">Crear Camarero</button>
+          </form>
+          <table>
+            <thead>
+              <tr>
+                <th>Usuario</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="camareros-body"></tbody>
+          </table>
+        </section>
+
+        <!-- Cocinero section -->
+        <section id="cocineros" class="panel-section">
+          <h2>Gestión de Cocineros</h2>
+          <form id="cocinero-form">
+            <input name="usuario" placeholder="Usuario" required />
+            <input
+              name="contraseña"
+              type="password"
+              placeholder="Contraseña"
+              required
+            />
+            <button type="submit" class="btn">Crear Cocinero</button>
+          </form>
+          <table>
+            <thead>
+              <tr>
+                <th>Usuario</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="cocineros-body"></tbody>
+          </table>
         </section>
 
         <!-- Configuración section -->

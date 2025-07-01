@@ -1,15 +1,13 @@
 const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
 
-const adminSchema = new mongoose.Schema({
+const camareroSchema = new mongoose.Schema({
   usuario: { type: String, required: true, unique: true },
   contraseña: { type: String, required: true },
 });
 
-// Método para verificar contraseña
-adminSchema.methods.comprobarPassword = function (inputPassword) {
+camareroSchema.methods.comprobarPassword = function (inputPassword) {
   return bcrypt.compare(inputPassword, this.contraseña);
 };
-
-const Admin = mongoose.model("Admin", adminSchema);
-module.exports = Admin;
+const Camarero = mongoose.model("Camarero", camareroSchema);
+module.exports = Camarero;

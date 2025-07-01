@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Contra Corriente – Panel Camarero</title>
+    <link rel="stylesheet" href="/general.css" />
+    <link rel="stylesheet" href="/camarero/comanda.css" />
+  </head>
+  <body>
+    <header>
+      <div class="logo">Contra Corriente – Camarero</div>
+    </header>
+
+    <main>
+      <section id="pedido">
+        <div class="mesa-input">
+          <label for="mesa">Mesa:</label>
+          <input type="text" id="mesa" placeholder="Número de mesa" />
+        </div>
+
+        <div id="items-menu" class="menu-grid"></div>
+
+        <aside id="resumen-pedido">
+          <ul id="lista-resumen"></ul>
+          <div class="resumen-footer">
+            <p>
+              Total: <b><span id="total">0.00</span>€</b>
+            </p>
+            <button onclick="enviarComanda()">Enviar comanda</button>
+          </div>
+        </aside>
+      </section>
+    </main>
+
+    <footer>
+      <p>Gracias por su trabajo 😊</p>
+    </footer>
+
+    <script src="/camarero/comanda.js"></script>
+  </body>
+</html>

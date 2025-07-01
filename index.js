@@ -10,9 +10,11 @@ require("dotenv").config();
 const Plato = require("./models/Platos");
 const Comanda = require("./models/Comandas");
 const Admin = require("./models/Admin");
+const Camarero = require("./models/Camarero");
+const Cocinero = require("./models/Cocinero");
 const Categoria = require("./models/Categorias");
 
-// Función para insertar datos de test
+// Función para inicializar datos de prueba
 async function insertarDatosDeTest() {
   const hayPlatos = await Plato.countDocuments();
   const hayComandas = await Comanda.countDocuments();
@@ -22,62 +24,79 @@ async function insertarDatosDeTest() {
       {
         nombre: "Paella Valenciana",
         precio: 12.5,
-        imagen: "https://images.unsplash.com/photo-1586190848861-99aa4a171e90",
-        descripcion: "Arroz con pollo, conejo y verduras",
+        imagen:
+          "https://via.placeholder.com/300x200.png?text=Paella+Valenciana",
+        descripcion:
+          "Arroz con pollo, conejo, garrofó y judías, aromatizado con azafrán y acabado con socarrat crujiente.",
       },
       {
         nombre: "Tortilla Española",
         precio: 6.0,
-        imagen: "https://images.unsplash.com/photo-1605479130549-c7bd026ff7a1",
-        descripcion: "Con cebolla y jugosa por dentro",
+        imagen:
+          "https://via.placeholder.com/300x200.png?text=Tortilla+Española",
+        descripcion:
+          "Omelette grueso de patata y cebolla, jugoso por dentro y dorado por fuera — clásico tapas.",
       },
       {
         nombre: "Croquetas Caseras",
         precio: 5.5,
-        imagen: "https://images.unsplash.com/photo-1608571424600-d0db84b3b75b",
-        descripcion: "De jamón ibérico",
+        imagen:
+          "https://via.placeholder.com/300x200.png?text=Croquetas+Caseras",
+        descripcion:
+          "Crujientes por fuera, suaves en su interior de bechamel con jamón ibérico.",
       },
       {
         nombre: "Pulpo a la Gallega",
         precio: 13.0,
-        imagen: "https://images.unsplash.com/photo-1583337130417-3346a1fc1d50",
-        descripcion: "Con pimentón y aceite de oliva",
+        imagen:
+          "https://via.placeholder.com/300x200.png?text=Pulpo+a+la+Gallega",
+        descripcion:
+          "Pulpo cocido tierno, espolvoreado con pimentón, sal gorda y aceite de oliva.",
       },
       {
         nombre: "Gazpacho Andaluz",
         precio: 4.5,
-        imagen: "https://images.unsplash.com/photo-1625940480216-f092e15b314b",
-        descripcion: "Sopa fría de tomate y verduras",
+        imagen: "https://via.placeholder.com/300x200.png?text=Gazpacho+Andaluz",
+        descripcion:
+          "Sopa fría de tomate, pimiento y pepino, fresca y perfecta para el verano.",
       },
       {
         nombre: "Ensaladilla Rusa",
         precio: 5.0,
-        imagen: "https://images.unsplash.com/photo-1562967916-eb82221dfb52",
-        descripcion: "Con atún y mayonesa",
+        imagen: "https://via.placeholder.com/300x200.png?text=Ensaladilla+Rusa",
+        descripcion:
+          "Ensalada cremosa de patata, zanahoria, guisantes y atún con mayonesa.",
       },
       {
         nombre: "Calamares a la Romana",
         precio: 8.0,
-        imagen: "https://images.unsplash.com/photo-1608748494116-54740f291fe1",
-        descripcion: "Rebozados y crujientes",
+        imagen:
+          "https://via.placeholder.com/300x200.png?text=Calamares+a+la+Romana",
+        descripcion:
+          "Anillas de calamar rebozadas y fritas, doradas y crujientes.",
       },
       {
         nombre: "Salmorejo Cordobés",
         precio: 5.0,
-        imagen: "https://images.unsplash.com/photo-1616486235650-bb0db59de030",
-        descripcion: "Sopa espesa de tomate con jamón",
+        imagen:
+          "https://via.placeholder.com/300x200.png?text=Salmorejo+Cordobes",
+        descripcion:
+          "Crema fría espesa de tomate y pan, servida con huevo duro y jamón en taquitos.",
       },
       {
         nombre: "Albóndigas con Tomate",
         precio: 7.5,
-        imagen: "https://images.unsplash.com/photo-1576402187878-974f2b480eb2",
-        descripcion: "Carne picada con salsa casera",
+        imagen:
+          "https://via.placeholder.com/300x200.png?text=Albondigas+con+Tomate",
+        descripcion:
+          "Albóndigas caseras en salsa de tomate, tiernas y sabrosas.",
       },
       {
         nombre: "Pisto Manchego",
         precio: 6.0,
-        imagen: "https://images.unsplash.com/photo-1598515213887-300b1b50b809",
-        descripcion: "Verduras guisadas al estilo manchego",
+        imagen: "https://via.placeholder.com/300x200.png?text=Pisto+Manchego",
+        descripcion:
+          "Guiso de verduras (tomate, pimiento, calabacín) cocinado lentamente.",
       },
     ];
     await Plato.insertMany(platos);
@@ -165,6 +184,7 @@ async function insertarDatosDeTest() {
     console.log("✔ Comandas insertadas");
   }
 }
+
 insertarDatosDeTest();
 
 const app = express();
@@ -180,151 +200,208 @@ app.use(
 );
 
 // Conexión a MongoDB
-const MONGODB_URI = process.env.MONGODB_URI;
-if (!MONGODB_URI) {
-  console.error("❌ Falta la variable de entorno MONGODB_URI");
+if (!process.env.MONGODB_URI) {
+  console.error("❌ Falta MONGODB_URI");
   process.exit(1);
 }
 mongoose
-  .connect(MONGODB_URI)
+  .connect(process.env.MONGODB_URI)
   .then(() => console.log("✅ MongoDB conectado"))
   .catch((err) => {
-    console.error("❌ Error en la conexión a MongoDB:", err.message);
+    console.error("❌ Error conexión:", err.message);
     process.exit(1);
   });
 
-// Crear admin por defecto si no existe
+// Crear admin y camarero por defecto
 (async () => {
   try {
-    const count = await Admin.countDocuments();
-    if (count === 0) {
-      const hashed = await bcrypt.hash("admin", 10);
-      await new Admin({ usuario: "admin", contraseña: hashed }).save();
-      console.log("🔐 Usuario admin creado (admin/admin)");
+    if ((await Admin.countDocuments()) === 0) {
+      const hash = await bcrypt.hash("admin", 10);
+      await new Admin({ usuario: "admin", contraseña: hash }).save();
+      console.log("🔐 Admin por defecto (admin/admin)");
+    }
+    if ((await Camarero.countDocuments()) === 0) {
+      const hash2 = await bcrypt.hash("camarero", 10);
+      await new Camarero({ usuario: "camarero", contraseña: hash2 }).save();
+      console.log("🔐 Camarero por defecto (camarero/camarero)");
+    }
+    if ((await Cocinero.countDocuments()) === 0) {
+      const hash2 = await bcrypt.hash("cocinero", 10);
+      await new Cocinero({ usuario: "cocinero", contraseña: hash2 }).save();
+      console.log("🔐 Cocinero por defecto (cocinero/cocinero)");
     }
   } catch (e) {
-    console.error("❌ Error creando admin por defecto:", e.message);
+    console.error("❌ Error por defecto:", e.message);
   }
 })();
 
-// Middleware para proteger rutas admin
+// Middlewares
 function requireAdmin(req, res, next) {
-  if (req.session && req.session.adminId) return next();
-  // Redirigir a la página de login si no está autenticado
-  return res.redirect("/admin");
+  if (req.session?.adminId) return next();
+  res.redirect("/admin");
+}
+function requireCamarero(req, res, next) {
+  if (req.session?.camareroId) return next();
+  res.redirect("/camarero");
+}
+function puedeCrearComanda(req, res, next) {
+  return next(); // permite público o camarero
 }
 
-// AUTH — login/logout
-app.get("/admin", (req, res) => {
-  res.sendFile(path.join(__dirname, "public/admin/login.html"));
-});
+function requireCocinero(req, res, next) {
+  if (req.session?.cocineroId) return next();
+  res.redirect("/cocinero");
+}
 
+// Rutas auth admin
+app.get("/admin", (req, res) =>
+  res.sendFile(path.join(__dirname, "public/admin/login.html"))
+);
 app.post("/api/admin/login", async (req, res) => {
   const { usuario, contraseña } = req.body;
-  try {
-    const admin = await Admin.findOne({ usuario });
-    if (!admin) return res.status(401).json({ error: "Usuario no encontrado" });
-    const valid = await bcrypt.compare(contraseña, admin.contraseña);
-    if (!valid) return res.status(401).json({ error: "Contraseña incorrecta" });
-    req.session.adminId = admin._id;
-    res.json({ message: "Login correcto" });
-  } catch {
-    res.status(500).json({ error: "Error interno" });
-  }
+  const adm = await Admin.findOne({ usuario });
+  if (!adm || !(await adm.comprobarPassword(contraseña)))
+    return res.status(401).json({ error: "Credenciales inválidas" });
+  req.session.adminId = adm._id;
+  res.json({ message: "OK" });
 });
 app.post("/api/admin/logout", (req, res) => {
   req.session.destroy((err) => {
-    if (err) return res.status(500).json({ error: "Error al cerrar sesión" });
+    if (err) return res.status(500).json({ error: "Error logout" });
     res.clearCookie("connect.sid");
     res.json({ message: "Sesión cerrada" });
   });
 });
 
-// Panel admin (protegido)
-app.get("/admin/panel", requireAdmin, (req, res) => {
-  res.sendFile(path.join(__dirname, "public/admin/admin-panel.html"));
+// Rutas auth camarero
+app.get("/camarero", (req, res) =>
+  res.sendFile(path.join(__dirname, "public/camarero/login.html"))
+);
+app.post("/api/camarero/login", async (req, res) => {
+  const { usuario, contraseña } = req.body;
+  const cam = await Camarero.findOne({ usuario });
+  if (!cam || !(await cam.comprobarPassword(contraseña)))
+    return res.status(401).json({ error: "Credenciales inválidas" });
+  req.session.camareroId = cam._id;
+  res.json({ message: "OK" });
+});
+app.post("/api/camarero/logout", (req, res) => {
+  req.session.destroy((err) => {
+    if (err) return res.status(500).json({ error: "Error logout" });
+    res.clearCookie("connect.sid");
+    res.json({ message: "Sesión cerrada" });
+  });
 });
 
-// Cambiar contraseña
-app.post("/api/admin/change-password", requireAdmin, async (req, res) => {
-  const { current, new: newPwd } = req.body;
-  try {
-    const admin = await Admin.findById(req.session.adminId);
-    const match = await bcrypt.compare(current, admin.contraseña);
-    if (!match)
-      return res.status(400).json({ error: "Contraseña actual incorrecta" });
-
-    admin.contraseña = await bcrypt.hash(newPwd, 10);
-    await admin.save();
-    res.json({ message: "Contraseña actualizada" });
-  } catch (e) {
-    res.status(500).json({ error: "Error interno" });
-  }
+// Rutas auth camarero
+app.get("/cocinero", (req, res) =>
+  res.sendFile(path.join(__dirname, "public/cocinero/login.html"))
+);
+app.post("/api/cocinero/login", async (req, res) => {
+  const { usuario, contraseña } = req.body;
+  const cam = await Cocinero.findOne({ usuario });
+  if (!cam || !(await cam.comprobarPassword(contraseña)))
+    return res.status(401).json({ error: "Credenciales inválidas" });
+  req.session.cocineroId = cam._id;
+  res.json({ message: "OK" });
+});
+app.post("/api/cocinero/logout", (req, res) => {
+  req.session.destroy((err) => {
+    if (err) return res.status(500).json({ error: "Error logout" });
+    res.clearCookie("connect.sid");
+    res.json({ message: "Sesión cerrada" });
+  });
 });
 
-// CRUD Platos (solo admin)
-// Obtener todos los platos con categoría poblada
-app.get("/api/platos", requireAdmin, async (req, res) => {
-  try {
-    const platos = await Plato.find().populate("categoria");
-    res.json(platos);
-  } catch (e) {
-    res.status(500).json({ error: e.message });
-  }
+// Admin crea/elimina camareros
+app.get("/api/camareros", requireAdmin, async (req, res) => {
+  const lista = await Camarero.find({}, "usuario");
+  res.json(lista);
 });
 
-// Obtener plato por ID con categoría poblada
-app.get("/api/platos/:id", requireAdmin, async (req, res) => {
-  try {
-    const p = await Plato.findById(req.params.id).populate("categoria");
-    if (!p) return res.status(404).json({ error: "Plato no encontrado" });
-    res.json(p);
-  } catch (e) {
-    res.status(500).json({ error: e.message });
-  }
-});
+app.post("/api/camareros", requireAdmin, async (req, res) => {
+  const { usuario, contraseña } = req.body;
 
-app.post("/api/platos", requireAdmin, async (req, res) => {
   try {
-    res.status(201).json(await new Plato(req.body).save());
-  } catch (e) {
-    res.status(500).json({ error: e.message });
-  }
-});
+    if (await Camarero.findOne({ usuario })) {
+      return res.status(409).json({ error: "Ese camarero ya existe." });
+    }
 
-app.put("/api/platos/:id", requireAdmin, async (req, res) => {
-  try {
-    const updatedPlato = await Plato.findByIdAndUpdate(
-      req.params.id,
-      req.body,
-      { new: true }
-    ).populate("categoria");
-    res.json(updatedPlato);
-  } catch (e) {
-    res.status(500).json({ error: e.message });
-  }
-});
+    // Generar el hash de la contraseña
+    const salt = await bcrypt.genSalt(10);
+    const hash = await bcrypt.hash(contraseña, salt);
 
-app.delete("/api/platos/:id", requireAdmin, async (req, res) => {
-  try {
-    await Plato.findByIdAndDelete(req.params.id);
-    res.json({ message: "Plato eliminado" });
+    // Crear y guardar el nuevo camarero con contraseña cifrada
+    const nuevo = new Camarero({ usuario, contraseña: hash });
+    await nuevo.save();
+
+    res.status(201).json({ usuario: nuevo.usuario, _id: nuevo._id });
   } catch (e) {
     res.status(500).json({ error: e.message });
   }
 });
 
-// API pública — ver platos y enviar comandas
-app.get("/public/platos", async (req, res) => {
+app.delete("/api/camareros/:id", requireAdmin, async (req, res) => {
   try {
-    const platos = await Plato.find().populate("categoria");
-    res.json(platos);
+    const eliminado = await Camarero.findByIdAndDelete(req.params.id);
+    if (!eliminado) return res.status(404).json({ error: "No encontrado" });
+    res.json({ message: "Camarero eliminado" });
   } catch (e) {
     res.status(500).json({ error: e.message });
   }
 });
 
-app.post("/api/comandas", async (req, res) => {
+// Admin crea/elimina camareros
+app.get("/api/cocineros", requireAdmin, async (req, res) => {
+  const lista = await Cocinero.find({}, "usuario");
+  res.json(lista);
+});
+
+app.post("/api/cocineros", requireAdmin, async (req, res) => {
+  const { usuario, contraseña } = req.body;
+
+  try {
+    if (await Cocinero.findOne({ usuario })) {
+      return res.status(409).json({ error: "Ese cocinero ya existe." });
+    }
+
+    // Generar el hash de la contraseña
+    const salt = await bcrypt.genSalt(10);
+    const hash = await bcrypt.hash(contraseña, salt);
+
+    // Crear y guardar el nuevo camarero con contraseña cifrada
+    const nuevo = new Cocinero({ usuario, contraseña: hash });
+    await nuevo.save();
+
+    res.status(201).json({ usuario: nuevo.usuario, _id: nuevo._id });
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
+});
+
+app.delete("/api/cocineros/:id", requireAdmin, async (req, res) => {
+  try {
+    const eliminado = await Cocinero.findByIdAndDelete(req.params.id);
+    if (!eliminado) return res.status(404).json({ error: "No encontrado" });
+    res.json({ message: "Cocinero eliminado" });
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
+});
+
+// Vistas
+app.get("/admin/panel", requireAdmin, (req, res) =>
+  res.sendFile(path.join(__dirname, "public/admin/admin-panel.html"))
+);
+app.get("/camarero/comanda", requireCamarero, (req, res) =>
+  res.sendFile(path.join(__dirname, "public/camarero/comanda.html"))
+);
+app.get("/cocinero/comandas", requireCocinero, (req, res) =>
+  res.sendFile(path.join(__dirname, "public/cocinero/comanda.html"))
+);
+
+// Crear comanda (camarero o público)
+app.post("/api/comandas", puedeCrearComanda, async (req, res) => {
   try {
     const { mesa, platos, total } = req.body;
     const fecha = new Date().toLocaleString("es-ES", {
@@ -337,14 +414,22 @@ app.post("/api/comandas", async (req, res) => {
       hour12: false,
       timeZone: "Europe/Madrid",
     });
-    res
-      .status(201)
-      .json(await new Comanda({ mesa, platos, fecha, total }).save());
+    const nueva = new Comanda({ mesa, platos, fecha, total });
+    res.status(201).json(await nueva.save());
   } catch (e) {
     res.status(500).json({ error: e.message });
   }
 });
 
+// Resto rutas públicas y protegidas
+app.get("/public/platos", async (req, res) => {
+  try {
+    const platos = await Plato.find().populate("categoria");
+    res.json(platos);
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
+});
 app.get("/api/comandas", requireAdmin, async (req, res) => {
   try {
     const lista = await Comanda.find().sort({ fecha: -1 });
@@ -354,96 +439,129 @@ app.get("/api/comandas", requireAdmin, async (req, res) => {
   }
 });
 
+// Ruta específica para cocina (comandas para cocinero)
+app.get("/api/comandas/cocina", requireCocinero, async (req, res) => {
+  try {
+    const comandas = await Comanda.find().sort({ fecha: -1 });
+    res.json(comandas);
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
+});
+
+app.delete("/api/comandas/:id", requireCocinero, async (req, res) => {
+  try {
+    const eliminada = await Comanda.findByIdAndDelete(req.params.id);
+    if (!eliminada)
+      return res.status(404).json({ error: "Comanda no encontrada" });
+    res.json({ message: "Comanda eliminada" });
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
+});
+
+app.patch("/api/comandas/:id", requireCocinero, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { platos } = req.body;
+
+    const comanda = await Comanda.findById(id);
+    if (!comanda)
+      return res.status(404).json({ error: "Comanda no encontrada" });
+
+    comanda.platos = platos;
+    await comanda.save();
+
+    res.json({ success: true });
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
+});
+
+app.put("/api/comandas/:id/plato", requireCocinero, async (req, res) => {
+  try {
+    const { platoIndex, nuevosHechos } = req.body;
+    const comanda = await Comanda.findById(req.params.id);
+    if (!comanda) return res.status(404).json({ error: "No encontrada" });
+    if (!comanda.platos[platoIndex])
+      return res.status(400).json({ error: "Índice inválido" });
+
+    comanda.platos[platoIndex].ready = nuevosHechos;
+    await comanda.save();
+    res.json({ message: "Actualizado" });
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
+});
+
+// CRUD Platos (solo admin)
+app.get("/api/platos", requireAdmin, async (req, res) => {
+  const platos = await Plato.find().populate("categoria");
+  res.json(platos);
+});
+app.get("/api/platos/:id", requireAdmin, async (req, res) => {
+  const p = await Plato.findById(req.params.id).populate("categoria");
+  if (!p) return res.status(404).json({ error: "No encontrado" });
+  res.json(p);
+});
+app.post("/api/platos", requireAdmin, async (req, res) => {
+  res.status(201).json(await new Plato(req.body).save());
+});
+app.put("/api/platos/:id", requireAdmin, async (req, res) => {
+  const updated = await Plato.findByIdAndUpdate(req.params.id, req.body, {
+    new: true,
+  }).populate("categoria");
+  res.json(updated);
+});
+app.delete("/api/platos/:id", requireAdmin, async (req, res) => {
+  await Plato.findByIdAndDelete(req.params.id);
+  res.json({ message: "Eliminado" });
+});
+
 // CRUD Categorías (solo admin)
-app.get("/api/categorias", requireAdmin, async (req, res) => {
-  try {
-    const categorias = await Categoria.find();
-    res.json(categorias);
-  } catch (e) {
-    res.status(500).json({ error: e.message });
-  }
-});
-
+app.get("/api/categorias", requireAdmin, async (req, res) =>
+  res.json(await Categoria.find())
+);
 app.get("/api/categorias/:id", requireAdmin, async (req, res) => {
-  try {
-    const categoria = await Categoria.findById(req.params.id);
-    if (!categoria)
-      return res.status(404).json({ error: "Categoría no encontrada" });
-    res.json(categoria);
-  } catch (e) {
-    res.status(500).json({ error: e.message });
-  }
+  const cat = await Categoria.findById(req.params.id);
+  if (!cat) return res.status(404).json({ error: "No encontrada" });
+  res.json(cat);
 });
-
 app.post("/api/categorias", requireAdmin, async (req, res) => {
-  try {
-    // Convertir a minúsculas y eliminar espacios extra
-    const nombre = req.body.nombre.trim().toLowerCase();
-
-    // Verificar si ya existe una categoría con ese nombre en minúsculas
-    const existe = await Categoria.findOne({ nombre });
-    if (existe) {
-      return res.status(409).json({ error: "Categoría ya existe" });
-    }
-
-    const nuevaCategoria = new Categoria({ nombre });
-    await nuevaCategoria.save();
-    res.status(201).json(nuevaCategoria);
-  } catch (e) {
-    res.status(500).json({ error: e.message });
-  }
+  const nombre = req.body.nombre.trim().toLowerCase();
+  if (await Categoria.findOne({ nombre }))
+    return res.status(409).json({ error: "Ya existe" });
+  const nueva = new Categoria({ nombre });
+  await nueva.save();
+  res.status(201).json(nueva);
 });
-
 app.put("/api/categorias/:id", requireAdmin, async (req, res) => {
-  try {
-    const categoriaActualizada = await Categoria.findByIdAndUpdate(
-      req.params.id,
-      { nombre: req.body.nombre },
-      { new: true }
-    );
-    if (!categoriaActualizada)
-      return res.status(404).json({ error: "Categoría no encontrada" });
-    res.json(categoriaActualizada);
-  } catch (e) {
-    res.status(500).json({ error: e.message });
-  }
+  const updated = await Categoria.findByIdAndUpdate(
+    req.params.id,
+    { nombre: req.body.nombre },
+    { new: true }
+  );
+  if (!updated) return res.status(404).json({ error: "No encontrada" });
+  res.json(updated);
 });
-
-// Eliminar categoría (solo admin)
 app.delete("/api/categorias/:id", requireAdmin, async (req, res) => {
-  try {
-    const categoriaId = req.params.id;
-
-    // Actualizar platos que tienen esa categoría, asignándoles categoria null (sin categoría)
-    await Plato.updateMany(
-      { categoria: categoriaId },
-      { $unset: { categoria: null } } // o { categoria: null } si prefieres
-    );
-
-    // Borrar la categoría
-    const categoriaEliminada = await Categoria.findByIdAndDelete(categoriaId);
-    if (!categoriaEliminada)
-      return res.status(404).json({ error: "Categoría no encontrada" });
-
-    res.json({ message: "Categoría eliminada y platos actualizados" });
-  } catch (e) {
-    res.status(500).json({ error: e.message });
-  }
+  await Plato.updateMany(
+    { categoria: req.params.id },
+    { $unset: { categoria: null } }
+  );
+  const cat = await Categoria.findByIdAndDelete(req.params.id);
+  if (!cat) return res.status(404).json({ error: "No encontrada" });
+  res.json({ message: "Eliminada y platos actualizados" });
 });
 
 // Front-end público
-app.get("/", (req, res) => {
-  res.sendFile(path.join(__dirname, "public/index.html"));
-});
-app.get("/:mesa/comanda", (req, res) => {
-  res.sendFile(path.join(__dirname, "public/mesa/comanda.html"));
-});
-
-// Servir estáticos
+app.get("/", (req, res) =>
+  res.sendFile(path.join(__dirname, "public/index.html"))
+);
+app.get("/:mesa/comanda", (req, res) =>
+  res.sendFile(path.join(__dirname, "public/mesa/comanda.html"))
+);
 app.use(express.static(path.join(__dirname, "public")));
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`✅ Servidor en http://localhost:${PORT}`));
-app.listen(PORT, "0.0.0.0", () => {
-  console.log(`Servidor escuchando en http://0.0.0.0:${PORT}`);
-});

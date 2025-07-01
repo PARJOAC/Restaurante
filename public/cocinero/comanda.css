@@ -1,0 +1,92 @@
+body {
+  font-family: sans-serif;
+  padding: 1rem;
+  background: #f9f9f9;
+}
+
+h1 {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.comanda {
+  border-radius: 10px;
+  padding: 1rem;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  background-color: #e0ffe0; /* verde nuevas */
+  transition: background 0.3s ease;
+}
+
+.comanda.en-proceso {
+  background-color: #fff8d5; /* amarillo */
+}
+
+.comanda.finalizada {
+  background-color: #ffe0e0; /* rojo */
+}
+
+.comanda h2 {
+  margin-top: 0;
+}
+
+.plato {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 0.75rem;
+  font-size: 1.1rem;
+}
+
+.plato input[type="checkbox"] {
+  margin-right: 0.75rem;
+}
+
+.estado {
+  margin-top: 1rem;
+  font-weight: bold;
+}
+
+.ocultar {
+  margin-top: 2rem;
+  text-align: center;
+}
+
+button {
+  padding: 0.5rem 1rem;
+  font-size: 1rem;
+  cursor: pointer;
+  background: #0077cc;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  transition: background 0.3s;
+}
+
+button:hover {
+  background: #005fa3;
+}
+
+.plato.tachado {
+  text-decoration: line-through;
+  color: #777;
+}
+
+.btn-marca {
+  padding: 0.5rem 0.9rem;
+  font-size: 1.2rem;
+  background-color: #0077cc;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.btn-marca:hover {
+  background-color: #005fa3;
+}
+
+small {
+  font-size: 0.85rem;
+  color: #555;
+}
