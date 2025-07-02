@@ -3,64 +3,40 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Contra Corriente – Comanda Mesa</title>
-
-    <!-- Estilos globales y específicos del menú -->
+    <title>Contra Corriente – Carta</title>
     <link rel="stylesheet" href="/css/general.css" />
     <link rel="stylesheet" href="/css/carta.css" />
+
+    <script>
+      const mesa = window.location.pathname.split("/")[1];
+      window.__mesa = mesa;
+    </script>
+    <script src="/mesa/comanda.js" defer></script>
   </head>
+
   <body>
-    <!-- Encabezado con nombre del restaurante -->
     <header>
       <div class="logo">Contra Corriente – Carta</div>
-    </header
+    </header>
 
     <main>
       <section id="pedido">
-        <!-- Contenedor donde se cargarán los platos disponibles -->
-        <div id="items-menu" class="menu-grid">
-          <!-- Se llenará dinámicamente desde JS -->
-        </div>
+        <div id="items-menu"></div>
 
-        <!-- Resumen del pedido con lista de platos y total -->
         <aside id="resumen-pedido">
           <ul id="lista-resumen"></ul>
-
-          <!-- Pie del resumen con total y botón de enviar -->
           <div class="resumen-footer">
             <p>
               Total: <b><span id="total">0.00</span>€</b>
             </p>
-            <!-- Botón para enviar comanda al servidor -->
             <button onclick="enviarComanda()">Enviar comanda</button>
           </div>
         </aside>
       </section>
     </main>
 
-    <!-- Pie de página de cortesía -->
     <footer>
       <p>Gracias por su visita 😊</p>
     </footer>
-
-    <!-- Script de funcionalidad del pedido (platos, añadir, enviar, etc.) -->
-    <script src="/mesa/comanda.js"></script>
-
-    <!-- Script para obtener el número de mesa desde la URL -->
-    <script>
-      // Obtener la ruta actual, por ejemplo /mesa3
-      const path = window.location.pathname;
-
-      // Extraer el número de mesa de la ruta usando split (simple)
-      const mesa = path.split("/")[1];
-
-      // Guardar el número de mesa en una variable global
-      window.__mesa = mesa;
-
-      // Cuando se cargue el contenido del DOM, iniciar carga de platos
-      window.addEventListener("DOMContentLoaded", () => {
-        cargarPlatos(); // función definida en /mesa/comanda.js
-      });
-    </script>
   </body>
 </html>

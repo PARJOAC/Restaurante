@@ -89,14 +89,13 @@ function initComanda() {
 
 // Añadir un plato al pedido
 function agregarItem(id) {
-  const p = platos.find((x) => x._id === id); // Buscar el plato
-  const ex = pedido.find((i) => i.nombre === p.nombre); // Buscar si ya está en el pedido
+  const p = platos.find((x) => x._id === id);
+  const ex = pedido.find((i) => i._id === id);
 
   if (ex) {
     ex.cantidad++;
-    ex.precio += p.precio;
   } else {
-    pedido.push({ nombre: p.nombre, cantidad: 1, precio: p.precio });
+    pedido.push({ _id: id, cantidad: 1 });
   }
 
   total += p.precio;
@@ -104,12 +103,11 @@ function agregarItem(id) {
 }
 
 // Eliminar una unidad de un plato del pedido
-function eliminarUno(nombre) {
-  const idx = pedido.findIndex((i) => i.nombre === nombre);
+function eliminarUno(id) {
+  const idx = pedido.findIndex((i) => i._id === id);
   if (idx !== -1) {
-    const p = platos.find((x) => x.nombre === nombre);
+    const p = platos.find((x) => x._id === id);
     pedido[idx].cantidad--;
-    pedido[idx].precio -= p.precio;
     total -= p.precio;
 
     if (pedido[idx].cantidad <= 0) pedido.splice(idx, 1);
@@ -120,10 +118,11 @@ function eliminarUno(nombre) {
 }
 
 // Eliminar completamente un plato del pedido
-function eliminarTodos(nombre) {
-  const idx = pedido.findIndex((i) => i.nombre === nombre);
+function eliminarTodos(id) {
+  const idx = pedido.findIndex((i) => i._id === id);
   if (idx !== -1) {
-    total -= pedido[idx].precio;
+    const p = platos.find((x) => x._id === id);
+    total -= pedido[idx].cantidad * p.precio;
     pedido.splice(idx, 1);
     if (total < 0) total = 0;
     actualizarResumen();
@@ -134,14 +133,17 @@ function eliminarTodos(nombre) {
 function actualizarResumen() {
   const lista = document.getElementById("lista-resumen");
   lista.innerHTML = pedido
-    .map(
-      (i) => `
-    <li>
-      <span>${i.nombre} x${i.cantidad} - <b>${i.precio.toFixed(2)}€</b></span>
-      <button onclick="eliminarUno('${i.nombre}')">-1</button>
-      <button onclick="eliminarTodos('${i.nombre}')">🗑️</button>
-    </li>`
-    )
+    .map((i) => {
+      const p = platos.find((x) => x._id === i._id);
+      return `
+      <li>
+        <span>${p.nombre} x${i.cantidad} - <b>${(p.precio * i.cantidad).toFixed(
+        2
+      )}€</b></span>
+        <button onclick="eliminarUno('${i._id}')">-1</button>
+        <button onclick="eliminarTodos('${i._id}')">🗑️</button>
+      </li>`;
+    })
     .join("");
   document.getElementById("total").textContent = total.toFixed(2);
 }

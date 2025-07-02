@@ -36,9 +36,9 @@ if (!process.env.MONGODB_URI) {
 }
 mongoose
   .connect(process.env.MONGODB_URI)
-  .then(() => console.log("✅ MongoDB conectado"))
+  .then(() => console.log("✅ MongoDB se ha conectado"))
   .catch((err) => {
-    console.error("❌ Error conexión:", err.message);
+    console.error("❌ Error en la conexión:", err.message);
     process.exit(1);
   });
 
@@ -48,10 +48,10 @@ mongoose
     if ((await Admin.countDocuments()) === 0) {
       const hash = await bcrypt.hash("admin", 10);
       await new Admin({ usuario: "admin", contraseña: hash }).save();
-      console.log("🔐 Admin por defecto (admin/admin)");
+      console.log("🔐 Admin por defecto creado (admin/admin)");
     }
   } catch (e) {
-    console.error("❌ Error por defecto:", e.message);
+    console.error("❌ Error:", e.message);
   }
 })();
 
@@ -72,6 +72,13 @@ function puedeCrearComanda(req, res, next) {
   return next(); // permite público o camarero
 }
 
+function requireAdminOrCocinero(req, res, next) {
+  if (req.session && (req.session.adminId || req.session.cocineroId)) {
+    return next();
+  }
+  res.redirect("/cocinero");
+}
+
 // Rutas de autenticación para admin
 app.get("/admin", (req, res) =>
   res.sendFile(path.join(__dirname, "public/admin/login.html"))
@@ -82,7 +89,7 @@ app.post("/api/admin/login", async (req, res) => {
   const { usuario, contraseña } = req.body;
   const adm = await Admin.findOne({ usuario });
   if (!adm || !(await adm.comprobarPassword(contraseña)))
-    return res.status(401).json({ error: "Credenciales inválidas" });
+    return res.status(401).json({ error: "Credenciales inválidas." });
   req.session.adminId = adm._id;
   res.json({ message: "OK" });
 });
@@ -90,9 +97,9 @@ app.post("/api/admin/login", async (req, res) => {
 // Logout de admin
 app.post("/api/admin/logout", (req, res) => {
   req.session.destroy((err) => {
-    if (err) return res.status(500).json({ error: "Error logout" });
+    if (err) return res.status(500).json({ error: "Error al cerrar sesión." });
     res.clearCookie("connect.sid");
-    res.json({ message: "Sesión cerrada" });
+    res.json({ message: "Sesión cerrada correctamente." });
   });
 });
 
@@ -101,22 +108,22 @@ app.post("/api/admin/change-password", requireAdmin, async (req, res) => {
   const { current, new: newPass } = req.body;
   try {
     const adm = await Admin.findById(req.session.adminId);
-    if (!adm) return res.status(400).json({ error: "Admin no encontrado" });
+    if (!adm) return res.status(400).json({ error: "Admin no encontrado." });
 
     const dbHash = String(adm.contraseña).trim();
     const match = await bcrypt.compare(current, dbHash);
 
     if (!match) {
-      return res.status(400).json({ error: "Contraseña actual incorrecta" });
+      return res.status(400).json({ error: "Contraseña actual incorrecta." });
     }
 
     const hash = await bcrypt.hash(newPass, 10);
     adm.contraseña = hash;
     await adm.save();
-    res.json({ message: "Contraseña actualizada correctamente" });
+    res.json({ message: "Contraseña actualizada correctamente." });
   } catch (e) {
     console.error(e);
-    res.status(500).json({ error: "Error al actualizar contraseña" });
+    res.status(500).json({ error: "Error al actualizar contraseña." });
   }
 });
 
@@ -130,7 +137,7 @@ app.post("/api/camarero/login", async (req, res) => {
   const { usuario, contraseña } = req.body;
   const cam = await Camarero.findOne({ usuario });
   if (!cam || !(await cam.comprobarPassword(contraseña)))
-    return res.status(401).json({ error: "Credenciales inválidas" });
+    return res.status(401).json({ error: "Credenciales inválidas." });
   req.session.camareroId = cam._id;
   res.json({ message: "OK" });
 });
@@ -138,9 +145,9 @@ app.post("/api/camarero/login", async (req, res) => {
 // Logout de camarero
 app.post("/api/camarero/logout", (req, res) => {
   req.session.destroy((err) => {
-    if (err) return res.status(500).json({ error: "Error logout" });
+    if (err) return res.status(500).json({ error: "Error al cerrar sesión." });
     res.clearCookie("connect.sid");
-    res.json({ message: "Sesión cerrada" });
+    res.json({ message: "Sesión cerrada correctamente." });
   });
 });
 
@@ -154,7 +161,7 @@ app.post("/api/cocinero/login", async (req, res) => {
   const { usuario, contraseña } = req.body;
   const cam = await Cocinero.findOne({ usuario });
   if (!cam || !(await cam.comprobarPassword(contraseña)))
-    return res.status(401).json({ error: "Credenciales inválidas" });
+    return res.status(401).json({ error: "Credenciales inválidas." });
   req.session.cocineroId = cam._id;
   res.json({ message: "OK" });
 });
@@ -162,9 +169,9 @@ app.post("/api/cocinero/login", async (req, res) => {
 // Logout de cocinero
 app.post("/api/cocinero/logout", (req, res) => {
   req.session.destroy((err) => {
-    if (err) return res.status(500).json({ error: "Error logout" });
+    if (err) return res.status(500).json({ error: "Error al cerrar sesión." });
     res.clearCookie("connect.sid");
-    res.json({ message: "Sesión cerrada" });
+    res.json({ message: "Sesión cerrada correctamente." });
   });
 });
 
@@ -180,7 +187,9 @@ app.post("/api/camareros", requireAdmin, async (req, res) => {
 
   try {
     if (await Camarero.findOne({ usuario })) {
-      return res.status(409).json({ error: "Ese camarero ya existe." });
+      return res
+        .status(409)
+        .json({ error: `El camarero llamado \"${usuario}\" ya existe.` });
     }
 
     // Generar el hash de la contraseña
@@ -201,8 +210,13 @@ app.post("/api/camareros", requireAdmin, async (req, res) => {
 app.delete("/api/camareros/:id", requireAdmin, async (req, res) => {
   try {
     const eliminado = await Camarero.findByIdAndDelete(req.params.id);
-    if (!eliminado) return res.status(404).json({ error: "No encontrado" });
-    res.json({ message: "Camarero eliminado" });
+    if (!eliminado)
+      return res.status(404).json({
+        error: `No se ha encontrado el camarero llamado \"${eliminado.usuario}\".`,
+      });
+    res.json({
+      message: `El camarero llamado \"${eliminado.usuario}\" ha sido eliminado`,
+    });
   } catch (e) {
     res.status(500).json({ error: e.message });
   }
@@ -220,7 +234,9 @@ app.post("/api/cocineros", requireAdmin, async (req, res) => {
 
   try {
     if (await Cocinero.findOne({ usuario })) {
-      return res.status(409).json({ error: "Ese cocinero ya existe." });
+      return res
+        .status(409)
+        .json({ error: `El cocinero llamado \"${usuario}\" ya existe.` });
     }
 
     // Generar el hash de la contraseña
@@ -241,7 +257,10 @@ app.post("/api/cocineros", requireAdmin, async (req, res) => {
 app.delete("/api/cocineros/:id", requireAdmin, async (req, res) => {
   try {
     const eliminado = await Cocinero.findByIdAndDelete(req.params.id);
-    if (!eliminado) return res.status(404).json({ error: "No encontrado" });
+    if (!eliminado)
+      return res.status(404).json({
+        error: `No se ha encontrado el cocinero llamado \"${eliminado.usuario}\".`,
+      });
     res.json({ message: "Cocinero eliminado" });
   } catch (e) {
     res.status(500).json({ error: e.message });
@@ -262,7 +281,17 @@ app.get("/cocinero/comandas", requireCocinero, (req, res) =>
 // Crear comanda (camarero o público)
 app.post("/api/comandas", puedeCrearComanda, async (req, res) => {
   try {
-    const { mesa, platos, total } = req.body;
+    const { mesa, platos: items, total } = req.body;
+
+    if (!Array.isArray(items) || items.length === 0)
+      return res.status(400).json({ error: "No hay platos en la comanda" });
+
+    // Valida el contenido y construye la estructura para Mongo
+    const platosParaGuardar = items.map((i) => ({
+      plato: i._id,
+      cantidad: i.cantidad,
+    }));
+
     const fecha = new Date().toLocaleString("es-ES", {
       day: "2-digit",
       month: "2-digit",
@@ -273,9 +302,19 @@ app.post("/api/comandas", puedeCrearComanda, async (req, res) => {
       hour12: false,
       timeZone: "Europe/Madrid",
     });
-    const nueva = new Comanda({ mesa, platos, fecha, total });
-    res.status(201).json(await nueva.save());
+
+    // Construye y guarda la comanda
+    const nueva = new Comanda({
+      mesa,
+      platos: platosParaGuardar,
+      total,
+      fecha,
+    });
+    const result = await nueva.save();
+
+    res.status(201).json(result);
   } catch (e) {
+    console.error("Error al guardar comanda", e);
     res.status(500).json({ error: e.message });
   }
 });
@@ -291,21 +330,15 @@ app.get("/public/platos", async (req, res) => {
 });
 
 // CRUD Comandas (admin)
-app.get("/api/comandas", requireAdmin, async (req, res) => {
+app.get("/api/comandas", requireAdminOrCocinero, async (req, res) => {
   try {
-    const lista = await Comanda.find().sort({ fecha: -1 });
+    const lista = await Comanda.find()
+      .sort({ fecha: -1 })
+      .populate("platos.plato");
+
     res.json(lista);
   } catch (e) {
-    res.status(500).json({ error: e.message });
-  }
-});
-
-// Comandas para cocina (cocinero)
-app.get("/api/comandas/cocina", requireCocinero, async (req, res) => {
-  try {
-    const comandas = await Comanda.find().sort({ fecha: -1 });
-    res.json(comandas);
-  } catch (e) {
+    console.error("Error en /api/comandas:", e); // ⬅️ Añade esto
     res.status(500).json({ error: e.message });
   }
 });
@@ -315,8 +348,8 @@ app.delete("/api/comandas/:id", requireCocinero, async (req, res) => {
   try {
     const eliminada = await Comanda.findByIdAndDelete(req.params.id);
     if (!eliminada)
-      return res.status(404).json({ error: "Comanda no encontrada" });
-    res.json({ message: "Comanda eliminada" });
+      return res.status(404).json({ error: "Comanda no encontrada." });
+    res.json({ message: "Comanda eliminada." });
   } catch (e) {
     res.status(500).json({ error: e.message });
   }
@@ -330,7 +363,7 @@ app.patch("/api/comandas/:id", requireCocinero, async (req, res) => {
 
     const comanda = await Comanda.findById(id);
     if (!comanda)
-      return res.status(404).json({ error: "Comanda no encontrada" });
+      return res.status(404).json({ error: "Comanda no encontrada." });
 
     comanda.platos = platos;
     await comanda.save();
@@ -346,13 +379,13 @@ app.put("/api/comandas/:id/plato", requireCocinero, async (req, res) => {
   try {
     const { platoIndex, nuevosHechos } = req.body;
     const comanda = await Comanda.findById(req.params.id);
-    if (!comanda) return res.status(404).json({ error: "No encontrada" });
+    if (!comanda) return res.status(404).json({ error: "No encontrada." });
     if (!comanda.platos[platoIndex])
-      return res.status(400).json({ error: "Índice inválido" });
+      return res.status(400).json({ error: "Índice inválido." });
 
     comanda.platos[platoIndex].ready = nuevosHechos;
     await comanda.save();
-    res.json({ message: "Actualizado" });
+    res.json({ message: "Actualizado." });
   } catch (e) {
     res.status(500).json({ error: e.message });
   }
@@ -367,7 +400,7 @@ app.get("/api/platos", requireAdmin, async (req, res) => {
 // Obtener un plato por ID (admin)
 app.get("/api/platos/:id", requireAdmin, async (req, res) => {
   const p = await Plato.findById(req.params.id).populate("categoria");
-  if (!p) return res.status(404).json({ error: "No encontrado" });
+  if (!p) return res.status(404).json({ error: "No encontrado." });
   res.json(p);
 });
 
@@ -387,7 +420,7 @@ app.put("/api/platos/:id", requireAdmin, async (req, res) => {
 // Eliminar un plato (admin)
 app.delete("/api/platos/:id", requireAdmin, async (req, res) => {
   await Plato.findByIdAndDelete(req.params.id);
-  res.json({ message: "Eliminado" });
+  res.json({ message: "Se ha eliminado el plato." });
 });
 
 // CRUD Categorías (admin)
@@ -420,7 +453,8 @@ app.put("/api/categorias/:id", requireAdmin, async (req, res) => {
     { nombre: req.body.nombre },
     { new: true }
   );
-  if (!updated) return res.status(404).json({ error: "No encontrada" });
+  if (!updated)
+    return res.status(404).json({ error: "No se ha encontrado la categoría." });
   res.json(updated);
 });
 
@@ -431,8 +465,9 @@ app.delete("/api/categorias/:id", requireAdmin, async (req, res) => {
     { $unset: { categoria: null } }
   );
   const cat = await Categoria.findByIdAndDelete(req.params.id);
-  if (!cat) return res.status(404).json({ error: "No encontrada" });
-  res.json({ message: "Eliminada y platos actualizados" });
+  if (!cat)
+    return res.status(404).json({ error: "No se ha encontrado la categoría." });
+  res.json({ message: "Categoría eliminada y platos actualizados." });
 });
 
 // Rutas públicas para el frontend

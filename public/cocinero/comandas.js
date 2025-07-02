@@ -1,124 +1,102 @@
-// Lista que contiene todas las comandas cargadas desde el servidor
 let todasLasComandas = [];
-
-// Variable que indica si se deben mostrar las comandas finalizadas
 let mostrarFinalizadasActivas = false;
 
-// Función para cargar las comandas desde el backend
+// Trae y actualiza las comandas periódicamente
 async function cargarComandas() {
-  const res = await fetch("/api/comandas/cocina"); // Llamada al backend
-  const comandas = await res.json(); // Conversión de respuesta a JSON
-  todasLasComandas = comandas; // Se actualiza la lista global
-  renderizarComandas(); // Se muestran en pantalla
+  try {
+    const res = await fetch("/api/comandas");
+    todasLasComandas = await res.json();
+    renderizarComandas();
+  } catch (e) {
+    console.error("Error al cargar comandas:", e);
+  }
 }
 
-// Función para renderizar las comandas en el DOM
+// Renderiza las comandas en pantalla
 function renderizarComandas() {
-  const contenedorActivas = document.getElementById("comandas-activas");
-  const contenedorFinalizadas = document.getElementById("comandas-finalizadas");
+  const contAct = document.getElementById("comandas-activas");
+  const contFin = document.getElementById("comandas-finalizadas");
+  contAct.innerHTML = "";
+  contFin.innerHTML = "";
 
-  // Limpia los contenedores para volver a pintarlos
-  contenedorActivas.innerHTML = "";
-  contenedorFinalizadas.innerHTML = "";
-
-  // Recorre todas las comandas y las pinta en su respectivo contenedor
   todasLasComandas.forEach((comanda, i) => {
     const div = document.createElement("div");
-    div.classList.add("comanda");
-    div.dataset.index = i; // Guardamos el índice para identificarla luego
-
-    // Se generan los botones y la información de los platos de la comanda
-    const platosHtml = comanda.platos
-      .map((p, idx) => {
-        const hechos = p.ready || 0;
-        const total = p.cantidad;
-        return `
-        <div class="plato">
-          <button onclick="marcarPlato(${i}, ${idx})" class="btn-marca">${
-          hechos < total ? "✔" : "❌" // Muestra ✔ si aún faltan, ❌ si están todos listos
-        }</button>
-          <div>
-            <span>${total} × ${p.nombre}</span><br/>
-            <small>Hechos: ${hechos} / ${total}</small>
-          </div>
-        </div>`;
-      })
-      .join("");
-
-    // Se compone el HTML principal de la comanda
+    div.className = `comanda ${claseEstado(comanda)}`;
     div.innerHTML = `
       <h2>Mesa ${comanda.mesa} - ${comanda.fecha}</h2>
-      ${platosHtml}
-      <div class="estado" id="estado-${i}">Estado: <span>${estadoComanda(
-      comanda
-    )}</span></div>`;
+      ${comanda.platos
+        .map(
+          (p, idx) => `
+        <div class="plato">
+          <button onclick="marcarPlato('${
+            comanda._id
+          }', ${idx})" class="btn-marca">
+            ${p.ready < p.cantidad ? "✔" : "❌"}
+          </button>
+          <div><span>${p.cantidad} × ${
+            p.plato?.nombre || "Desconocido"
+          }</span><br/>
 
-    // Añadimos la clase visual según el estado de la comanda
-    const clase = claseEstado(comanda);
-    div.classList.add(clase);
-
-    // Se añade la comanda al contenedor adecuado según su estado
-    const esFinalizada = estadoComanda(comanda) === "Finalizada";
-    if (esFinalizada) {
-      if (mostrarFinalizadasActivas) contenedorFinalizadas.appendChild(div);
+          <small>Hechos: ${p.ready} / ${p.cantidad}</small></div>
+        </div>`
+        )
+        .join("")}
+      <div class="estado">Estado: <span>${estadoComanda(comanda)}</span></div>
+    `;
+    const esFinal = estadoComanda(comanda) === "Finalizada";
+    if (esFinal) {
+      if (mostrarFinalizadasActivas) contFin.appendChild(div);
     } else {
-      contenedorActivas.appendChild(div);
+      contAct.appendChild(div);
     }
   });
 }
 
-// Devuelve el estado actual de una comanda: Nueva / En proceso / Finalizada
+// Determina el estado (Nueva, En proceso, Finalizada)
 function estadoComanda(comanda) {
-  let total = 0;
-  let hechos = 0;
-  for (const p of comanda.platos) {
-    total += p.cantidad;
-    hechos += p.ready || 0;
-  }
+  const total = comanda.platos.reduce((a, p) => a + p.cantidad, 0);
+  const hechos = comanda.platos.reduce((a, p) => a + (p.ready || 0), 0);
   if (hechos === 0) return "Nueva";
-  if (hechos === total) return "Finalizada";
+  if (hechos >= total) return "Finalizada";
   return "En proceso";
 }
-
-// Devuelve la clase CSS correspondiente según el estado
-function claseEstado(comanda) {
-  const estado = estadoComanda(comanda);
-  if (estado === "Nueva") return "nueva";
-  if (estado === "Finalizada") return "finalizada";
-  return "en-proceso";
+function claseEstado(c) {
+  const e = estadoComanda(c);
+  return e === "Nueva"
+    ? "nueva"
+    : e === "Finalizada"
+    ? "finalizada"
+    : "en-proceso";
 }
 
-// Función para marcar un plato como hecho
-async function marcarPlato(comandaIndex, platoIndex) {
-  const comanda = todasLasComandas[comandaIndex];
-  const plato = comanda.platos[platoIndex];
+// Marca un plato como preparado
+async function marcarPlato(comandaId, platoIndex) {
+  const comanda = todasLasComandas.find((c) => c._id === comandaId);
+  if (!comanda) return console.error("Comanda no encontrada");
 
-  // Lógica para incrementar el número de platos hechos
-  if (!plato.ready) plato.ready = 1;
-  else if (plato.ready < plato.cantidad) plato.ready++;
-  else return; // Si ya están todos hechos, no hace nada
+  const p = comanda.platos[platoIndex];
+  if (p.ready < p.cantidad) p.ready++;
+  else return; // ya estaba completa
 
-  // Se envía la actualización al servidor
-  await fetch(`/api/comandas/${comanda._id}`, {
-    method: "PATCH",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ platos: comanda.platos }),
-  });
+  try {
+    // Envia PATCH al servidor con solo el plato actualizado
+    await fetch(`/api/comandas/${comandaId}/plato`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ platoIndex, nuevosHechos: p.ready }),
+    });
+    renderizarComandas();
+  } catch (e) {
+    console.error("Error al marcar plato:", e);
+  }
+}
 
-  // Se vuelve a renderizar la lista con los cambios
+// Alterna visibilidad de comandas finalizadas
+function toggleFinalizadas() {
+  mostrarFinalizadasActivas = !mostrarFinalizadasActivas;
   renderizarComandas();
 }
 
-// Alterna la visualización de las comandas finalizadas
-function toggleFinalizadas() {
-  mostrarFinalizadasActivas = !mostrarFinalizadasActivas;
-  renderizarComandas(); // Se vuelve a pintar según la nueva configuración
-}
-
-// Al cargar la página, se obtienen las comandas
+// Inicialización
 cargarComandas();
-
-// Refresca automáticamente las comandas cada 10 segundos
-setInterval(() => {
-  cargarComandas();
-}, 10000);
+setInterval(cargarComandas, 10000);

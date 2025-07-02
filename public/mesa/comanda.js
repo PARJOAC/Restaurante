@@ -1,65 +1,66 @@
-// Arrays para guardar los platos disponibles, el pedido actual y el total del pedido
+// Variables globales
 let platos = [];
 let pedido = [];
 let total = 0;
 
-// Carga los platos desde el servidor
+// Inicia el pedido cuando el DOM está cargado
+function iniciarPedido() {
+  cargarPlatos();
+}
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", iniciarPedido);
+} else {
+  iniciarPedido();
+}
+
+// Carga platos desde backend
 async function cargarPlatos() {
   try {
-    const res = await fetch("/public/platos"); // Solicita los platos al backend
-    if (!res.ok) throw new Error(res.statusText); // Lanza error si hay fallo de red
-    platos = await res.json(); // Almacena los platos en el array global
+    const res = await fetch("/public/platos");
+    if (!res.ok) throw new Error(res.statusText);
+    platos = await res.json();
 
-    // Si no hay platos disponibles, mostrar mensaje
+    const cont = document.getElementById("items-menu");
     if (!Array.isArray(platos) || platos.length === 0) {
-      document.getElementById("items-menu").innerHTML =
-        "<p>No hay platos disponibles actualmente.</p>";
+      cont.innerHTML = "<p>No hay platos disponibles actualmente.</p>";
       return;
     }
-
-    initComanda(); // Si todo va bien, inicializa el menú
+    initComanda();
   } catch (e) {
     console.error("Error cargando platos:", e);
     document.getElementById("items-menu").innerHTML =
-      "<p>Error al cargar los platos.</p>";
+      "<p>Error al cargar los platos, inténtalo más tarde.</p>";
   }
 }
 
-// Muestra los platos organizados por categoría
+// Dibuja platos agrupados por categoría
 function initComanda() {
   const cont = document.getElementById("items-menu");
   cont.innerHTML = "";
-
-  const grupos = {}; // Agrupar platos por categoría
-
-  // Clasifica los platos
+  const grupos = {};
   platos.forEach((p) => {
     const cat = p.categoria?.nombre?.toUpperCase() || "SIN CATEGORÍA";
-    if (!grupos[cat]) grupos[cat] = [];
+    grupos[cat] = grupos[cat] || [];
     grupos[cat].push(p);
   });
 
-  // Recorre cada categoría y la dibuja en pantalla
-  for (const categoria in grupos) {
+  for (const cat in grupos) {
     const grupoDiv = document.createElement("div");
     grupoDiv.className = "categoria-grupo";
 
     const titulo = document.createElement("h3");
-    titulo.textContent = categoria;
-
+    titulo.textContent = cat;
     const flecha = document.createElement("span");
     flecha.className = "flecha";
     titulo.appendChild(flecha);
     grupoDiv.appendChild(titulo);
 
-    const contenido = document.createElement("div");
-    contenido.className = "categoria-contenido abierto";
+    const contCat = document.createElement("div");
+    contCat.className = "categoria-contenido abierto";
+    const grid = document.createElement("div");
+    grid.className = "menu-grid";
 
-    const gridDiv = document.createElement("div");
-    gridDiv.className = "menu-grid";
-
-    // Añade cada plato dentro de su categoría
-    grupos[categoria].forEach((p) => {
+    grupos[cat].forEach((p) => {
       const div = document.createElement("div");
       div.className = "menu-item";
       div.innerHTML = `
@@ -73,112 +74,102 @@ function initComanda() {
           }')">Añadir</button>
         </div>
       `;
-      gridDiv.appendChild(div);
+      grid.appendChild(div);
     });
 
-    contenido.appendChild(gridDiv);
-    grupoDiv.appendChild(contenido);
+    contCat.appendChild(grid);
+    grupoDiv.appendChild(contCat);
     cont.appendChild(grupoDiv);
 
-    // Alternar visibilidad al hacer clic en el título de la categoría
     titulo.addEventListener("click", () => {
-      const abierto = contenido.classList.toggle("abierto");
+      const abierto = contCat.classList.toggle("abierto");
       flecha.classList.toggle("flecha-rotada", !abierto);
     });
   }
-
-  actualizarResumen(); // Muestra el resumen del pedido
+  actualizarResumen();
 }
 
-// Agrega un plato al pedido
+// Añade plato al pedido
 function agregarItem(id) {
   const p = platos.find((x) => x._id === id);
-  const existente = pedido.find((i) => i.nombre === p.nombre);
-  if (existente) {
-    existente.cantidad += 1;
-    existente.precio += p.precio;
+  if (!p) return;
+  const ex = pedido.find((i) => i._id === id);
+  if (ex) {
+    ex.cantidad++;
+    ex.precio += p.precio;
   } else {
-    pedido.push({ nombre: p.nombre, cantidad: 1, precio: p.precio });
+    pedido.push({ _id: id, nombre: p.nombre, cantidad: 1, precio: p.precio });
   }
   total += p.precio;
   actualizarResumen();
 }
 
-// Elimina una unidad del plato del pedido
-function eliminarUno(nombre) {
-  const index = pedido.findIndex((i) => i.nombre === nombre);
-  if (index !== -1) {
-    const precioUnidad = platos.find((p) => p.nombre === nombre).precio;
-    pedido[index].cantidad -= 1;
-    pedido[index].precio -= precioUnidad;
-    total -= precioUnidad;
-
-    if (pedido[index].cantidad <= 0) pedido.splice(index, 1);
-    if (total < 0) total = 0;
-    actualizarResumen();
-  }
+// Elimina unidad
+function eliminarUno(id) {
+  const idx = pedido.findIndex((i) => i._id === id);
+  if (idx === -1) return;
+  const p = platos.find((x) => x._id === id);
+  pedido[idx].cantidad--;
+  pedido[idx].precio -= p.precio;
+  total -= p.precio;
+  if (pedido[idx].cantidad <= 0) pedido.splice(idx, 1);
+  if (total < 0) total = 0;
+  actualizarResumen();
 }
 
-// Elimina todas las unidades de un plato
-function eliminarTodos(nombre) {
-  const index = pedido.findIndex((i) => i.nombre === nombre);
-  if (index !== -1) {
-    total -= pedido[index].precio;
-    pedido.splice(index, 1);
-    if (total < 0) total = 0;
-    actualizarResumen();
-  }
+// Elimina todas
+function eliminarTodos(id) {
+  const idx = pedido.findIndex((i) => i._id === id);
+  if (idx === -1) return;
+  total -= pedido[idx].precio;
+  pedido.splice(idx, 1);
+  if (total < 0) total = 0;
+  actualizarResumen();
 }
 
-// Actualiza la lista de resumen del pedido
+// Actualiza resumen en pantalla
 function actualizarResumen() {
   const lista = document.getElementById("lista-resumen");
   lista.innerHTML = pedido
     .map(
       (i) => `
-      <li>
-        <span>${i.nombre} x${i.cantidad} - <b>${i.precio.toFixed(2)}€</b></span>
-        <button title="Eliminar 1" onclick="eliminarUno('${
-          i.nombre
-        }')">-1</button>
-        <button title="Eliminar todas" onclick="eliminarTodos('${
-          i.nombre
-        }')">🗑️</button>
-      </li>`
+    <li>
+      <span>${i.nombre} x${i.cantidad} - <b>${i.precio.toFixed(2)}€</b></span>
+      <button onclick="eliminarUno('${i._id}')">-1</button>
+      <button onclick="eliminarTodos('${i._id}')">🗑️</button>
+    </li>`
     )
     .join("");
   document.getElementById("total").textContent = total.toFixed(2);
 }
 
-// Envía la comanda al servidor
+// Envía comanda al servidor
 async function enviarComanda() {
-  if (pedido.length === 0) return alert("Añade al menos un plato");
-
-  const mesa = window.__mesa; // Se obtiene del HTML al cargar la página
-
-  if (!mesa) {
-    alert("Error: no se detectó el número de mesa.");
-    return;
-  }
+  if (pedido.length === 0) return alert("Añade al menos un plato.");
+  const mesa = window.__mesa;
+  if (!mesa) return alert("No se detecta mesa.");
 
   try {
     const res = await fetch("/api/comandas", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ mesa, platos: pedido, total }),
+      body: JSON.stringify({
+        mesa,
+        platos: pedido.map((i) => ({ _id: i._id, cantidad: i.cantidad })),
+        total,
+      }),
     });
-
     if (res.ok) {
-      alert(`Comanda enviada - Mesa ${mesa}`);
+      alert(`Comanda enviada. Mesa: ${mesa}`);
       pedido = [];
       total = 0;
       actualizarResumen();
     } else {
-      const error = await res.json();
-      alert("Error: " + (error.message || res.status));
+      const e = await res.json();
+      alert("Error: " + (e.message || res.status));
     }
   } catch (e) {
-    console.error(e);
-    alert("Error al enviar la comanda");
+    console.error("Error enviando comanda:", e);
+    alert("Error al enviar la comanda. Inténtalo más tarde.");
   }
 }
