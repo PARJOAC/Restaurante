@@ -351,7 +351,7 @@ async function loadComandas() {
     .map((c) => {
       // Genera lista de platos dentro de cada comanda
       const detalles = (c.platos || [])
-        .map((i) => `<li>${i.nombre} x ${i.cantidad}</li>`)
+        .map((i) => `<li>${i.plato?.nombre} x ${i.cantidad}</li>`)
         .join("");
       return `
       <tr>
