@@ -13,7 +13,7 @@ async function cargarPlatos() {
     // Si no hay platos, mostrar mensaje
     if (!Array.isArray(platos) || platos.length === 0) {
       document.getElementById("items-menu").innerHTML =
-        "<p>No hay platos disponibles</p>";
+        "<p>No hay platos disponibles.</p>";
       return;
     }
 
@@ -22,7 +22,7 @@ async function cargarPlatos() {
   } catch (e) {
     console.error("Error cargando platos:", e);
     document.getElementById("items-menu").innerHTML =
-      "<p>Error cargando platos</p>";
+      "<p>Error cargando los platos.</p>";
   }
 }
 
@@ -151,8 +151,8 @@ function actualizarResumen() {
 // Enviar la comanda al backend
 async function enviarComanda() {
   const mesaInput = document.getElementById("mesa").value.trim();
-  if (!mesaInput) return alert("Indica el número de mesa");
-  if (pedido.length === 0) return alert("Añade al menos un plato");
+  if (!mesaInput) return alert("Indica el número de la mesa.");
+  if (pedido.length === 0) return alert("Añade al menos un plato a la comanda.");
 
   try {
     const res = await fetch("/api/comandas", {
@@ -173,7 +173,7 @@ async function enviarComanda() {
     }
   } catch (e) {
     console.error(e);
-    alert("Error enviando comanda");
+    alert("Error enviando la comanda.");
   }
 }
 

@@ -70,7 +70,7 @@ async function loadCamareros() {
 
 // Eliminar camarero con confirmación
 async function delCamarero(id) {
-  if (!confirm("¿Eliminar este camarero?")) return;
+  if (!confirm("¿Quieres eliminar el camarero?")) return;
   await fetch(`/api/camareros/${id}`, { method: "DELETE" });
   loadCamareros();
 }
@@ -120,7 +120,7 @@ async function loadCocineros() {
 
 // Eliminar cocinero
 async function delCocinero(id) {
-  if (!confirm("¿Eliminar este cocinero?")) return;
+  if (!confirm("¿Quieres eliminar el cocinero?")) return;
   await fetch(`/api/cocineros/${id}`, { method: "DELETE" });
   loadCocineros();
 }
@@ -164,7 +164,7 @@ pwdForm?.addEventListener("submit", async (e) => {
 
   // Validar coincidencia
   if (nw !== confirm) {
-    pwdMsg.textContent = "Las contraseñas no coinciden";
+    pwdMsg.textContent = "Las contraseñas no coinciden.";
     pwdMsg.classList.add("error");
     return;
   }
@@ -176,13 +176,12 @@ pwdForm?.addEventListener("submit", async (e) => {
     body: JSON.stringify({ current, new: nw }),
   });
 
-  const data = await res.json();
   if (res.ok) {
-    pwdMsg.textContent = "Contraseña actualizada correctamente";
+    pwdMsg.textContent = "Contraseña actualizada correctamente.";
     pwdMsg.classList.add("success");
     pwdForm.reset();
   } else {
-    pwdMsg.textContent = data.error || "Error al actualizar";
+    pwdMsg.textContent = "Error al actualizar la contraseña.";
     pwdMsg.classList.add("error");
   }
 });
@@ -210,7 +209,7 @@ async function loadCategorias() {
           }')">Editar</button>
           <button class="btn-small delete-btn" onclick="delCategoria('${
             c._id
-          }')">Borrar</button>
+          }')">Eliminar</button>
         </td>
       </tr>`
       )
@@ -220,14 +219,14 @@ async function loadCategorias() {
     actualizarSelectorCategorias(categorias);
   } catch {
     categoriasBody.innerHTML =
-      "<tr><td colspan='2'>Error cargando categorías</td></tr>";
+      "<tr><td colspan='2'>Error cargando categorías.</td></tr>";
   }
 }
 
 // Rellena el selector de categorías en el formulario de platos
 function actualizarSelectorCategorias(categorias) {
   const select = document.querySelector("#plato-form select[name=categoria]");
-  select.innerHTML = `<option value="" disabled selected>Selecciona categoría</option>`;
+  select.innerHTML = `<option value="" disabled selected>Selecciona una categoría</option>`;
   categorias.forEach((c) => {
     const opt = document.createElement("option");
     opt.value = c._id;
@@ -248,7 +247,7 @@ async function editCategoria(id) {
 
 // Eliminar una categoría
 async function delCategoria(id) {
-  if (!confirm("¿Estás seguro?")) return;
+  if (!confirm("¿Quieres eliminar la categoría?")) return;
   await fetch(`/api/categorias/${id}`, { method: "DELETE" });
   loadCategorias();
 }
@@ -333,7 +332,7 @@ function renderizarPlatos() {
         }')">Editar</button>
         <button class="btn-small delete-btn" onclick="delPlato('${
           p._id
-        }')">Borrar</button>
+        }')">Eliminar</button>
       </td>
     </tr>`
     )
@@ -362,7 +361,7 @@ async function editPlato(id) {
 
 // Eliminar un plato
 async function delPlato(id) {
-  if (!confirm("¿Estás seguro?")) return;
+  if (!confirm("¿Quieres eliminar el plato?")) return;
   await fetch(`/api/platos/${id}`, { method: "DELETE" });
   loadPlatos();
 }

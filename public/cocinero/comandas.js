@@ -8,7 +8,9 @@ async function cargarComandas() {
     todasLasComandas = await res.json();
     renderizarComandas();
   } catch (e) {
-    console.error("Error al cargar comandas:", e);
+    const contAct = document.getElementById("comandas-activas");
+    console.error("Error al cargar las comandas:", e);
+    contAct.innerHTML = `<p>Error al cargar las comandas. Inténtalo más tarde.</p>`;
   }
 }
 
@@ -33,7 +35,7 @@ function renderizarComandas() {
           }', ${idx})" class="btn-marca">
             ${p.ready < p.cantidad ? "✔" : "❌"}
           </button>
-          <div><span>${p.cantidad} × ${
+          <div><span>x${p.cantidad} - ${
             p.plato?.nombre || "Desconocido"
           }</span><br/>
 
@@ -72,7 +74,7 @@ function claseEstado(c) {
 // Marca un plato como preparado
 async function marcarPlato(comandaId, platoIndex) {
   const comanda = todasLasComandas.find((c) => c._id === comandaId);
-  if (!comanda) return console.error("Comanda no encontrada");
+  if (!comanda) return console.error("Comanda no encontrada.");
 
   const p = comanda.platos[platoIndex];
   if (p.ready < p.cantidad) p.ready++;
