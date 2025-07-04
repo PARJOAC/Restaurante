@@ -367,3 +367,41 @@ table img {
     width: 100%;
   }
 }
+
+.platos-layout {
+  display: flex;
+  gap: 2rem;
+  align-items: flex-start;
+  margin-top: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.lado-izquierdo {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  max-width: 350px;
+  width: 100%;
+  flex: 1;
+  margin: 0 auto;
+}
+
+.lado-derecho {
+  flex: 2;
+  min-width: 500px;
+}
+
+@media (max-width: 768px) {
+  .lado-izquierdo {
+    max-width: 100%;
+    padding: 0 1rem;
+  }
+  .platos-layout {
+    flex-direction: column;
+  }
+
+  .lado-derecho {
+    width: 100%;
+    min-width: auto;
+  }
+}
