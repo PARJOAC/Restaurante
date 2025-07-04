@@ -179,3 +179,69 @@ async function enviarComanda() {
 
 // Cuando carga el DOM, empieza cargando los platos
 window.addEventListener("DOMContentLoaded", cargarPlatos);
+
+// Escuchar cambios en el input de búsqueda
+document.getElementById("busqueda").addEventListener("input", (e) => {
+  const texto = e.target.value.toLowerCase().trim();
+  const filtrados = texto
+    ? platos.filter((p) => p.nombre.toLowerCase().includes(texto))
+    : platos;
+
+  renderPlatosFiltrados(filtrados);
+});
+
+// Función para renderizar platos filtrados por nombre
+function renderPlatosFiltrados(lista) {
+  const cont = document.getElementById("items-menu");
+  cont.innerHTML = "";
+
+  const grupos = {};
+
+  lista.forEach((p) => {
+    const cat = p.categoria?.nombre?.toUpperCase() || "SIN CATEGORÍA";
+    if (!grupos[cat]) grupos[cat] = [];
+    grupos[cat].push(p);
+  });
+
+  for (const cat in grupos) {
+    const grupoDiv = document.createElement("div");
+    grupoDiv.className = "categoria-grupo";
+
+    const titulo = document.createElement("h3");
+    titulo.textContent = cat;
+
+    const flecha = document.createElement("span");
+    flecha.className = "flecha";
+    titulo.appendChild(flecha);
+    grupoDiv.appendChild(titulo);
+
+    const contenido = document.createElement("div");
+    contenido.className = "categoria-contenido abierto";
+
+    const grid = document.createElement("div");
+    grid.className = "menu-grid";
+
+    grupos[cat].forEach((p) => {
+      const div = document.createElement("div");
+      div.className = "menu-item";
+      div.innerHTML = `
+        <img src="${p.imagen}" alt="${p.nombre}" class="item-img" />
+        <h4 class="item-nombre">${p.nombre}</h4>
+        ${p.descripcion ? `<p class="item-desc">${p.descripcion}</p>` : ""}
+        <div class="item-footer">
+          <span class="item-precio">${p.precio.toFixed(2)}€</span>
+          <button onclick="agregarItem('${p._id}')">Añadir</button>
+        </div>`;
+      grid.appendChild(div);
+    });
+
+    contenido.appendChild(grid);
+    grupoDiv.appendChild(contenido);
+    cont.appendChild(grupoDiv);
+
+    titulo.addEventListener("click", () => {
+      const abierto = contenido.classList.toggle("abierto");
+      flecha.classList.toggle("flecha-rotada", !abierto);
+    });
+  }
+}
