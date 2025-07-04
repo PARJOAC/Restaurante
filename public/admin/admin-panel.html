@@ -1,27 +1,18 @@
 <!DOCTYPE html>
 <html lang="es">
   <head>
-    <!-- Configuración básica del documento -->
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Admin Panel</title>
-
-    <!-- Estilos generales y específicos del panel -->
+    <title>Panel de Administración</title>
     <link rel="stylesheet" href="/css/general.css" />
     <link rel="stylesheet" href="/admin/admin-panel.css" />
   </head>
-
   <body>
-    <!-- Botón visible solo en móvil para mostrar/ocultar el menú lateral -->
     <button class="sidebar-toggle" id="toggleSidebar">☰ Menú</button>
-
-    <!-- Contenedor principal que incluye el menú lateral y el contenido -->
     <div class="admin-container">
-      <!-- Menú lateral (sidebar) con las secciones del panel -->
       <nav class="sidebar">
         <h2>Admin</h2>
         <ul>
-          <!-- Cada <li> representa una sección del panel -->
           <li data-section="platos" class="active">Platos</li>
           <li data-section="categorias">Categorías</li>
           <li data-section="comandas">Comandas</li>
@@ -29,18 +20,15 @@
           <li data-section="cocineros">Cocineros</li>
           <li data-section="config">Configuración</li>
         </ul>
-
-        <!-- Botón para cerrar sesión -->
         <button id="logout" class="btn logout">Cerrar sesión</button>
       </nav>
 
-      <!-- Contenido principal del panel -->
       <main class="content">
-        <!-- Sección: Gestión de Platos -->
+        <!-- Sección Platos -->
         <section id="platos" class="panel-section active">
           <h2>Gestión de Platos</h2>
+
           <div class="form-grid">
-            <!-- Formulario para añadir/editar platos -->
             <form id="plato-form">
               <input name="id" type="hidden" />
               <input name="nombre" placeholder="Nombre" required />
@@ -59,8 +47,28 @@
               </select>
               <button type="submit" class="btn">Guardar plato</button>
             </form>
+            <div class="form-grid">
+              <div class="filtros">
+                <label for="filtro-nombre">Buscar por nombre:</label>
+                <input
+                  type="text"
+                  id="filtro-nombre"
+                  placeholder="Ej: Paella, Tortilla..."
+                />
 
-            <!-- Tabla con la lista de platos -->
+                <label for="filtro-categoria">Buscar por categoría:</label>
+                <select id="filtro-categoria">
+                  <option value="">Todas las categorías</option>
+                </select>
+
+                <label for="ordenar-por">Ordenar por:</label>
+                <select id="ordenar-por">
+                  <option value="nombre">Nombre A-Z</option>
+                  <option value="categoria">Categoría</option>
+                  <option value="precio">Precio</option>
+                </select>
+              </div>
+            </div>
             <div class="table-wrapper">
               <table>
                 <thead>
@@ -78,11 +86,10 @@
           </div>
         </section>
 
-        <!-- Sección: Categorías -->
+        <!-- Sección Categorías -->
         <section id="categorias" class="panel-section">
           <h2>Gestión de Categorías</h2>
           <div class="form-grid">
-            <!-- Formulario para añadir/editar categorías -->
             <form id="categoria-form">
               <input name="id" type="hidden" />
               <input
@@ -92,10 +99,8 @@
               />
               <button type="submit" class="btn">Guardar categoría</button>
             </form>
-
-            <!-- Tabla de categorías -->
             <div class="table-wrapper">
-              <table id="categorias">
+              <table>
                 <thead>
                   <tr>
                     <th>Nombre</th>
@@ -108,7 +113,7 @@
           </div>
         </section>
 
-        <!-- Sección: Comandas -->
+        <!-- Sección Comandas -->
         <section id="comandas" class="panel-section">
           <h2>Comandas Recientes</h2>
           <div class="table-wrapper">
@@ -126,61 +131,60 @@
           </div>
         </section>
 
-        <!-- Sección: Camareros -->
+        <!-- Sección Camareros -->
         <section id="camareros" class="panel-section">
           <h2>Gestión de Camareros</h2>
-          <!-- Formulario para añadir camarero -->
-          <form id="camarero-form">
-            <input name="usuario" placeholder="Usuario" required />
-            <input
-              name="contraseña"
-              type="password"
-              placeholder="Contraseña"
-              required
-            />
-            <button type="submit" class="btn">Crear Camarero</button>
-          </form>
+          <div class="form-grid">
+            <form id="camarero-form">
+              <input name="usuario" placeholder="Usuario" required />
+              <input
+                name="contraseña"
+                type="password"
+                placeholder="Contraseña"
+                required
+              />
+              <button type="submit" class="btn">Crear Camarero</button>
+            </form>
 
-          <!-- Tabla con los camareros existentes -->
-          <table>
-            <thead>
-              <tr>
-                <th>Usuario</th>
-                <th>Acciones</th>
-              </tr>
-            </thead>
-            <tbody id="camareros-body"></tbody>
-          </table>
+            <table>
+              <thead>
+                <tr>
+                  <th>Usuario</th>
+                  <th>Acciones</th>
+                </tr>
+              </thead>
+              <tbody id="camareros-body"></tbody>
+            </table>
+          </div>
         </section>
 
-        <!-- Sección: Cocineros -->
+        <!-- Sección Cocineros -->
         <section id="cocineros" class="panel-section">
           <h2>Gestión de Cocineros</h2>
-          <!-- Formulario para añadir cocinero -->
-          <form id="cocinero-form">
-            <input name="usuario" placeholder="Usuario" required />
-            <input
-              name="contraseña"
-              type="password"
-              placeholder="Contraseña"
-              required
-            />
-            <button type="submit" class="btn">Crear Cocinero</button>
-          </form>
-
-          <!-- Tabla con los cocineros existentes -->
-          <table>
-            <thead>
-              <tr>
-                <th>Usuario</th>
-                <th>Acciones</th>
-              </tr>
-            </thead>
-            <tbody id="cocineros-body"></tbody>
-          </table>
+          <div class="form-grid">
+            <form id="cocinero-form">
+              <input name="usuario" placeholder="Usuario" required />
+              <input
+                name="contraseña"
+                type="password"
+                placeholder="Contraseña"
+                required
+              />
+              <button type="submit" class="btn">Crear Cocinero</button>
+            </form>
+            <table>
+              <thead>
+                <tr>
+                  <th>Usuario</th>
+                  <th>Acciones</th>
+                </tr>
+              </thead>
+              <tbody id="cocineros-body"></tbody>
+            </table>
+          </div>
         </section>
 
-        <!-- Sección: Configuración (cambiar contraseña del admin) -->
+        <!-- Sección Configuración -->
         <section id="config" class="panel-section">
           <h2>Cambiar Contraseña</h2>
           <form id="pwd-form" class="config-form">
@@ -189,25 +193,17 @@
               type="password"
               id="current-password"
               name="current"
-              autocomplete="current-password"
               required
             />
 
             <label for="new-password">Nueva contraseña</label>
-            <input
-              type="password"
-              id="new-password"
-              name="new"
-              autocomplete="new-password"
-              required
-            />
+            <input type="password" id="new-password" name="new" required />
 
             <label for="confirm-password">Confirmar nueva contraseña</label>
             <input
               type="password"
               id="confirm-password"
               name="confirm"
-              autocomplete="new-password"
               required
             />
 
@@ -218,21 +214,16 @@
       </main>
     </div>
 
-    <!-- Script principal del panel de administración -->
     <script src="/admin/admin-panel.js"></script>
-
-    <!-- Script para controlar el toggle del menú en móviles -->
     <script>
       const sidebar = document.querySelector(".sidebar");
-      const toggleBtn = document.querySelector(".sidebar-toggle");
+      const toggleBtn = document.getElementById("toggleSidebar");
 
-      // Muestra/oculta el menú lateral al hacer clic en el botón ☰
       toggleBtn.addEventListener("click", () => {
         sidebar.classList.toggle("open");
         document.body.classList.toggle("sidebar-open");
       });
 
-      // Cierra el menú lateral automáticamente cuando se selecciona una opción en móvil
       document.querySelectorAll(".sidebar ul li").forEach((li) => {
         li.addEventListener("click", () => {
           sidebar.classList.remove("open");

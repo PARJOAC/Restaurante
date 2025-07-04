@@ -27,6 +27,15 @@ sidebarItems.forEach((item) => {
 // Al cargar la página, activa automáticamente la sección 'Platos'
 window.addEventListener("DOMContentLoaded", () => {
   document.querySelector('[data-section="platos"]').click();
+  document
+    .getElementById("filtro-nombre")
+    .addEventListener("input", renderizarPlatos);
+  document
+    .getElementById("filtro-categoria")
+    .addEventListener("change", renderizarPlatos);
+  document
+    .getElementById("ordenar-por")
+    .addEventListener("change", renderizarPlatos);
 });
 
 // Evento al hacer clic en el botón de cerrar sesión
@@ -52,7 +61,7 @@ async function loadCamareros() {
     <tr>
       <td>${c.usuario}</td>
       <td>
-        <button onclick="delCamarero('${c._id}')">Eliminar</button>
+      <button class="btn-small delete-btn" onclick="delCamarero('${c._id}')">Eliminar</button>
       </td>
     </tr>`
     )
@@ -102,7 +111,7 @@ async function loadCocineros() {
     <tr>
       <td>${c.usuario}</td>
       <td>
-        <button onclick="delCocinero('${c._id}')">Eliminar</button>
+      <button class="btn-small delete-btn" onclick="delCocinero('${c._id}')">Eliminar</button>
       </td>
     </tr>`
     )
@@ -265,10 +274,52 @@ const platosBody = document.getElementById("platos-body");
 const platoForm = document.getElementById("plato-form");
 
 // Cargar platos y mostrarlos en tabla
+let todosLosPlatos = [];
+
 async function loadPlatos() {
   const res = await fetch("/api/platos");
-  const platos = res.ok ? await res.json() : [];
-  platosBody.innerHTML = platos
+  todosLosPlatos = res.ok ? await res.json() : [];
+
+  const categorias = await fetchCategorias();
+  const filtroCategoria = document.getElementById("filtro-categoria");
+  filtroCategoria.innerHTML = `<option value="">Todas las categorías</option>`;
+  categorias.forEach((c) => {
+    const opt = document.createElement("option");
+    opt.value = c.nombre.toLowerCase();
+    opt.textContent = c.nombre.toUpperCase();
+    filtroCategoria.appendChild(opt);
+  });
+
+  renderizarPlatos();
+}
+
+function renderizarPlatos() {
+  const nombreFiltro = document
+    .getElementById("filtro-nombre")
+    .value.toLowerCase();
+  const categoriaFiltro = document.getElementById("filtro-categoria").value;
+  const ordenarPor = document.getElementById("ordenar-por").value;
+
+  let filtrados = todosLosPlatos.filter((p) => {
+    const nombre = p.nombre.toLowerCase();
+    const categoria = p.categoria?.nombre?.toLowerCase() || "";
+    return (
+      nombre.includes(nombreFiltro) &&
+      (categoriaFiltro === "" || categoria === categoriaFiltro)
+    );
+  });
+
+  filtrados.sort((a, b) => {
+    if (ordenarPor === "precio") return a.precio - b.precio;
+    if (ordenarPor === "nombre") return a.nombre.localeCompare(b.nombre);
+    if (ordenarPor === "categoria")
+      return (a.categoria?.nombre || "").localeCompare(
+        b.categoria?.nombre || ""
+      );
+    return 0;
+  });
+
+  platosBody.innerHTML = filtrados
     .map(
       (p) => `
     <tr>
@@ -287,8 +338,6 @@ async function loadPlatos() {
     </tr>`
     )
     .join("");
-
-  actualizarSelectorCategorias(await fetchCategorias());
 }
 
 // Petición para obtener las categorías

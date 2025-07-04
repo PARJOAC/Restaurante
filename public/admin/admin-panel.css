@@ -1,166 +1,135 @@
 /* Contenedor general del panel de administración */
 .admin-container {
-  display: flex; /* organiza los hijos (sidebar y contenido) en fila */
-  min-height: 100vh; /* ocupa toda la altura de la ventana */
-  font-family: "Segoe UI", sans-serif; /* tipografía del contenido */
-  overflow-x: hidden; /* evita scroll horizontal innecesario */
+  display: flex;
+  min-height: 100vh;
+  font-family: "Segoe UI", sans-serif;
+  overflow-x: hidden;
 }
 
-/* Sidebar (barra lateral) fija a la izquierda */
 .sidebar {
-  width: 220px; /* ancho constante */
-  position: fixed; /* siempre visible al hacer scroll */
-  top: 0; /* empieza desde la parte superior */
-  left: 0; /* alineado a la izquierda */
-  height: 100vh; /* ocupa toda la altura de la pantalla */
-  background: #fff; /* fondo blanco */
-  border-right: 1px solid #ddd; /* línea separadora derecha */
-  padding: 2rem 1rem; /* espaciado interior */
-  display: flex; /* organiza elementos internos en columna */
+  width: 220px;
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  background: #fff;
+  border-right: 1px solid #ddd;
+  padding: 2rem 1rem;
+  display: flex;
   flex-direction: column;
-  justify-content: space-between; /* distribuye partes superior e inferior */
-  box-shadow: 2px 0 6px rgba(0, 0, 0, 0.05); /* sombra lateral suave */
-  z-index: 1000; /* por encima del contenido */
-  overflow-y: auto; /* permite scroll si hay muchos elementos */
+  justify-content: space-between;
+  box-shadow: 2px 0 6px rgba(0, 0, 0, 0.05);
+  z-index: 1000;
+  overflow-y: auto;
 }
 
-/* Contenido principal, al lado derecho del sidebar */
 .content {
-  margin-left: 220px; /* deja espacio al sidebar */
-  flex: 1; /* ocupa el resto del ancho disponible */
-  padding: 2rem; /* espaciado interno */
-  background: #f4f7fa; /* color de fondo claro */
-  overflow-y: auto; /* scroll vertical si se necesita */
-  width: calc(100% - 220px); /* se adapta al ancho restante */
-  box-sizing: border-box; /* incluye padding en el cálculo del ancho */
+  margin-left: 220px;
+  flex: 1;
+  padding: 2rem;
+  background: #f4f7fa;
+  overflow-y: auto;
+  width: calc(100% - 220px);
+  box-sizing: border-box;
 }
 
-/* Título dentro del sidebar */
 .sidebar h2 {
-  text-align: center; /* centrado */
-  font-size: 1.5rem; /* tamaño de fuente grande */
-  margin-bottom: 2rem; /* separación inferior */
+  text-align: center;
+  font-size: 1.5rem;
+  margin-bottom: 2rem;
 }
 
-/* Lista del sidebar (menú) sin estilo por defecto */
 .sidebar ul {
-  list-style: none; /* quita los puntos */
+  list-style: none;
   padding: 0;
   margin: 0;
 }
 
-/* Ítems del menú del sidebar */
 .sidebar ul li {
-  padding: 0.8rem 1rem; /* espaciado interno */
-  border-radius: 6px; /* esquinas redondeadas */
-  margin-bottom: 0.5rem; /* espacio entre ítems */
-  cursor: pointer; /* cursor de mano al pasar por encima */
-  transition: all 0.3s ease; /* animación suave */
+  padding: 0.8rem 1rem;
+  border-radius: 6px;
+  margin-bottom: 0.5rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
 }
-
-/* Efecto hover para los ítems del menú */
 .sidebar ul li:hover {
-  background-color: #e8f0fe;
+  background: #e8f0fe;
 }
-
-/* Ítem activo del menú */
 .sidebar ul li.active {
-  background-color: #0077cc; /* azul principal */
-  color: white; /* texto blanco */
+  background: #0077cc;
+  color: #fff;
 }
-
-/* Ítem activo con hover (oscurecido) */
 .sidebar ul li.active:hover {
-  background-color: #005fa3;
+  background: #005fa3;
 }
 
-/* Botón de cerrar sesión */
+.btn,
 .btn.logout {
-  width: 100%; /* ocupa todo el ancho */
-  padding: 0.5rem 0; /* altura */
-  background: #d9534f; /* rojo */
-  color: white;
   border: none;
   border-radius: 4px;
-  margin-top: 2rem;
-  transition: background 0.3s;
-  font-size: 0.9rem;
   cursor: pointer;
+  color: #fff;
+  transition: background 0.3s ease;
 }
-
-/* Hover para el botón de cerrar sesión */
+.btn.logout {
+  width: 100%;
+  padding: 0.5rem 0;
+  background: #d9534f;
+  margin-top: 2rem;
+  font-size: 0.9rem;
+}
 .btn.logout:hover {
   background: #c9302c;
 }
-
-/* Botones generales (ej. guardar) */
 .btn {
   padding: 0.6rem 1.2rem;
   font-size: 1rem;
-  border-radius: 4px;
-  cursor: pointer;
-  border: none;
-  transition: background 0.3s ease;
-  color: white;
-  background-color: #0077cc;
+  background: #0077cc;
 }
-
-/* Hover para botones generales */
 .btn:hover {
-  background-color: #005fa3;
+  background: #005fa3;
 }
 
-/* Botones pequeños (editar, borrar) */
 .btn-small {
   padding: 0.15rem 0.4rem;
   font-size: 0.75rem;
   border-radius: 4px;
   border: none;
-  cursor: pointer;
   margin-right: 0.3rem;
-  transition: background-color 0.3s ease;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 4px;
   min-width: 28px;
   height: 24px;
-  color: white;
+  color: #fff;
   font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
 }
-
-/* Botón de edición */
 .btn-small.edit-btn {
-  background-color: #0077cc;
+  background: #0077cc;
 }
-
 .btn-small.edit-btn:hover {
-  background-color: #005fa3;
+  background: #005fa3;
 }
-
-/* Botón de borrado */
 .btn-small.delete-btn {
-  background-color: #d9534f;
+  background: #d9534f;
 }
-
 .btn-small.delete-btn:hover {
-  background-color: #c9302c;
+  background: #c9302c;
 }
-
-/* Iconos para botones pequeños (antes del texto) */
 .btn-small.edit-btn::before {
-  content: "✏️"; /* ícono de lápiz */
+  content: "✏️";
   font-size: 0.85rem;
   display: inline-block;
 }
-
 .btn-small.delete-btn::before {
-  content: "🗑️"; /* ícono de papelera */
+  content: "🗑️";
   font-size: 0.85rem;
   display: inline-block;
 }
 
-/* Secciones que se ocultan o muestran según clase activa */
 .panel-section {
   display: none;
 }
@@ -168,18 +137,18 @@
   display: block;
 }
 
-/* Grid para dividir el formulario y la tabla */
 .form-grid {
   display: grid;
-  grid-template-columns: 1fr 2fr; /* 1 parte vs 2 partes */
+  grid-template-columns: 1fr 2fr;
   gap: 2rem;
   align-items: start;
   margin-top: 1.5rem;
 }
 
-/* Formularios generales */
 #plato-form,
-#categoria-form {
+#categoria-form,
+#camarero-form,
+#cocinero-form {
   background: #fff;
   padding: 1.5rem;
   border-radius: 6px;
@@ -188,7 +157,6 @@
   flex-direction: column;
 }
 
-/* Inputs de formularios */
 #plato-form input,
 #plato-form select,
 #categoria-form input,
@@ -201,7 +169,6 @@
   border-radius: 4px;
 }
 
-/* Botones en formularios */
 #plato-form button,
 #categoria-form button {
   align-self: flex-end;
@@ -209,7 +176,6 @@
   font-size: 1rem;
 }
 
-/* Tablas de datos (platos, comandas...) */
 table {
   width: 100%;
   background: #fff;
@@ -218,40 +184,29 @@ table {
   overflow: hidden;
   box-shadow: 0 1px 6px rgba(0, 0, 0, 0.05);
 }
-
-/* Encabezado de la tabla */
 table thead {
   background: #0077cc;
   color: #fff;
 }
-
-/* Celdas de la tabla */
 th,
 td {
   padding: 0.9rem 1rem;
   border-bottom: 1px solid #eaeaea;
   text-align: left;
 }
-
-/* Efecto hover en filas */
 tr:hover {
   background: #f1f5f9;
 }
-
-/* Imágenes dentro de tablas */
 table img {
   width: 70px;
   height: 45px;
   object-fit: cover;
   border-radius: 4px;
 }
-
-/* Última celda de cada fila en comandas centrada */
 #comandas-body td:last-child {
   text-align: center;
 }
 
-/* Formulario de configuración (cambio de contraseña) */
 .config-form {
   background: #fff;
   padding: 1.5rem;
@@ -260,15 +215,11 @@ table img {
   max-width: 400px;
   margin-top: 2rem;
 }
-
-/* Etiquetas del formulario de configuración */
 .config-form label {
   font-weight: 600;
   margin-top: 1rem;
   display: block;
 }
-
-/* Inputs del formulario de configuración */
 .config-form input {
   width: 100%;
   padding: 0.6rem;
@@ -276,46 +227,37 @@ table img {
   border: 1px solid #ccc;
   border-radius: 4px;
 }
-
-/* Botón del formulario de configuración */
 .config-form button {
   margin-top: 1.2rem;
   width: 100%;
   font-size: 1rem;
 }
 
-/* Botón de abrir/cerrar el sidebar en móvil */
 .sidebar-toggle {
-  display: none; /* oculto por defecto, solo se muestra en móvil */
+  display: none;
 }
 
-/* ------------------ RESPONSIVE (pantallas pequeñas) ------------------ */
 @media (max-width: 768px) {
   .admin-container {
-    flex-direction: column; /* los elementos se apilan en vertical */
+    flex-direction: column;
   }
-
   .sidebar {
     position: fixed;
-    transform: translateX(-100%); /* oculto por defecto */
+    transform: translateX(-100%);
     transition: transform 0.3s ease;
   }
-
   .sidebar.open {
-    transform: translateX(0); /* visible cuando tiene clase open */
+    transform: translateX(0);
   }
-
   .content {
     margin-left: 0;
     width: 100%;
-    padding: 5rem 1rem 1rem 1rem; /* espacio para el botón toggle */
+    padding: 5rem 1rem 1rem;
   }
-
   .form-grid {
-    grid-template-columns: 1fr; /* una sola columna */
+    grid-template-columns: 1fr;
     gap: 1rem;
   }
-
   .sidebar-toggle {
     display: block;
     position: fixed;
@@ -332,60 +274,96 @@ table img {
     transition: background 0.3s ease, opacity 0.3s ease;
     cursor: pointer;
   }
-
   .sidebar-toggle:hover {
     background: #005fa3;
   }
-
-  /* Oculta el botón cuando el sidebar está abierto */
   body.sidebar-open .sidebar-toggle {
     opacity: 0;
     pointer-events: none;
   }
 }
 
-/* Contenedor de tabla, usado para habilitar scroll horizontal en móvil */
 .table-wrapper {
   width: 100%;
-  overflow-x: visible;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
   border-radius: 6px;
-  box-shadow: none;
-  background: transparent;
+  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.05);
+  background: white;
 }
-
 .table-wrapper table {
   width: 100%;
   border-collapse: collapse;
 }
 
-/* Scroll horizontal en móvil para tablas anchas */
 @media (max-width: 768px) {
-  .table-wrapper {
+  .table-wrapper.scrollable {
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
     box-shadow: 0 1px 6px rgba(0, 0, 0, 0.1);
     background: white;
   }
-
-  .table-wrapper table {
-    min-width: 600px; /* obliga a hacer scroll si no cabe */
+  .table-wrapper.scrollable table {
+    min-width: 600px;
   }
-
   table th,
   table td {
     font-size: 0.85rem;
     padding: 0.5rem 0.7rem;
   }
-
   .btn-small {
     min-width: 26px;
     height: 26px;
     font-size: 0.75rem;
     padding: 0.15rem 0.4rem;
   }
-
   table img {
     width: 50px;
     height: 30px;
+  }
+}
+
+.filtros {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin: 1.5rem 0;
+  padding: 1rem;
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.05);
+}
+.filtros label {
+  display: flex;
+  flex-direction: column;
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: #333;
+  min-width: 180px;
+}
+.filtros input,
+.filtros select {
+  padding: 0.5rem;
+  font-size: 0.95rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  background: #f9f9f9;
+  margin-top: 0.3rem;
+  transition: border-color 0.3s, background-color 0.3s;
+}
+.filtros input:focus,
+.filtros select:focus {
+  border-color: #0077cc;
+  outline: none;
+  background: #fff;
+}
+@media (max-width: 768px) {
+  .filtros {
+    flex-direction: column;
+    padding: 1rem;
+  }
+  .filtros label {
+    width: 100%;
   }
 }
