@@ -1,59 +1,42 @@
 <!DOCTYPE html>
-<!-- Declaración del tipo de documento HTML5 -->
-
 <html lang="es">
-  <!-- Establece el idioma de la página a español -->
-
   <head>
     <meta charset="UTF-8" />
-    <!-- Codificación de caracteres en UTF-8 para admitir acentos, eñes, etc. -->
-
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <!-- Hace que el diseño sea responsive en dispositivos móviles -->
-
     <title>Bienvenido – Contra Corriente</title>
-    <!-- Título de la pestaña del navegador -->
 
     <link rel="stylesheet" href="/css/general.css" />
-    <!-- Hoja de estilos general común a todas las páginas -->
-
     <link rel="stylesheet" href="/css/inicio.css" />
-    <!-- Estilos específicos para esta pantalla de bienvenida -->
   </head>
-
   <body>
-    <!-- Cuerpo principal de la página -->
-
     <main class="welcome-container">
-      <!-- Contenedor central con estilo de bienvenida -->
-
       <h1>Bienvenido a Contra Corriente</h1>
-      <!-- Título destacado de bienvenida -->
-
-      <p>
-        Aquí puedes escanear el código QR de tu mesa para realizar tu pedido.
-      </p>
-      <!-- Explicación rápida de qué hacer -->
+      <p>Escanea el código QR de tu mesa para hacer el pedido.</p>
 
       <div class="instructions">
-        <!-- Bloque de instrucciones paso a paso -->
-
         <h2>📌 Instrucciones:</h2>
-        <!-- Subtítulo con icono -->
-
-        <ol type="1">
-          <!-- Lista ordenada con pasos numerados -->
+        <ol>
           <li>Escanea el QR impreso en tu mesa.</li>
           <li>Serás redirigido automáticamente a tu pedido.</li>
           <li>Selecciona los platos que desees y envía tu comanda.</li>
         </ol>
       </div>
 
-      <p>Si necesitas ayuda, contacta con el personal.</p>
-      <!-- Nota para pedir asistencia -->
+      <button onclick="iniciarEscaneo()">📷 Escanear QR</button>
+      <video
+        id="video"
+        muted
+        autoplay
+        playsinline
+        style="display: none"
+      ></video>
+      <div id="scan-result"></div>
 
+      <p>Si necesitas ayuda, contacta con el personal.</p>
       <p>¡Gracias por visitarnos!</p>
-      <!-- Mensaje de cierre amistoso -->
     </main>
+
+    <!-- Librería QR Scanner moderna -->
+    <script type="module" src="/qr.js"></script>
   </body>
 </html>
