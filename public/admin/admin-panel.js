@@ -321,7 +321,7 @@ function renderizarPlatos() {
   platosBody.innerHTML = filtrados
     .map(
       (p) => `
-    <tr>
+    <tr class="${p.activo ? "plato-activo" : "plato-inactivo"}">
       <td><img src="${p.imagen}" alt="" /></td>
       <td>${p.nombre}</td>
       <td>${p.precio.toFixed(2)}</td>
@@ -333,10 +333,25 @@ function renderizarPlatos() {
         <button class="btn-small delete-btn" onclick="delPlato('${
           p._id
         }')">Eliminar</button>
+        <button class="btn-small toggle-btn ${
+          p.activo ? "activar" : "desactivar"
+        }" onclick="toggleActivo('${p._id}', ${p.activo})">
+          ${p.activo ? "En venta" : "No disponible"}
+        </button>
       </td>
     </tr>`
     )
     .join("");
+}
+
+async function toggleActivo(id, estadoActual) {
+  const nuevoEstado = !estadoActual;
+  await fetch(`/api/platos/${id}/estado`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ activo: nuevoEstado }),
+  });
+  loadPlatos();
 }
 
 // Petición para obtener las categorías

@@ -405,3 +405,28 @@ table img {
     min-width: auto;
   }
 }
+
+.plato-activo {
+  background-color: #e0f7e9;
+}
+
+.plato-inactivo {
+  background-color: #ffe1e1;
+}
+
+button.toggle-btn {
+  border: none;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-weight: bold;
+}
+
+button.toggle-btn.activar {
+  background-color: #4caf50;
+  color: white;
+}
+
+button.toggle-btn.desactivar {
+  background-color: #f44336;
+  color: white;
+}

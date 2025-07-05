@@ -19,6 +19,9 @@ const platoSchema = new mongoose.Schema(
 
     // Referencia a una categoría (relación con la colección 'Categorias')
     categoria: { type: mongoose.Schema.Types.ObjectId, ref: "Categorias" },
+
+    // Indica si el plato está disponible para pedir o no
+    activo: { type: Boolean, default: true },
   },
   {
     // Activa los timestamps: crea automáticamente 'createdAt' y 'updatedAt'

@@ -18,7 +18,9 @@ async function cargarPlatos() {
   try {
     const res = await fetch("/public/platos");
     if (!res.ok) throw new Error(res.statusText);
-    platos = await res.json();
+    let todos = await res.json();
+
+    platos = todos.filter((p) => p.activo !== false);
 
     const cont = document.getElementById("items-menu");
     if (!Array.isArray(platos) || platos.length === 0) {

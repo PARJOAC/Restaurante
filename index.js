@@ -329,6 +329,17 @@ app.get("/public/platos", async (req, res) => {
   }
 });
 
+app.put("/api/platos/:id/estado", async (req, res) => {
+  const { id } = req.params;
+  const { activo } = req.body;
+  try {
+    await Plato.findByIdAndUpdate(id, { activo });
+    res.sendStatus(200);
+  } catch (err) {
+    res.status(500).json({ error: "Error al cambiar estado del plato." });
+  }
+});
+
 // CRUD Comandas (admin)
 app.get("/api/comandas", requireAdminOrCocinero, async (req, res) => {
   try {

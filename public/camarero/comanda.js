@@ -8,8 +8,9 @@ async function cargarPlatos() {
   try {
     const res = await fetch("/public/platos"); // Petición GET a la API pública
     if (!res.ok) throw new Error(res.statusText); // Error si falla
-    platos = await res.json(); // Se guardan los platos en la variable global
+    let todos = await res.json(); // Se guardan los platos en la variable global
 
+    platos = todos.filter((p) => p.activo !== false);
     // Si no hay platos, mostrar mensaje
     if (!Array.isArray(platos) || platos.length === 0) {
       document.getElementById("items-menu").innerHTML =
@@ -152,7 +153,8 @@ function actualizarResumen() {
 async function enviarComanda() {
   const mesaInput = document.getElementById("mesa").value.trim();
   if (!mesaInput) return alert("Indica el número de la mesa.");
-  if (pedido.length === 0) return alert("Añade al menos un plato a la comanda.");
+  if (pedido.length === 0)
+    return alert("Añade al menos un plato a la comanda.");
 
   try {
     const res = await fetch("/api/comandas", {
