@@ -280,6 +280,8 @@ async function loadPlatos() {
   todosLosPlatos = res.ok ? await res.json() : [];
 
   const categorias = await fetchCategorias();
+  actualizarSelectorCategorias(categorias); // ← esto actualiza también el <select> del formulario
+
   const filtroCategoria = document.getElementById("filtro-categoria");
   filtroCategoria.innerHTML = `<option value="">Todas las categorías</option>`;
   categorias.forEach((c) => {
@@ -334,7 +336,7 @@ function renderizarPlatos() {
           p._id
         }')">Eliminar</button>
         <button class="btn-small toggle-btn ${
-          p.activo ? "activar" : "desactivar"
+          p.activo ? "activar" : "desactivado"
         }" onclick="toggleActivo('${p._id}', ${p.activo})">
           ${p.activo ? "En venta" : "No disponible"}
         </button>
@@ -368,8 +370,10 @@ async function editPlato(id) {
     platoForm.id.value = p._id;
     platoForm.nombre.value = p.nombre;
     platoForm.precio.value = p.precio;
-    platoForm.imagen.value = p.imagen;
-    platoForm.descripcion.value = p.descripcion || "";
+    platoForm.imagen.value =
+      p.imagen ||
+      "https://chatgpt.com/backend-api/public_content/enc/eyJpZCI6Im1fNjg2OTFhZTIyNmM4ODE5MTgxYjBkYmFmM2I3NGRhMWU6ZmlsZV8wMDAwMDAwMDM5YTA2MjQzODhlNDNlOGZmM2I0N2M0YyIsInRzIjoiNDg2NTg4IiwicCI6InB5aSIsInNpZyI6IjdmNDUyOWFhOTg1MGM3ZTM1N2Y5NzIzNDFlNTcxZGQwOGU3OWE0MGRjZjA3NzMwYjI5ZWU0MWRlNWViY2I1YzEiLCJ2IjoiMCIsImdpem1vX2lkIjpudWxsfQ==";
+    platoForm.descripcion.value = p.descripcion || "Sin descripción.";
     platoForm.categoria.value = p.categoria?._id || "";
   }
 }
@@ -387,8 +391,10 @@ platoForm.addEventListener("submit", async (e) => {
   const data = {
     nombre: platoForm.nombre.value,
     precio: parseFloat(platoForm.precio.value),
-    imagen: platoForm.imagen.value,
-    descripcion: platoForm.descripcion.value,
+    imagen:
+      platoForm.imagen.value ||
+      "https://chatgpt.com/backend-api/public_content/enc/eyJpZCI6Im1fNjg2OTFhZTIyNmM4ODE5MTgxYjBkYmFmM2I3NGRhMWU6ZmlsZV8wMDAwMDAwMDM5YTA2MjQzODhlNDNlOGZmM2I0N2M0YyIsInRzIjoiNDg2NTg4IiwicCI6InB5aSIsInNpZyI6IjdmNDUyOWFhOTg1MGM3ZTM1N2Y5NzIzNDFlNTcxZGQwOGU3OWE0MGRjZjA3NzMwYjI5ZWU0MWRlNWViY2I1YzEiLCJ2IjoiMCIsImdpem1vX2lkIjpudWxsfQ==",
+    descripcion: platoForm.descripcion.value || "Sin descripción.",
     categoria: platoForm.categoria.value || null,
   };
   const id = platoForm.id.value;
