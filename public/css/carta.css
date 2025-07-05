@@ -316,3 +316,27 @@
   gap: 2rem;
 }
 
+.indice-categorias {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 1rem 0 1.5rem;
+  padding: 0.5rem;
+  background: #f8f8f8;
+  border-radius: 6px;
+  justify-content: center;
+}
+
+.indice-categorias a {
+  text-decoration: none;
+  color: #333;
+  font-weight: bold;
+  background: #e0e0e0;
+  padding: 6px 12px;
+  border-radius: 4px;
+  transition: background 0.2s;
+}
+
+.indice-categorias a:hover {
+  background: #ccc;
+}

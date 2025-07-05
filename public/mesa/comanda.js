@@ -38,8 +38,11 @@ async function cargarPlatos() {
 // Dibuja platos agrupados por categoría
 function initComanda() {
   const cont = document.getElementById("items-menu");
+  const indice = document.getElementById("indice-categorias");
   cont.innerHTML = "";
+  indice.innerHTML = "";
   const grupos = {};
+
   platos.forEach((p) => {
     const cat = p.categoria?.nombre?.toUpperCase() || "SIN CATEGORÍA";
     grupos[cat] = grupos[cat] || [];
@@ -47,11 +50,21 @@ function initComanda() {
   });
 
   for (const cat in grupos) {
+    // Crear enlace en el índice
+    const link = document.createElement("a");
+    const id = `cat-${cat.toLowerCase().replace(/\s+/g, "-")}`;
+    link.href = `#${id}`;
+    link.textContent = cat;
+    indice.appendChild(link);
+
+    // Crear bloque de categoría
     const grupoDiv = document.createElement("div");
     grupoDiv.className = "categoria-grupo";
+    grupoDiv.id = id;
 
     const titulo = document.createElement("h3");
     titulo.textContent = cat;
+
     const flecha = document.createElement("span");
     flecha.className = "flecha";
     titulo.appendChild(flecha);
@@ -88,6 +101,7 @@ function initComanda() {
       flecha.classList.toggle("flecha-rotada", !abierto);
     });
   }
+
   actualizarResumen();
 }
 

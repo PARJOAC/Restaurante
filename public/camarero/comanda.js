@@ -30,24 +30,32 @@ async function cargarPlatos() {
 // Renderiza todos los platos agrupados por categoría
 function initComanda() {
   const cont = document.getElementById("items-menu");
+  const indice = document.getElementById("indice-categorias");
   cont.innerHTML = "";
-  const grupos = {}; // Diccionario por categoría
+  indice.innerHTML = "";
+  const grupos = {};
 
-  // Agrupar platos por categoría
   platos.forEach((p) => {
     const cat = p.categoria?.nombre?.toUpperCase() || "SIN CATEGORÍA";
-    if (!grupos[cat]) grupos[cat] = [];
+    grupos[cat] = grupos[cat] || [];
     grupos[cat].push(p);
   });
 
-  // Crear HTML por cada grupo de categoría
   for (const cat in grupos) {
+    // Índice navegable
+    const link = document.createElement("a");
+    const id = `cat-${cat.toLowerCase().replace(/\s+/g, "-")}`;
+    link.href = `#${id}`;
+    link.textContent = cat;
+    indice.appendChild(link);
+
+    // Grupo de categoría
     const grupoDiv = document.createElement("div");
     grupoDiv.className = "categoria-grupo";
+    grupoDiv.id = id;
 
     const titulo = document.createElement("h3");
     titulo.textContent = cat;
-
     const flecha = document.createElement("span");
     flecha.className = "flecha";
     titulo.appendChild(flecha);
@@ -55,11 +63,9 @@ function initComanda() {
 
     const contenido = document.createElement("div");
     contenido.className = "categoria-contenido abierto";
-
     const grid = document.createElement("div");
     grid.className = "menu-grid";
 
-    // Añadir cada plato como tarjeta
     grupos[cat].forEach((p) => {
       const div = document.createElement("div");
       div.className = "menu-item";
@@ -78,7 +84,6 @@ function initComanda() {
     grupoDiv.appendChild(contenido);
     cont.appendChild(grupoDiv);
 
-    // Al hacer clic en el título, se colapsa el grupo
     titulo.addEventListener("click", () => {
       const abierto = contenido.classList.toggle("abierto");
       flecha.classList.toggle("flecha-rotada", !abierto);
